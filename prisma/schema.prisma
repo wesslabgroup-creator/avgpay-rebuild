@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
+}
+
+model Salary {
+  id                  String   @id @default(cuid())
+  createdAt           DateTime @default(now())
+
+  locationState       String
+  locationCity        String
+  specialty           String
+  yearsExperience     Int
+  payRateHourly       Float
+  overtimeRateHourly  Float?
+  stipendWeekly       Float?
+  bonusesAnnual       Float?
+}
