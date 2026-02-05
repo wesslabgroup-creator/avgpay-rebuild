@@ -3,6 +3,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import { salarySchema } from '$lib/schema';
 	import type { z } from 'zod';
+	import type { z as Zod } from 'zod';
 
 	const dispatch = createEventDispatcher();
 
@@ -17,7 +18,7 @@
 		bonusesAnnual: undefined,
 	};
 
-	let errors: z.ZodFormattedError<typeof formData> | null = null;
+	let errors: z.ZodFormattedError<Zod.infer<typeof salarySchema>> | null = null;
 	let formError: string | null = null;
 	let isLoading = false;
 

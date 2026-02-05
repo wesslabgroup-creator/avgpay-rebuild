@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import { PrismaClient } from '@prisma/client';
 import { salarySchema } from '$lib/schema';
 
-const prisma = new PrismaClient();
+import prisma from '$lib/prisma';
 
 // GET /api/salaries
 // Retrieves the latest 100 salary entries.

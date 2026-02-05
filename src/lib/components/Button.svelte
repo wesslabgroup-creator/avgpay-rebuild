@@ -2,6 +2,7 @@
   export let type: 'button' | 'submit' | 'reset' = 'button';
   export let variant: 'primary' | 'secondary' = 'primary';
   export let onClick: (() => void) | undefined = undefined;
+  export let disabled = false;
 
   const baseClasses = 'px-8 py-4 text-lg font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2';
   const variantClasses = {
@@ -10,6 +11,6 @@
   };
 </script>
 
-<button {type} on:click={onClick} class="{baseClasses} {variantClasses[variant]}">
+<button {type} disabled={disabled} on:click={onClick} class="{baseClasses} {variantClasses[variant]} {disabled ? 'opacity-50 cursor-not-allowed' : ''}">
   <slot />
 </button>
