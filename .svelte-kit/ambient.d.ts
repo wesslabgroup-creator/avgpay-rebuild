@@ -30,6 +30,7 @@ declare module '$env/static/private' {
 	export const NODE: string;
 	export const OPENCLAW_GATEWAY_PORT: string;
 	export const INIT_CWD: string;
+	export const TERM: string;
 	export const NODE_NO_WARNINGS: string;
 	export const SHELL: string;
 	export const TMPDIR: string;
@@ -73,6 +74,7 @@ declare module '$env/static/private' {
 	export const OPENCLAW_PATH_BOOTSTRAPPED: string;
 	export const npm_node_execpath: string;
 	export const npm_config_prefix: string;
+	export const NODE_ENV: string;
 }
 
 /**
@@ -106,6 +108,7 @@ declare module '$env/dynamic/private' {
 		NODE: string;
 		OPENCLAW_GATEWAY_PORT: string;
 		INIT_CWD: string;
+		TERM: string;
 		NODE_NO_WARNINGS: string;
 		SHELL: string;
 		TMPDIR: string;
@@ -149,6 +152,7 @@ declare module '$env/dynamic/private' {
 		OPENCLAW_PATH_BOOTSTRAPPED: string;
 		npm_node_execpath: string;
 		npm_config_prefix: string;
+		NODE_ENV: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
