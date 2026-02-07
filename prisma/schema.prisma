@@ -20,3 +20,32 @@ model Salary {
   stipendWeekly       Float?
   bonusesAnnual       Float?
 }
+
+model AggregateSalary {
+  id            String @id @default(cuid())
+  createdAt     DateTime @default(now())
+  occupation    String
+  meanAnnual    Float?
+  source        String
+  year          Int
+  area          String?  /// "national", "state_code", etc.
+  meanHourly    Float?
+
+  @@unique([occupation, source, year, area], name: "unique_agg_salary")
+}
+
+model Metrics {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  date            DateTime
+  source          String
+  usersNew        Int?
+  usersTotal      Int?
+  sessions        Int?
+  pageviews       Int?
+  revenue         Float?
+  builds          Int?
+  functionsInvoked Int?
+
+  @@unique([date, source])
+}
