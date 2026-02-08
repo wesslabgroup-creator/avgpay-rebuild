@@ -2612,7 +2612,7 @@ const options = {
   service_worker: false,
   service_worker_options: void 0,
   templates: {
-    app: ({ head, body, assets, nonce, env }) => '<!doctype html>\\n<html lang="en">\\n	<head>\\n		<meta charset="utf-8" />\\n		<link rel="icon" href="' + assets + '/favicon.png" />\\n		<meta name="viewport" content="width=device-width, initial-scale=1" />\\n		' + head + '\\n	</head>\\n	<body data-sveltekit-preload-data="hover">\\n		<div style="display: contents">' + body + "</div>\\n	</body>\\n</html>\\n",
+    app: ({ head, body, assets, nonce, env }) => '<!doctype html>\\n\n<html lang="en">\n  \\n\n  <head>\n    \\n\n    <meta charset="utf-8" />\n    \\n\n    <link rel="icon" href="' + assets + '/favicon.png" />\n    \\n\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    \\n ' + head + '\\n</head\n  >\\n\n  <body data-sveltekit-preload-data="hover">\n    \\n\n    <div style="display: contents">' + body + "</div>\n    \\n\n  </body>\n  \\n\n</html>\n\\n\n",
     error: ({ status, message }) => '<!doctype html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<title>' + message + `</title>
 
 		<style>
@@ -2684,7 +2684,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "7gf23a"
+  version_hash: "1t4r4du"
 };
 async function get_hooks() {
   let handle;

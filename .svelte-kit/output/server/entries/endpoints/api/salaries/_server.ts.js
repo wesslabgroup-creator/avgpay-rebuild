@@ -25,7 +25,10 @@ async function POST({ request }) {
     const body = await request.json();
     const result = salarySchema.safeParse(body);
     if (!result.success) {
-      return json({ error: "Invalid data provided.", details: result.error.flatten() }, { status: 400 });
+      return json(
+        { error: "Invalid data provided.", details: result.error.flatten() },
+        { status: 400 }
+      );
     }
     const newSalary = await prisma.salary.create({
       data: result.data

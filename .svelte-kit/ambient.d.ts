@@ -26,17 +26,14 @@
  * ```
  */
 declare module '$env/static/private' {
-	export const DATABASE_URL: string;
 	export const NODE: string;
 	export const OPENCLAW_GATEWAY_PORT: string;
 	export const INIT_CWD: string;
-	export const TERM: string;
 	export const NODE_NO_WARNINGS: string;
 	export const SHELL: string;
 	export const TMPDIR: string;
 	export const npm_config_global_prefix: string;
 	export const COLOR: string;
-	export const VIPSHOME: string;
 	export const npm_config_noproxy: string;
 	export const npm_config_local_prefix: string;
 	export const USER: string;
@@ -104,17 +101,14 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
-		DATABASE_URL: string;
 		NODE: string;
 		OPENCLAW_GATEWAY_PORT: string;
 		INIT_CWD: string;
-		TERM: string;
 		NODE_NO_WARNINGS: string;
 		SHELL: string;
 		TMPDIR: string;
 		npm_config_global_prefix: string;
 		COLOR: string;
-		VIPSHOME: string;
 		npm_config_noproxy: string;
 		npm_config_local_prefix: string;
 		USER: string;

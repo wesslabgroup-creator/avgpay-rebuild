@@ -8,7 +8,7 @@ function Header($$renderer) {
 function Button($$renderer, $$props) {
   let type = fallback($$props["type"], "button");
   let variant = fallback($$props["variant"], "primary");
-  let onClick = fallback($$props["onClick"], () => void 0, true);
+  let onClick = fallback($$props["onClick"], void 0);
   let disabled = fallback($$props["disabled"], false);
   const baseClasses = "px-8 py-4 text-lg font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2";
   const variantClasses = {
