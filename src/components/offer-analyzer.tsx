@@ -327,9 +327,22 @@ export function OfferAnalyzer() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full bg-gradient-to-r from-indigo-600 to-violet-600">
-            Analyze My Offer <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-indigo-600 to-violet-600"
+                disabled={step === "analyzing"}
+              >
+                {step === "analyzing" ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    Analyze My Offer <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
         </form>
       </CardContent>
     </Card>

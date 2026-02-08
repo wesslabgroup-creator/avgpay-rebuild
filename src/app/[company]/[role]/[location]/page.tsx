@@ -5,6 +5,7 @@ import { SalaryChart } from "@/components/salary-chart";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/navigation";
 import { getMarketData } from "@/lib/data";
+import { BreadcrumbSchema } from "@/components/schema-markup";
 import Link from "next/link";
 
 interface PageProps {
@@ -67,6 +68,12 @@ export default function SalaryPage({ params }: PageProps) {
       
       <div className="px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-8">
+          <BreadcrumbSchema items={[
+            { name: "Home", item: "https://avgpay-rebuild.vercel.app" },
+            { name: company, item: `https://avgpay-rebuild.vercel.app/${encodeURIComponent(company)}` },
+            { name: role, item: `https://avgpay-rebuild.vercel.app/${encodeURIComponent(company)}/${encodeURIComponent(role)}` },
+            { name: location, item: `https://avgpay-rebuild.vercel.app/${encodeURIComponent(company)}/${encodeURIComponent(role)}/${encodeURIComponent(location.replace(", ", "-"))}` },
+          ]} />
           {/* Breadcrumb */}
           <nav className="text-sm text-slate-400">
             <Link href="/" className="hover:text-slate-200">Home</Link>

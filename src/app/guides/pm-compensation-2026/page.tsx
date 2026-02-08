@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/navigation";
 import { DataTable } from "@/components/data-table";
+import { ArticleSchema } from "@/components/schema-markup";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -38,6 +39,7 @@ export default function PMGuidePage() {
   return (
     <main className="min-h-screen bg-slate-950">
       <Navigation />
+      <ArticleSchema headline="Product Manager Compensation Guide 2026" datePublished="2026-02-01" authorName="AvgPay Team" />
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">
         <div className="mb-8 not-prose">
