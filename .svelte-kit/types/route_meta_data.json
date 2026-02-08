@@ -1,5 +1,14 @@
 {
-	"/": [],
+	"/": [
+		"src/routes/+layout.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/admin": [
+		"src/routes/+layout.server.ts"
+	],
+	"/api/metrics": [
+		"src/routes/api/metrics/+server.js"
+	],
 	"/api/salaries": [
 		"src/routes/api/salaries/+server.ts"
 	]

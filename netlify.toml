@@ -2,22 +2,6 @@
   command = "npm run build"
   publish = ".svelte-kit/adapter-netlify"
 
-[[functions.scheduled]]
-path = "/api/cron-scrape"
-cron = "0 2 * * *"  # Daily BLS at 2AM UTC
-
-[[functions.scheduled]]
-path = "/api/cron-ga4"
-cron = "0 3 * * *"  # GA4 at 3AM UTC
-
-[[functions.scheduled]]
-path = "/api/cron-stripe"
-cron = "0 4 * * *"  # Stripe at 4AM UTC
-
-[[functions.scheduled]]
-path = "/api/cron-netlify"
-cron = "0 5 * * *"  # Netlify at 5AM UTC
-
 [functions]
   directory = "netlify/functions"
   external_node_modules = ["@prisma/client", "googleapis", "stripe"]

@@ -26,6 +26,7 @@
  * ```
  */
 declare module '$env/static/private' {
+	export const DATABASE_URL: string;
 	export const NODE: string;
 	export const OPENCLAW_GATEWAY_PORT: string;
 	export const INIT_CWD: string;
@@ -101,6 +102,7 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		DATABASE_URL: string;
 		NODE: string;
 		OPENCLAW_GATEWAY_PORT: string;
 		INIT_CWD: string;
