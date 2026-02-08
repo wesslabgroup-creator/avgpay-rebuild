@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { calculateGrade, getMarketData } from "@/lib/data";
+import { calculateGrade } from "@/lib/data";
 import { SalaryChart } from "@/components/salary-chart";
 import { ArrowRight } from "lucide-react";
 
@@ -15,9 +15,6 @@ const ROLES = [
   "Data Scientist",
   "UX Designer",
   "Engineering Manager",
-  "Staff Engineer",
-  "Principal Engineer",
-  "Senior Software Engineer",
 ];
 
 const LOCATIONS = [
@@ -25,17 +22,24 @@ const LOCATIONS = [
   "New York, NY",
   "Seattle, WA",
   "Austin, TX",
-  "Boston, MA",
-  "Denver, CO",
   "Remote",
 ];
 
 const LEVELS = [
-  "Junior (L1-L2)",
-  "Mid (L3-L4)",
-  "Senior (L5-L6)",
-  "Staff+ (L7+)",
+  { value: "L1-L2", label: "Junior (L1-L2)" },
+  { value: "L3-L4", label: "Mid (L3-L4)" },
+  { value: "L5-L6", label: "Senior (L5-L6)" },
+  { value: "L7+", label: "Staff+ (L7+)" },
 ];
+
+interface MarketData {
+  count: number;
+  median: number;
+  p25: number;
+  p75: number;
+  p90: number;
+  blsMedian: number;
+}
 
 interface AnalysisResult {
   grade: string;
@@ -43,10 +47,11 @@ interface AnalysisResult {
   marketMedian: number;
   blsMedian: number;
   yourTotal: number;
+  count: number;
 }
 
 export function OfferAnalyzer() {
-  const [step, setStep] = useState<"form" | "analyzing" | "results">("form");
+  const [step, setStep] = useState<"form" | "analyzing" | "results" | "error">("form");
   const [formData, setFormData] = useState({
     role: "",
     location: "",
@@ -61,26 +66,96 @@ export function OfferAnalyzer() {
     e.preventDefault();
     setStep("analyzing");
 
-    // Simulate analysis delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
     const total = 
       parseInt(formData.baseSalary || "0") + 
       parseInt(formData.equity || "0") / 4 + 
       parseInt(formData.bonus || "0");
 
-    const marketData = getMarketData(formData.role, formData.location, formData.level);
-    const grade = calculateGrade(total, marketData.median);
-    const percentile = Math.round((total / marketData.median) * 50);
+    try {
+      // Fetch market data from API
+      const params = new URLSearchParams({
+        role: formData.role,
+        location: formData.location,
+        level: formData.level,
+      });
 
-    setResult({
-      grade,
-      percentile: Math.min(percentile, 99),
-      marketMedian: marketData.median,
-      blsMedian: marketData.blsMedian,
-      yourTotal: total,
-    });
-    setStep("results");
+      const response = await fetch(`/api/salaries?${params}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch market data');
+      }
+
+      const marketData: MarketData = await response.json();
+
+      if (marketData.count === 0) {
+        // Fallback to mock data if no database entries yet
+        const mockData = getFallbackData(formData.role, formData.location, formData.level);
+        const grade = calculateGrade(total, mockData.median);
+        const percentile = Math.min(Math.round((total / mockData.median) * 50), 99);
+
+        setResult({
+          grade,
+          percentile,
+          marketMedian: mockData.median,
+          blsMedian: mockData.blsMedian,
+          yourTotal: total,
+          count: 0,
+        });
+      } else {
+        const grade = calculateGrade(total, marketData.median);
+        const percentile = Math.min(Math.round((total / marketData.median) * 50), 99);
+
+        setResult({
+          grade,
+          percentile,
+          marketMedian: marketData.median,
+          blsMedian: marketData.blsMedian || marketData.median * 0.95,
+          yourTotal: total,
+          count: marketData.count,
+        });
+      }
+
+      setStep("results");
+    } catch (err) {
+      console.error('Analysis error:', err);
+      setStep("error");
+    }
+  };
+
+  const getFallbackData = (role: string, location: string, level: string) => {
+    // Fallback mock data when Supabase is not yet configured
+    const baseSalaries: Record<string, number> = {
+      "Software Engineer": 160000,
+      "Product Manager": 155000,
+      "Data Scientist": 165000,
+      "UX Designer": 140000,
+      "Engineering Manager": 190000,
+    };
+    
+    const locationMultipliers: Record<string, number> = {
+      "San Francisco, CA": 1.35,
+      "New York, NY": 1.25,
+      "Seattle, WA": 1.28,
+      "Austin, TX": 0.97,
+      "Remote": 0.93,
+    };
+    
+    const levelMultipliers: Record<string, number> = {
+      "L1-L2": 0.75,
+      "L3-L4": 1.0,
+      "L5-L6": 1.45,
+      "L7+": 2.1,
+    };
+
+    const base = baseSalaries[role] || 150000;
+    const locMult = locationMultipliers[location] || 1.0;
+    const lvlMult = levelMultipliers[level] || 1.0;
+    const median = Math.round(base * locMult * lvlMult);
+
+    return {
+      median,
+      blsMedian: Math.round(median * 0.95),
+    };
   };
 
   if (step === "analyzing") {
@@ -90,6 +165,21 @@ export function OfferAnalyzer() {
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
             <p className="text-slate-400">Analyzing against BLS, H-1B, and market data...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (step === "error") {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="pt-6">
+          <div className="text-center py-8 space-y-4">
+            <p className="text-red-400">Failed to analyze. Please try again.</p>
+            <Button onClick={() => setStep("form")} variant="outline">
+              Try Again
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -111,7 +201,12 @@ export function OfferAnalyzer() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Your Compensation Analysis</CardTitle>
-              <CardDescription>Based on verified market data</CardDescription>
+              <CardDescription>
+                {result.count > 0 
+                  ? `Based on ${result.count} verified data points`
+                  : "Based on market benchmarks (database coming soon)"
+                }
+              </CardDescription>
             </div>
             <div className={`text-6xl font-bold ${gradeColor}`}>{result.grade}</div>
           </div>
@@ -161,7 +256,7 @@ export function OfferAnalyzer() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Role</label>
+              <label className="text-sm font-medium">Role *</label>
               <Select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
@@ -174,7 +269,7 @@ export function OfferAnalyzer() {
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Location</label>
+              <label className="text-sm font-medium">Location *</label>
               <Select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -193,18 +288,17 @@ export function OfferAnalyzer() {
             <Select
               value={formData.level}
               onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-              required
             >
               <option value="">Select level...</option>
               {LEVELS.map((level) => (
-                <option key={level} value={level}>{level}</option>
+                <option key={level.value} value={level.value}>{level.label}</option>
               ))}
             </Select>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Base Salary</label>
+              <label className="text-sm font-medium">Base Salary *</label>
               <Input
                 type="number"
                 placeholder="150000"

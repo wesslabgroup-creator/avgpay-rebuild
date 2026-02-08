@@ -1,11 +1,41 @@
+import { Metadata } from "next";
 import { OfferAnalyzer } from "@/components/offer-analyzer";
 import { Button } from "@/components/ui/button";
 import { Database, Shield, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
+export const metadata: Metadata = {
+  title: "AvgPay - Know Your Worth in 60 Seconds",
+  description: "Data-driven salary insights for tech workers. Compare your compensation against BLS, H-1B, and market data.",
+  openGraph: {
+    title: "AvgPay - Know Your Worth in 60 Seconds",
+    description: "Data-driven salary insights for tech workers",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AvgPay - Know Your Worth in 60 Seconds",
+    description: "Data-driven salary insights for tech workers",
+  },
+};
+
 export default function Home() {
   return (
     <main className="min-h-screen">
+      {/* Navigation */}
+      <nav className="px-6 py-4 border-b border-slate-800">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <Link href="/" className="text-xl font-bold text-gradient">AvgPay</Link>
+          <div className="flex items-center gap-6 text-sm">
+            <Link href="/guides" className="text-slate-400 hover:text-slate-200">Guides</Link>
+            <Link href="/methodology" className="text-slate-400 hover:text-slate-200">Methodology</Link>
+            <Link href="/pricing" className="text-slate-400 hover:text-slate-200">Pricing</Link>
+            <Link href="/about" className="text-slate-400 hover:text-slate-200">About</Link>
+            <Link href="/contribute" className="text-slate-400 hover:text-slate-200">Contribute</Link>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <section className="relative px-6 py-24 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/20 via-slate-950 to-slate-950" />
@@ -28,12 +58,16 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600 text-lg px-8">
-              Analyze Your Offer
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8">
-              Browse Salary Data
-            </Button>
+            <Link href="#analyzer">
+              <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600 text-lg px-8">
+                Analyze Your Offer
+              </Button>
+            </Link>
+            <Link href="/guides">
+              <Button size="lg" variant="outline" className="text-lg px-8">
+                Browse Salary Data
+              </Button>
+            </Link>
           </div>
 
           {/* Trust Badges */}
@@ -91,7 +125,7 @@ export default function Home() {
       </section>
 
       {/* Offer Analyzer Section */}
-      <section className="px-6 py-24">
+      <section id="analyzer" className="px-6 py-24">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="text-center space-y-4">
             <h2 className="text-3xl font-bold">Get Your Grade</h2>
@@ -136,8 +170,8 @@ export default function Home() {
           </div>
           <div className="flex gap-6 text-sm">
             <Link href="/methodology" className="text-slate-400 hover:text-slate-200">Methodology</Link>
-            <Link href="/privacy" className="text-slate-400 hover:text-slate-200">Privacy</Link>
-            <Link href="/data" className="text-slate-400 hover:text-slate-200">Data Sources</Link>
+            <Link href="/about" className="text-slate-400 hover:text-slate-200">Privacy</Link>
+            <Link href="/contribute" className="text-slate-400 hover:text-slate-200">Contribute</Link>
           </div>
         </div>
       </footer>
