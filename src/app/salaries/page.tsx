@@ -4,10 +4,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { Navigation } from '@/components/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
-import { DataTable } from '@/components/data-data-table'; // Assuming 'data-table' is the correct import path
+import { DataTable } from '@/components/data-data-table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { COMPANIES, ROLES, LOCATIONS, LEVELS } from '@/lib/data';
+import { COMPANIES, ROLES, LOCATIONS, LEVELS } from '@/app/lib/data';
 import { ChevronLeft, ChevronRight, ExternalLink, ArrowUpDown } from 'lucide-react'; // Added sort indicator icon
 
 interface SalaryResult {

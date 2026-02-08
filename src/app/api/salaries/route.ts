@@ -60,7 +60,7 @@ function getAggregatedSalaryData(filters: {
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const company = searchParams.get('company') ?? undefined;
-  const role = searchcastParams.get('role') ?? undefined;
+  const role = searchParams.get('role') ?? undefined;
   const location = searchParams.get('location') ?? undefined;
   const level = searchParams.get('level') ?? undefined;
 
