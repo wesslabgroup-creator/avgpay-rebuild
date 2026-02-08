@@ -42,8 +42,8 @@ export default function Home() {
           </h1>
           
           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Stop guessing. Get data-driven salary insights backed by government data 
-            and real market intelligence. Know exactly where you stand before your next negotiation.
+            Negotiate your next offer with confidence using data-driven insights. 
+            Know exactly where you stand against BLS, H-1B, and market data.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -54,7 +54,7 @@ export default function Home() {
             </Link>
             <Link href="/guides">
               <Button size="lg" variant="outline" className="text-lg px-8">
-                Browse Salary Data
+                Explore Salaries by Job Title
               </Button>
             </Link>
           </div>
@@ -157,10 +157,12 @@ export default function Home() {
           <div className="text-slate-500 text-sm">
             © 2026 AvgPay. Data-driven salary insights.
           </div>
-          <div className="flex gap-6 text-sm">
+          <div className="flex flex-wrap gap-6 text-sm justify-center md:justify-end">
+            <Link href="/guides" className="text-slate-400 hover:text-slate-200">Salary Guides</Link>
             <Link href="/methodology" className="text-slate-400 hover:text-slate-200">Methodology</Link>
-            <Link href="/about" className="text-slate-400 hover:text-slate-200">Privacy</Link>
+            <Link href="/about" className="text-slate-400 hover:text-slate-200">About</Link>
             <Link href="/contribute" className="text-slate-400 hover:text-slate-200">Contribute</Link>
+            <Link href="/pricing" className="text-slate-400 hover:text-slate-200">Pricing</Link>
           </div>
         </div>
       </footer>

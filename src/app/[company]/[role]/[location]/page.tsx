@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SalaryChart } from "@/components/salary-chart";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/navigation";
-import { getMarketData } from "@/lib/data";
+import { getMarketData, COMPANIES, ROLES, LOCATIONS } from "@/lib/data"; // Import necessary constants
 import { BreadcrumbSchema } from "@/components/schema-markup";
 import Link from "next/link";
 
@@ -21,23 +21,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const role = decodeURIComponent(params.role);
   const location = decodeURIComponent(params.location).replace(/-/g, ", ");
   
-  const data = getMarketData(role, location, "L3-L4");
+  // Updated to include company, role, location, and level for accurate data retrieval
+  const data = getMarketData(company, role, location, "L3-L4");
   
   return {
     title: `${role} Salary at ${company} in ${location} | AvgPay`,
     description: `See ${role} compensation data at ${company} in ${location}. Median: $${data.median.toLocaleString()}. Compare against BLS and market benchmarks.`,
     openGraph: {
       title: `${role} Salary at ${company} in ${location}`,
-      description: `Verified compensation data for ${role} positions`,
+      description: `Verified compensation data for ${role} positions at ${company}`,
     },
   };
 }
 
 export async function generateStaticParams() {
-  const companies = ["Google", "Meta", "Amazon", "Apple", "Microsoft"];
-  const roles = ["Software Engineer", "Product Manager"];
-  const locations = ["San Francisco, CA", "New York, NY", "Seattle, WA"];
+  // Updated to use the exported constants for broader static generation
+  const companies = COMPANIES;
+  const roles = ROLES;
+  const locations = LOCATIONS;
   
+  // Ensure all combinations are generated for SEO
   return companies.flatMap(company =>
     roles.flatMap(role =>
       locations.map(location => ({
@@ -54,12 +57,15 @@ export default function SalaryPage({ params }: PageProps) {
   const role = decodeURIComponent(params.role);
   const location = decodeURIComponent(params.location).replace(/-/g, ", ");
   
-  const data = getMarketData(role, location, "L3-L4");
+  // Updated to include company in the data retrieval
+  const data = getMarketData(company, role, location, "L3-L4");
   
+  // Handle cases where data might not be found (though mock data is extensive now)
   if (!data) {
     notFound();
   }
 
+  // Helper to format currency values
   const formatCurrency = (n: number) => `$${(n / 1000).toFixed(0)}k`;
 
   return (
@@ -68,26 +74,28 @@ export default function SalaryPage({ params }: PageProps) {
       
       <div className="px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-8">
+           {/* Schema Markup for Breadcrumbs */}
           <BreadcrumbSchema items={[
-            { name: "Home", item: "https://avgpay-rebuild.vercel.app" },
-            { name: company, item: `https://avgpay-rebuild.vercel.app/${encodeURIComponent(company)}` },
-            { name: role, item: `https://avgpay-rebuild.vercel.app/${encodeURIComponent(company)}/${encodeURIComponent(role)}` },
-            { name: location, item: `https://avgpay-rebuild.vercel.app/${encodeURIComponent(company)}/${encodeURIComponent(role)}/${encodeURIComponent(location.replace(", ", "-"))}` },
+            { name: "Home", item: `${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "http://localhost:3000"}` },
+            { name: company, item: `${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "http://localhost:3000"}/${encodeURIComponent(company)}` },
+            { name: role, item: `${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "http://localhost:3000"}/${encodeURIComponent(company)}/${encodeURIComponent(role)}` },
+            { name: location, item: `${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "http://localhost:3000"}/${encodeURIComponent(company)}/${encodeURIComponent(role)}/${encodeURIComponent(location.replace(", ", "-"))}` },
           ]} />
-          {/* Breadcrumb */}
+          
+          {/* Visual Breadcrumb */}
           <nav className="text-sm text-slate-400">
-            <Link href="/" className="hover:text-slate-200">Home</Link>
+            <Link href="/" className="hover:text-slate-200 transition duration-300">Home</Link>
             <span className="mx-2">/</span>
-            <Link href={`/${encodeURIComponent(company)}`} className="hover:text-slate-200">{company}</Link>
+            <Link href={`/${encodeURIComponent(company)}`} className="hover:text-slate-200 transition duration-300">{company}</Link>
             <span className="mx-2">/</span>
-            <span className="text-slate-200">{role}</span>
+            <Link href={`/${encodeURIComponent(company)}/${encodeURIComponent(role)}`} className="hover:text-slate-200 transition duration-300">{role}</Link>
             <span className="mx-2">/</span>
             <span className="text-slate-200">{location}</span>
           </nav>
 
           {/* Header */}
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold text-slate-100">
+            <h1 className="text-4xl font-bold tracking-tight text-slate-100">
               {role} Salary at {company}
             </h1>
             <p className="text-xl text-slate-400">{location}</p>

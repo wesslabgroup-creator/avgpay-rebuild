@@ -1,112 +1,71 @@
-import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+// src/app/api/salaries/browse/route.ts
+import type { NextRequest } from 'next/server';
+import { COMPANIES, ROLES, LOCATIONS, MARKET_DATA } from '@/lib/data'; // Assuming MARKET_DATA is structured appropriately
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json()
-    
-    // If Supabase is not configured, store in memory or return success
-    if (!supabase) {
-      console.log('Supabase not configured, logging submission:', body)
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Submission logged (database not yet configured)',
-        data: body 
-      })
-    }
-    
-    const totalComp = body.baseSalary + (body.equity || 0) / 4 + (body.bonus || 0)
-    
-    const { data, error } = await supabase
-      .from('user_submissions')
-      .insert({
-        email: body.email || null,
-        base_salary: body.baseSalary,
-        equity: body.equity || 0,
-        bonus: body.bonus || 0,
-        total_comp: totalComp,
-        company: body.company,
-        role: body.role,
-        location: body.location,
-        level: body.level,
-        years_exp: body.yearsExp || null,
-        status: 'pending',
-        weight: 0.5
-      })
-      .select()
-    
-    if (error) {
-      console.error('Supabase error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-    
-    return NextResponse.json({ success: true, data })
-  } catch (err) {
-    console.error('API error:', err)
-    return NextResponse.json({ error: 'Failed to submit' }, { status: 500 })
-  }
+// Mock function to simulate fetching aggregated data
+// In a real app, this would query a database based on filters
+function getAggregatedSalaryData(filters: {
+  company?: string;
+  role?: string;
+  location?: string;
+  level?: string;
+}) {
+  let data = [];
+  let companyList = filters.company ? [filters.company] : COMPANIES;
+  let roleList = filters.role ? [filters.role] : ROLES;
+  let locationList = filters.location ? [filters.location] : LOCATIONS;
+  let levelList = filters.level ? [filters.level] : ["Junior (L1-L2)", "Mid (L3-L4)", "Senior (L5-L6)", "Staff+ (L7+)"];
+
+  // Expand data based on filters
+  companyList.forEach(comp => {
+    roleList.forEach(rol => {
+      locationList.forEach(loc => {
+        levelList.forEach(lvl => {
+          const companyData = MARKET_DATA[comp];
+          if (companyData) {
+            const roleData = companyData[rol];
+            if (roleData) {
+              const locationData = roleData[loc];
+              if (locationData) {
+                const levelData = locationData[lvl];
+                if (levelData) {
+                  data.push({
+                    company: comp,
+                    role: rol,
+                    location: loc,
+                    level: lvl,
+                    ...levelData, // Spread median, blsMedian etc.
+                  });
+                }
+              }
+            }
+          }
+        });
+      });
+    });
+  });
+
+  // Simulate count and return basic structure
+  return data.map(item => ({
+    company: item.company,
+    role: item.role,
+    location: item.location,
+    level: item.level,
+    medianTotalComp: item.median,
+    blsBenchmark: item.blsMedian,
+    count: 1, // Each item is a unique mock entry for now
+  }));
 }
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const role = searchParams.get('role')
-  const location = searchParams.get('location')
-  const level = searchParams.get('level')
-  
-  // If Supabase not configured, return empty data
-  if (!supabase) {
-    return NextResponse.json({ count: 0, message: 'Database not yet configured' })
-  }
-  
-  try {
-    let query = supabase
-      .from('salaries')
-      .select('*, companies(name), roles(title), locations(city, state, metro)')
-      .eq('verified', true)
-    
-    if (role) {
-      query = query.eq('roles.title', role)
-    }
-    
-    if (location) {
-      query = query.eq('locations.metro', location)
-    }
-    
-    if (level) {
-      query = query.eq('level', level)
-    }
-    
-    const { data, error } = await query
-    
-    if (error) {
-      console.error('Supabase error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-    
-    // Calculate stats
-    const salaries = data?.map((s: { total_comp: number }) => s.total_comp) || []
-    const count = salaries.length
-    
-    if (count === 0) {
-      return NextResponse.json({ count: 0, message: 'No data available' })
-    }
-    
-    const sorted = salaries.sort((a: number, b: number) => a - b)
-    const median = sorted[Math.floor(count / 2)]
-    const p25 = sorted[Math.floor(count * 0.25)]
-    const p75 = sorted[Math.floor(count * 0.75)]
-    const p90 = sorted[Math.floor(count * 0.9)]
-    
-    return NextResponse.json({
-      count,
-      median,
-      p25,
-      p75,
-      p90,
-      data
-    })
-  } catch (err) {
-    console.error('API error:', err)
-    return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 })
-  }
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const company = searchParams.get('company') ?? undefined;
+  const role = searchcastParams.get('role') ?? undefined;
+  const location = searchParams.get('location') ?? undefined;
+  const level = searchParams.get('level') ?? undefined;
+
+  const filters = { company, role, location, level };
+  const salaryData = getAggregatedSalaryData(filters);
+
+  return Response.json(salaryData);
 }

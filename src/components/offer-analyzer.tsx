@@ -15,6 +15,12 @@ const ROLES = [
   "Data Scientist",
   "UX Designer",
   "Engineering Manager",
+  "DevOps Engineer",
+  "Solutions Architect",
+  "Technical Program Manager",
+  "Frontend Developer",
+  "Backend Developer",
+  "Full Stack Developer",
 ];
 
 const LOCATIONS = [
@@ -23,6 +29,11 @@ const LOCATIONS = [
   "Seattle, WA",
   "Austin, TX",
   "Remote",
+  "Boston, MA",
+  "Denver, CO",
+  "Chicago, IL",
+  "Los Angeles, CA",
+  "London, UK", // Added international option
 ];
 
 const LEVELS = [
@@ -92,6 +103,11 @@ export function OfferAnalyzer() {
       if (marketData.count === 0) {
         // Fallback to mock data if no database entries yet
         const mockData = getFallbackData(formData.role, formData.location, formData.level);
+        // Simplified grading logic for demonstration.
+        // TODO: Implement a more sophisticated grading system based on
+        //       multiple data sources, confidence scores, and user context.
+        //       Consider factors like job level, location multipliers, and bonus/equity
+        //       structures that deviate significantly from the median.
         const grade = calculateGrade(total, mockData.median);
         const percentile = Math.min(Math.round((total / mockData.median) * 50), 99);
 
@@ -99,11 +115,17 @@ export function OfferAnalyzer() {
           grade,
           percentile,
           marketMedian: mockData.median,
-          blsMedian: mockData.blsMedian,
+          // Placeholder for BLS median when available from API, otherwise use a conservative estimate.
+          blsMedian: mockData.blsMedian || Math.round(marketData.median * 0.95),
           yourTotal: total,
           count: 0,
         });
       } else {
+        // Simplified grading logic for demonstration.
+        // TODO: Implement a more sophisticated grading system based on
+        //       multiple data sources, confidence scores, and user context.
+        //       Consider factors like job level, location multipliers, and bonus/equity
+        //       structures that deviate significantly from the median.
         const grade = calculateGrade(total, marketData.median);
         const percentile = Math.min(Math.round((total / marketData.median) * 50), 99);
 
@@ -126,6 +148,16 @@ export function OfferAnalyzer() {
     }
   };
 
+  /**
+   * getFallbackData:
+   * Provides mock salary data when the primary data source (Supabase) is not yet configured
+   * or returns no entries. This ensures the application remains functional and user-facing
+   * during development or in edge cases.
+   *
+   * TODO: Replace hardcoded values with real data from API or database.
+   *       Consider fetching this from a dedicated endpoint if Supabase is unavailable.
+   *       Include more roles and locations for broader coverage.
+   */
   const getFallbackData = (role: string, location: string, level: string) => {
     // Fallback mock data when Supabase is not yet configured
     const baseSalaries: Record<string, number> = {
@@ -241,7 +273,7 @@ export function OfferAnalyzer() {
             <Button onClick={() => setStep("form")} variant="outline" className="flex-1">
               Analyze Another Offer
             </Button>
-            <Button className="flex-1 bg-gradient-to-r from-indigo-600 to-violet-600">
+            <Button onClick={() => alert("Feature coming soon: Full report generation!")} className="flex-1 bg-gradient-to-r from-indigo-600 to-violet-600">
               Get Full Report <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -319,6 +351,7 @@ export function OfferAnalyzer() {
                 value={formData.equity}
                 onChange={(e) => setFormData({ ...formData, equity: e.target.value })}
               />
+              <p className="text-xs text-slate-500 mt-1">*Assumes 4-year vesting</p>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Annual Bonus</label>
