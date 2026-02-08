@@ -7,45 +7,108 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Company {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  domain    String?
+  industry  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  salaries  Salary[]
+  postings  JobPosting[]
+}
+
+model Role {
+  id          String @id @default(cuid())
+  title       String
+  canonicalTitle String
+  slug        String @unique
+  category    String?
+  
+  salaries    Salary[]
+  postings    JobPosting[]
+}
+
+model Location {
+  id       String @id @default(cuid())
+  city     String
+  state    String
+  country  String @default("US")
+  metro    String
+  slug     String @unique
+  
+  salaries Salary[]
+  postings JobPosting[]
+}
+
 model Salary {
-  id                  String   @id @default(cuid())
-  createdAt           DateTime @default(now())
-
-  locationState       String
-  locationCity        String
-  specialty           String
-  yearsExperience     Int
-  payRateHourly       Float
-  overtimeRateHourly  Float?
-  stipendWeekly       Float?
-  bonusesAnnual       Float?
+  id          String   @id @default(cuid())
+  baseSalary  Int
+  equity      Int?
+  bonus       Int?
+  totalComp   Int
+  level       String?
+  yearsExp    Int?
+  
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  roleId      String
+  role        Role     @relation(fields: [roleId], references: [id])
+  
+  locationId  String
+  location    Location @relation(fields: [locationId], references: [id])
+  
+  source      String   // bls, h1b, user, scraper
+  verified    Boolean  @default(false)
+  submittedAt DateTime @default(now())
+  
+  @@index([companyId, roleId, locationId])
+  @@index([totalComp])
 }
 
-model AggregateSalary {
-  id            String @id @default(cuid())
-  createdAt     DateTime @default(now())
-  occupation    String
-  meanAnnual    Float?
-  source        String
-  year          Int
-  area          String?  /// "national", "state_code", etc.
-  meanHourly    Float?
-
-  @@unique([occupation, source, year, area], name: "unique_agg_salary")
+model JobPosting {
+  id          String   @id @default(cuid())
+  title       String
+  minSalary   Int?
+  maxSalary   Int?
+  currency    String   @default("USD")
+  url         String?
+  postedAt    DateTime?
+  
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  roleId      String
+  role        Role     @relation(fields: [roleId], references: [id])
+  
+  locationId  String
+  location    Location @relation(fields: [locationId], references: [id])
+  
+  source      String   // greenhouse, lever, ashby, direct
+  scrapedAt   DateTime @default(now())
+  isActive    Boolean  @default(true)
 }
 
-model Metrics {
-  id              String    @id @default(cuid())
-  createdAt       DateTime  @default(now())
-  date            DateTime
-  source          String
-  usersNew        Int?
-  usersTotal      Int?
-  sessions        Int?
-  pageviews       Int?
-  revenue         Float?
-  builds          Int?
-  functionsInvoked Int?
-
-  @@unique([date, source])
+model UserSubmission {
+  id          String   @id @default(cuid())
+  email       String?
+  baseSalary  Int
+  equity      Int?
+  bonus       Int?
+  totalComp   Int
+  
+  company     String
+  role        String
+  location    String
+  level       String?
+  yearsExp    Int?
+  
+  status      String   @default("pending") // pending, approved, rejected
+  weight      Float    @default(0.5)
+  
+  submittedAt DateTime @default(now())
+  reviewedAt  DateTime?
 }
