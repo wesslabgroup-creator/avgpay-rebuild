@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { calculateGrade, getMarketData } from "@/lib/data";
 import { SalaryChart } from "@/components/salary-chart";
-import { ArrowRight, TrendingUp, Shield, Database } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const ROLES = [
   "Software Engineer",

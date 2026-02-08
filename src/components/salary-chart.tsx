@@ -37,7 +37,7 @@ export function SalaryChart({ yourSalary, marketMedian, blsMedian }: SalaryChart
             tickFormatter={formatCurrency}
           />
           <Tooltip 
-            formatter={(value: number) => [formatCurrency(value), "Salary"]}
+            formatter={(value) => [formatCurrency(Number(value)), "Salary"]}
             contentStyle={{ 
               backgroundColor: "#0f172a", 
               border: "1px solid #1e293b",

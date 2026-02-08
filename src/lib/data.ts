@@ -70,4 +70,4 @@ export function calculateGrade(yourTotal: number, marketMedian: number): string 
 }
 
 export const ROLES = Object.keys(MARKET_DATA);
-export const LOCATIONS = [...new Set(Object.values(MARKET_DATA).flatMap(Object.keys))];
+export const LOCATIONS = Array.from(new Set(Object.values(MARKET_DATA).flatMap(Object.keys)));
