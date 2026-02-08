@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { Navigation } from "@/components/navigation";
 
 export const metadata: Metadata = {
   title: "Salary Guides | AvgPay",
@@ -54,34 +55,38 @@ const GUIDES = [
 
 export default function GuidesPage() {
   return (
-    <main className="min-h-screen px-6 py-12">
-      <div className="max-w-4xl mx-auto space-y-12">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold">Salary Guides</h1>
-          <p className="text-xl text-slate-400">
-            Data-driven insights for tech professionals
-          </p>
-        </div>
+    <main className="min-h-screen bg-slate-950">
+      <Navigation />
+      
+      <div className="px-6 py-12">
+        <div className="max-w-4xl mx-auto space-y-12">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold text-slate-100">Salary Guides</h1>
+            <p className="text-xl text-slate-400">
+              Data-driven insights for tech professionals
+            </p>
+          </div>
 
-        <div className="grid gap-6">
-          {GUIDES.map((guide) => (
-            <Link key={guide.slug} href={`/guides/${guide.slug}`}>
-              <Card className="hover:border-indigo-500 transition-colors cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>{guide.title}</CardTitle>
-                    <span className="text-sm px-3 py-1 rounded-full bg-slate-800 text-slate-400">
-                      {guide.category}
-                    </span>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-400 mb-2">{guide.description}</p>
-                  <p className="text-sm text-slate-500">{guide.readTime} read</p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+          <div className="grid gap-6">
+            {GUIDES.map((guide) => (
+              <Link key={guide.slug} href={`/guides/${guide.slug}`}>
+                <Card className="hover:border-indigo-500 transition-colors cursor-pointer bg-slate-900 border-slate-800">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-slate-100">{guide.title}</CardTitle>
+                      <span className="text-sm px-3 py-1 rounded-full bg-slate-800 text-slate-400">
+                        {guide.category}
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-slate-400 mb-2">{guide.description}</p>
+                    <p className="text-sm text-slate-500">{guide.readTime} read</p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </main>

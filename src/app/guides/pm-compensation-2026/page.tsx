@@ -1,94 +1,84 @@
 import { Metadata } from "next";
+import { Button } from "@/components/ui/button";
+import { Navigation } from "@/components/navigation";
+import { DataTable } from "@/components/data-table";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Product Manager Compensation Guide 2026 | AvgPay",
   description: "Complete breakdown of PM salaries across levels, companies, and locations. Includes equity ranges and negotiation strategies.",
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-02-01",
+  },
 };
 
 export default function PMGuidePage() {
-  return (
-    <main className="min-h-screen px-6 py-12">
-      <article className="max-w-3xl mx-auto prose prose-invert prose-lg">
-        <h1>Product Manager Compensation Guide 2026</h1>
-        
-        <p className="lead">
-          The most comprehensive analysis of Product Manager salaries in tech. 
-          Based on 5,000+ verified data points from BLS, H-1B filings, and pay transparency laws.
-        </p>
+  const levelData = {
+    headers: ["Level", "Base Salary", "Equity (Annual)", "Bonus", "Total Comp"],
+    rows: [
+      ["PM (L3)", 125000, 15000, 12000, 152000],
+      ["Sr PM (L4)", 155000, 35000, 20000, 210000],
+      ["Staff PM (L5)", 185000, 75000, 35000, 295000],
+      ["Principal PM (L6+)", 220000, 150000, 60000, 430000],
+    ],
+  };
 
-        <h2>Executive Summary</h2>
-        <p>
-          Product Managers in tech earn a median total compensation of $185,000 in 2026, 
-          ranging from $120,000 at the entry level to $450,000+ for senior Staff PMs at top companies. 
-          Location remains the biggest differentiator, with SF Bay Area PMs earning 35% more than the national average.
-        </p>
+  const locationData = {
+    headers: ["Location", "Median Total Comp", "Premium/Discount"],
+    rows: [
+      ["San Francisco Bay Area", 245000, "+35%"],
+      ["Seattle", 220000, "+21%"],
+      ["New York", 205000, "+13%"],
+      ["Austin", 175000, "-3%"],
+      ["Remote (US)", 195000, "-7%"],
+    ],
+  };
+
+  return (
+    <main className="min-h-screen bg-slate-950">
+      <Navigation />
+      
+      <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">
+        <div className="mb-8 not-prose">
+          <span className="text-indigo-400 text-sm font-medium">February 2026</span>
+          <h1 className="text-4xl font-bold text-slate-100 mt-2">Product Manager Compensation Guide 2026</h1>
+          <p className="text-xl text-slate-400 mt-4">
+            The most comprehensive analysis of Product Manager salaries in tech. 
+            Based on 5,000+ verified data points from BLS, H-1B filings, and pay transparency laws.
+          </p>
+        </div>
+
+        <div className="not-prose my-8 p-6 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
+          <h2 className="text-lg font-semibold text-indigo-300 mb-2">Executive Summary</h2>
+          <p className="text-slate-300">
+            Product Managers in tech earn a median total compensation of $185,000 in 2026, 
+            ranging from $120,000 at entry level to $450,000+ for senior Staff PMs at top companies. 
+            Location remains the biggest differentiator.
+          </p>
+        </div>
 
         <h2>Salary by Level</h2>
-        
-        <table>
-          <thead>
-            <tr>
-              <th>Level</th>
-              <th>Base Salary</th>
-              <th>Equity (Annual)</th>
-              <th>Bonus</th>
-              <th>Total Comp</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>PM (L3)</td>
-              <td>$125,000</td>
-              <td>$15,000</td>
-              <td>$12,000</td>
-              <td>$152,000</td>
-            </tr>
-            <tr>
-              <td>Sr PM (L4)</td>
-              <td>$155,000</td>
-              <td>$35,000</td>
-              <td>$20,000</td>
-              <td>$210,000</td>
-            </tr>
-            <tr>
-              <td>Staff PM (L5)</td>
-              <td>$185,000</td>
-              <td>$75,000</td>
-              <td>$35,000</td>
-              <td>$295,000</td>
-            </tr>
-            <tr>
-              <td>Principal PM (L6+)</td>
-              <td>$220,000</td>
-              <td>$150,000</td>
-              <td>$60,000</td>
-              <td>$430,000</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="not-prose my-6">
+          <DataTable headers={levelData.headers} rows={levelData.rows} />
+        </div>
 
         <h2>Salary by Location</h2>
-        
         <p>Location continues to drive significant compensation differences:</p>
         
-        <ul>
-          <li><strong>San Francisco Bay Area:</strong> $245,000 median (35% premium)</li>
-          <li><strong>Seattle:</strong> $220,000 median (21% premium)</li>
-          <li><strong>New York:</strong> $205,000 median (13% premium)</li>
-          <li><strong>Austin:</strong> $175,000 median (3% discount)</li>
-          <li><strong>Remote (US):</strong> $195,000 median (7% discount)</li>
-        </ul>
+        <div className="not-prose my-6">
+          <DataTable headers={locationData.headers} rows={locationData.rows} />
+        </div>
 
         <h2>Company-Specific Data</h2>
-        
         <p>Top-paying companies for Senior PMs (L4):</p>
         
         <ol>
-          <li>Google: $285,000 total comp</li>
-          <li>Meta: $275,000 total comp</li>
-          <li>Stripe: $265,000 total comp</li>
-          <li>Uber: $255,000 total comp</li>
-          <li>Airbnb: $250,000 total comp</li>
+          <li><strong>Google:</strong> $285,000 total comp</li>
+          <li><strong>Meta:</strong> $275,000 total comp</li>
+          <li><strong>Stripe:</strong> $265,000 total comp</li>
+          <li><strong>Uber:</strong> $255,000 total comp</li>
+          <li><strong>Airbnb:</strong> $250,000 total comp</li>
         </ol>
 
         <h2>Negotiation Strategies</h2>
@@ -121,9 +111,21 @@ export default function PMGuidePage() {
           <li><strong>Equity Refresher:</strong> More companies offering annual refreshers as standard</li>
         </ul>
 
-        <hr />
+        <div className="not-prose my-8 p-6 bg-slate-800/50 border border-slate-700 rounded-lg text-center">
+          <h3 className="text-lg font-semibold text-slate-200 mb-2">Ready to negotiate?</h3>
+          <p className="text-slate-400 mb-4">
+            Get your personalized salary analysis and grade.
+          </p>
+          <Link href="/#analyzer">
+            <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600">
+              Analyze Your Offer
+            </Button>
+          </Link>
+        </div>
+
+        <hr className="border-slate-800" />
         
-        <p className="text-slate-400 text-sm">
+        <p className="text-slate-400 text-sm not-prose">
           Last updated: February 2026. Data sourced from BLS, H-1B filings, and 
           pay transparency laws. Sample size: 5,000+ data points.
         </p>
