@@ -52,6 +52,7 @@ interface AnalysisResult {
 
 export function OfferAnalyzer() {
   const [step, setStep] = useState<"form" | "analyzing" | "results" | "error">("form");
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     role: "",
     location: "",
@@ -64,6 +65,7 @@ export function OfferAnalyzer() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     setStep("analyzing");
 
     const total = 
@@ -119,6 +121,8 @@ export function OfferAnalyzer() {
     } catch (err) {
       console.error('Analysis error:', err);
       setStep("error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -330,9 +334,9 @@ export function OfferAnalyzer() {
           <Button 
                 type="submit" 
                 className="w-full bg-gradient-to-r from-indigo-600 to-violet-600"
-                disabled={step === "analyzing"}
+                disabled={isLoading}
               >
-                {step === "analyzing" ? (
+                {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
                     Analyzing...
