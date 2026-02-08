@@ -8,7 +8,7 @@ import { DataTable } from '@/components/data-data-table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { COMPANIES, ROLES, LOCATIONS, LEVELS } from '@/app/lib/data';
-import { ChevronLeft, ChevronRight, ExternalLink, ArrowUpDown } from 'lucide-react'; // Added sort indicator icon
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SalaryResult {
   company: string;
@@ -85,7 +85,7 @@ export default function SalariesPage() {
 
   // Sorting logic
   const sortedResults = useMemo(() => {
-    let sortableItems = [...results];
+    const sortableItems = [...results];
     if (sortConfig.key !== null) {
       sortableItems.sort((a, b) => {
         const aValue = a[sortConfig.key!];

@@ -31,7 +31,7 @@ export default function RemotePayGuidePage() {
         <div className="not-prose my-8 p-6 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
           <h2 className="text-lg font-semibold text-indigo-300 mb-2">Coming Soon</h2>
           <p className="text-slate-300">
-            This research study on remote work compensation is currently under development. We're analyzing data from over 10,000 salaries to determine if location-based pay adjustments are still relevant in 2026. Stay tuned for the full analysis!
+            This research study on remote work compensation is currently under development. WeWeWe're#39;re#39;re analyzing data from over 10,000 salaries to determine if location-based pay adjustments are still relevant in 2026. Stay tuned for the full analysis!
           </p>
         </div>
 

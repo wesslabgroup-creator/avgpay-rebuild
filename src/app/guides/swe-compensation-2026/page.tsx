@@ -1,74 +1,74 @@
-import { Metadata } from "next";
-import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/navigation";
-import { DataTable } from "@/components/data-table";
-import { ArticleSchema } from "@/components/schema-markup";
-import Link from "next/link";
+import { Metadata } from &quot;next&quot;;
+import { Button } from &quot;@/components/ui/button&quot;;
+import { Navigation } from &quot;@/components/navigation&quot;;
+import { DataTable } from &quot;@/components/data-table&quot;;
+import { ArticleSchema } from &quot;@/components/schema-markup&quot;;
+import Link from &quot;next/link&quot;;
 
 export const metadata: Metadata = {
-  title: "Software Engineer Salary Guide 2026 | AvgPay",
-  description: "From L3 to Staff+. Compensation breakdowns at Google, Meta, Amazon, and startups. Plus leveling guides.",
+  title: &quot;Software Engineer Salary Guide 2026 | AvgPay&quot;,
+  description: &quot;From L3 to Staff+. Compensation breakdowns at Google, Meta, Amazon, and startups. Plus leveling guides.&quot;,
   openGraph: {
-    type: "article",
-    publishedTime: "2026-02-05",
+    type: &quot;article&quot;,
+    publishedTime: &quot;2026-02-05&quot;,
   },
 };
 
 export default function SWEGuidePage() {
   const levelData = {
-    headers: ["Level", "Base Salary", "Equity (Annual)", "Bonus", "Total Comp"],
+    headers: [&quot;Level&quot;, &quot;Base Salary&quot;, &quot;Equity (Annual)&quot;, &quot;Bonus&quot;, &quot;Total Comp&quot;],
     rows: [
-      ["Junior (L3)", 140000, 25000, 15000, 180000],
-      ["Mid-Level (L4)", 175000, 60000, 25000, 260000],
-      ["Senior (L5)", 210000, 120000, 40000, 370000],
-      ["Staff (L6)", 260000, 220000, 70000, 550000],
-      ["Principal (L7+)", 320000, 400000, 100000, 820000],
+      [&quot;Junior (L3)&quot;, 140000, 25000, 15000, 180000],
+      [&quot;Mid-Level (L4)&quot;, 175000, 60000, 25000, 260000],
+      [&quot;Senior (L5)&quot;, 210000, 120000, 40000, 370000],
+      [&quot;Staff (L6)&quot;, 260000, 220000, 70000, 550000],
+      [&quot;Principal (L7+)&quot;, 320000, 400000, 100000, 820000],
     ],
   };
 
   const locationData = {
-    headers: ["Location", "Median Total Comp", "Premium/Discount"],
+    headers: [&quot;Location&quot;, &quot;Median Total Comp&quot;, &quot;Premium/Discount&quot;],
     rows: [
-      ["San Francisco Bay Area", 280000, "+30%"],
-      ["New York", 260000, "+22%"],
-      ["Seattle", 255000, "+20%"],
-      ["Austin", 210000, "+2%"],
-      ["Remote (US)", 220000, "+6%"],
+      [&quot;San Francisco Bay Area&quot;, 280000, &quot;+30%&quot;],
+      [&quot;New York&quot;, 260000, &quot;+22%&quot;],
+      [&quot;Seattle&quot;, 255000, &quot;+20%&quot;],
+      [&quot;Austin&quot;, 210000, &quot;+2%&quot;],
+      [&quot;Remote (US)&quot;, 220000, &quot;+6%&quot;],
     ],
   };
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className=&quot;min-h-screen bg-slate-950&quot;>
       <Navigation />
-      <ArticleSchema headline="Software Engineer Salary Guide 2026" datePublished="2026-02-05" authorName="AvgPay Team" />
+      <ArticleSchema headline=&quot;Software Engineer Salary Guide 2026&quot; datePublished=&quot;2026-02-05&quot; authorName=&quot;AvgPay Team&quot; />
       
-      <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">
-        <div className="mb-8 not-prose">
-          <span className="text-indigo-400 text-sm font-medium">February 2026</span>
-          <h1 className="text-4xl font-bold text-slate-100 mt-2">Software Engineer Salary Guide 2026</h1>
-          <p className="text-xl text-slate-400 mt-4">
+      <article className=&quot;max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg&quot;>
+        <div className=&quot;mb-8 not-prose&quot;>
+          <span className=&quot;text-indigo-400 text-sm font-medium&quot;>February 2026</span>
+          <h1 className=&quot;text-4xl font-bold text-slate-100 mt-2&quot;>Software Engineer Salary Guide 2026</h1>
+          <p className=&quot;text-xl text-slate-400 mt-4&quot;>
             A deep dive into Software Engineering compensation across the tech industry. 
             Based on 8,000+ verified data points from BLS, H-1B filings, and public pay transparency data.
           </p>
         </div>
 
-        <div className="not-prose my-8 p-6 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
-          <h2 className="text-lg font-semibold text-indigo-300 mb-2">Executive Summary</h2>
-          <p className="text-slate-300">
+        <div className=&quot;not-prose my-8 p-6 bg-indigo-900/20 border border-indigo-500/30 rounded-lg&quot;>
+          <h2 className=&quot;text-lg font-semibold text-indigo-300 mb-2&quot;>Executive Summary</h2>
+          <p className=&quot;text-slate-300&quot;>
             Software Engineers command the highest median compensation in tech, with a median total comp of $260,000 for mid-level roles in major hubs. 
             AI/ML specializations are seeing a 20-30% premium over generalist roles.
           </p>
         </div>
 
         <h2>Compensation by Level</h2>
-        <div className="not-prose my-6">
+        <div className=&quot;not-prose my-6&quot;>
           <DataTable headers={levelData.headers} rows={levelData.rows} />
         </div>
 
         <h2>Compensation by Location</h2>
         <p>While remote work remains popular, top-tier compensation is still concentrated in major tech hubs:</p>
         
-        <div className="not-prose my-6">
+        <div className=&quot;not-prose my-6&quot;>
           <DataTable headers={locationData.headers} rows={locationData.rows} />
         </div>
 
@@ -88,7 +88,7 @@ export default function SWEGuidePage() {
         <h3>1. Multiple Offers are Key</h3>
         <p>
           Engineers with competing offers see an average initial offer increase of 22%. 
-          Companies have specific bands, but competing offers unlock "out-of-band" approvals.
+          Companies have specific bands, but competing offers unlock &quot;out-of-band&quot; approvals.
         </p>
 
         <h3>2. Understand the Equity Grant</h3>
@@ -112,21 +112,21 @@ export default function SWEGuidePage() {
           model deployment pipelines are seeing faster career velocity.
         </p>
 
-        <div className="not-prose my-8 p-6 bg-slate-800/50 border border-slate-700 rounded-lg text-center">
-          <h3 className="text-lg font-semibold text-slate-200 mb-2">Check your market rate</h3>
-          <p className="text-slate-400 mb-4">
+        <div className=&quot;not-prose my-8 p-6 bg-slate-800/50 border border-slate-700 rounded-lg text-center&quot;>
+          <h3 className=&quot;text-lg font-semibold text-slate-200 mb-2&quot;>Check your market rate</h3>
+          <p className=&quot;text-slate-400 mb-4&quot;>
             See exactly where your offer lands against verified benchmarks.
           </p>
-          <Link href="/#analyzer">
-            <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600">
+          <Link href=&quot;/#analyzer&quot;>
+            <Button size=&quot;lg&quot; className=&quot;bg-gradient-to-r from-indigo-600 to-violet-600&quot;>
               Analyze Your Offer
             </Button>
           </Link>
         </div>
 
-        <hr className="border-slate-800" />
+        <hr className=&quot;border-slate-800&quot; />
         
-        <p className="text-slate-400 text-sm not-prose">
+        <p className=&quot;text-slate-400 text-sm not-prose&quot;>
           Last updated: February 2026. Data sourced from BLS, H-1B filings, and 
           pay transparency laws.
         </p>

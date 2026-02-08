@@ -19,7 +19,7 @@ interface MarketData {
  * TODO: Replace this with a database query or external API call.
  *       Ensure data is regularly updated and sourced from reliable providers.
  */
-const MARKET_DATA: Record<string, Record<string, Record<string, Record<string, MarketData>>>> = {
+export const MARKET_DATA: Record<string, Record<string, Record<string, Record<string, MarketData>>>> = {
   // Google
   "Google": {
     "Software Engineer": {
