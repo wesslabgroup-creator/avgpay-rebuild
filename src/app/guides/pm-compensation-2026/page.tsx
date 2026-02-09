@@ -36,14 +36,14 @@ export default function PMGuidePage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       <ArticleSchema headline="Product Manager Compensation Guide 2026" datePublished="2026-02-01" authorName="AvgPay Team" />
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">
         <div className="mb-8 not-prose">
           <span className="text-indigo-400 text-sm font-medium">February 2026</span>
-          <h1 className="text-4xl font-bold text-slate-100 mt-2">Product Manager Compensation Guide 2026</h1>
-          <p className="text-xl text-slate-400 mt-4">
+          <h1 className="text-4xl font-bold text-slate-900 mt-2">Product Manager Compensation Guide 2026</h1>
+          <p className="text-xl text-slate-600 mt-4">
             The most comprehensive analysis of Product Manager salaries in tech. 
             Based on 5,000+ verified data points from BLS, H-1B filings, and pay transparency laws.
           </p>
@@ -113,7 +113,7 @@ export default function PMGuidePage() {
 
         <div className="not-prose my-8 p-6 bg-slate-800/50 border border-slate-700 rounded-lg text-center">
           <h3 className="text-lg font-semibold text-slate-200 mb-2">Ready to negotiate?</h3>
-          <p className="text-slate-400 mb-4">
+          <p className="text-slate-600 mb-4">
             Get your personalized salary analysis and grade.
           </p>
           <Link href="/#analyzer">
@@ -123,9 +123,9 @@ export default function PMGuidePage() {
           </Link>
         </div>
 
-        <hr className="border-slate-800" />
+        <hr className="border-slate-200" />
         
-        <p className="text-slate-400 text-sm not-prose">
+        <p className="text-slate-600 text-sm not-prose">
           Last updated: February 2026. Data sourced from BLS, H-1B filings, and 
           pay transparency laws. Sample size: 5,000+ data points.
         </p>

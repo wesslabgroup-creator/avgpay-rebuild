@@ -14,14 +14,14 @@ export const metadata: Metadata = {
 
 export default function StartupVsBigTechGuidePage() {
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       <ArticleSchema headline="Startup vs Big Tech Compensation" datePublished="2026-02-07" authorName="AvgPay Team" />
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">
         <div className="mb-8 not-prose">
           <span className="text-indigo-400 text-sm font-medium">February 2026</span>
-          <h1 className="text-4xl font-bold text-slate-100 mt-2">Startup vs Big Tech Compensation</h1>
-          <p className="text-xl text-slate-400 mt-4">
+          <h1 className="text-4xl font-bold text-slate-900 mt-2">Startup vs Big Tech Compensation</h1>
+          <p className="text-xl text-slate-600 mt-4">
             When does startup equity beat FAANG total comp? A probabilistic analysis with real data.
           </p>
         </div>
@@ -34,7 +34,7 @@ export default function StartupVsBigTechGuidePage() {
         </div>
 
         <div className="text-center not-prose mt-12">
-          <p className="text-slate-400 mb-4">
+          <p className="text-slate-600 mb-4">
             In the meantime, analyze your current offer to see how it stacks up.
           </p>
           <Link href="/#analyzer">

@@ -54,13 +54,13 @@ const GUIDES = [
 
 export default function GuidesPage() {
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       
       <div className="px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-slate-100">Salary Guides</h1>
-            <p className="text-xl text-slate-400">
+            <h1 className="text-4xl font-bold text-slate-900">Salary Guides</h1>
+            <p className="text-xl text-slate-600">
               Data-driven insights for tech professionals
             </p>
           </div>
@@ -68,17 +68,17 @@ export default function GuidesPage() {
           <div className="grid gap-6">
             {GUIDES.map((guide) => (
               <Link key={guide.slug} href={`/guides/${guide.slug}`}>
-                <Card className="hover:border-indigo-500 transition-colors cursor-pointer bg-slate-900 border-slate-800">
+                <Card className="hover:border-indigo-500 transition-colors cursor-pointer bg-slate-900 border-slate-200">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-slate-100">{guide.title}</CardTitle>
-                      <span className="text-sm px-3 py-1 rounded-full bg-slate-800 text-slate-400">
+                      <CardTitle className="text-slate-900">{guide.title}</CardTitle>
+                      <span className="text-sm px-3 py-1 rounded-full bg-slate-800 text-slate-600">
                         {guide.category}
                       </span>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-400 mb-2">{guide.description}</p>
+                    <p className="text-slate-600 mb-2">{guide.description}</p>
                     <p className="text-sm text-slate-500">{guide.readTime} read</p>
                   </CardContent>
                 </Card>

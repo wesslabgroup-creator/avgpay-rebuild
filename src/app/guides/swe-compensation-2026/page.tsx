@@ -37,14 +37,14 @@ export default function SWEGuidePage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       <ArticleSchema headline="Software Engineer Salary Guide 2026" datePublished="2026-02-05" authorName="AvgPay Team" />
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">
         <div className="mb-8 not-prose">
           <span className="text-indigo-400 text-sm font-medium">February 2026</span>
-          <h1 className="text-4xl font-bold text-slate-100 mt-2">Software Engineer Salary Guide 2026</h1>
-          <p className="text-xl text-slate-400 mt-4">
+          <h1 className="text-4xl font-bold text-slate-900 mt-2">Software Engineer Salary Guide 2026</h1>
+          <p className="text-xl text-slate-600 mt-4">
             A deep dive into Software Engineering compensation across the tech industry. 
             Based on 8,000+ verified data points from BLS, H-1B filings, and public pay transparency data.
           </p>
@@ -111,7 +111,7 @@ export default function SWEGuidePage() {
 
         <div className="not-prose my-8 p-6 bg-slate-800/50 border border-slate-700 rounded-lg text-center">
           <h3 className="text-lg font-semibold text-slate-200 mb-2">Check your market rate</h3>
-          <p className="text-slate-400 mb-4">
+          <p className="text-slate-600 mb-4">
             See exactly where your offer lands against verified benchmarks.
           </p>
           <Link href="/#analyzer">
@@ -121,9 +121,9 @@ export default function SWEGuidePage() {
           </Link>
         </div>
 
-        <hr className="border-slate-800" />
+        <hr className="border-slate-200" />
         
-        <p className="text-slate-400 text-sm not-prose">
+        <p className="text-slate-600 text-sm not-prose">
           Last updated: February 2026. Data sourced from BLS, H-1B filings, and 
           pay transparency laws.
         </p>

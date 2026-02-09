@@ -14,14 +14,14 @@ export const metadata: Metadata = {
 
 export default function RemotePayGuidePage() {
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       <ArticleSchema headline="The Remote Work Pay Cut Myth" datePublished="2026-02-07" authorName="AvgPay Team" />
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">
         <div className="mb-8 not-prose">
           <span className="text-indigo-400 text-sm font-medium">February 2026</span>
-          <h1 className="text-4xl font-bold text-slate-100 mt-2">The Remote Work Pay Cut Myth</h1>
-          <p className="text-xl text-slate-400 mt-4">
+          <h1 className="text-4xl font-bold text-slate-900 mt-2">The Remote Work Pay Cut Myth</h1>
+          <p className="text-xl text-slate-600 mt-4">
             Analyzing 10,000+ remote vs in-office salaries. Is location-based pay still justified in 2026?
           </p>
         </div>
@@ -34,7 +34,7 @@ export default function RemotePayGuidePage() {
         </div>
 
         <div className="text-center not-prose mt-12">
-          <p className="text-slate-400 mb-4">
+          <p className="text-slate-600 mb-4">
             In the meantime, analyze your current offer to see how it stacks up.
           </p>
           <Link href="/#analyzer">

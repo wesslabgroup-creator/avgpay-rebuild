@@ -103,14 +103,14 @@ const CompanyDetailPage = () => {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <main className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Card className="bg-slate-900/50 border-slate-800 p-8 w-96">
+          <Card className="bg-white border-slate-200 p-8 w-96">
             <CardHeader>
-              <CardTitle className="text-slate-100 animate-pulse">Loading Company Data...</CardTitle>
+              <CardTitle className="text-slate-900 animate-pulse">Loading Company Data...</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-slate-400">Please wait while we fetch details for {companyNameFromUrl}.</CardDescription>
+              <CardDescription className="text-slate-600">Please wait while we fetch details for {companyNameFromUrl}.</CardDescription>
             </CardContent>
           </Card>
         </div>
@@ -120,9 +120,9 @@ const CompanyDetailPage = () => {
 
   if (error || !companyData) {
     return (
-      <main className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <main className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Card className="bg-slate-900/50 border-slate-800 p-8 w-96">
+          <Card className="bg-white border-slate-200 p-8 w-96">
             <CardHeader>
               <CardTitle className="text-red-500">Error Loading Company</CardTitle>
             </CardHeader>
@@ -139,7 +139,7 @@ const CompanyDetailPage = () => {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       <div className="px-6 py-12">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Company Header */}
@@ -151,8 +151,8 @@ const CompanyDetailPage = () => {
                 </div>
               )}
               <div className="text-center md:text-left w-full">
-                <CardTitle className="text-4xl font-bold tracking-tight text-slate-100">{companyData.name}</CardTitle>
-                <CardDescription className="text-xl text-slate-400 mt-2 max-w-3xl mx-auto md:mx-0">{companyData.description}</CardDescription>
+                <CardTitle className="text-4xl font-bold tracking-tight text-slate-900">{companyData.name}</CardTitle>
+                <CardDescription className="text-xl text-slate-600 mt-2 max-w-3xl mx-auto md:mx-0">{companyData.description}</CardDescription>
                 <div className="mt-4 flex justify-center md:justify-start">
                   <Button variant="outline" size="lg">
                     <a href={companyData.website} target="_blank" rel="noopener noreferrer" className="flex items-center">
@@ -165,10 +165,10 @@ const CompanyDetailPage = () => {
           </Card>
           
           {/* Salary Data Section */}
-          <Card className="bg-slate-900/50 border-slate-800">
+          <Card className="bg-white border-slate-200">
             <CardHeader>
-              <CardTitle className="text-slate-100">Salary Insights</CardTitle>
-              <CardDescription className="text-slate-400">Compensation data for {companyData.name}.</CardDescription>
+              <CardTitle className="text-slate-900">Salary Insights</CardTitle>
+              <CardDescription className="text-slate-600">Compensation data for {companyData.name}.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {companyData.salaries && companyData.salaries.length > 0 ? (
@@ -176,8 +176,8 @@ const CompanyDetailPage = () => {
                   {companyData.salaries.map((salary, index) => (
                     <Card key={index} className="bg-slate-800/70 border-slate-700 hover:shadow-lg transition-shadow duration-200">
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-lg font-semibold text-slate-100">{salary.role}</CardTitle>
-                        <CardDescription className="text-sm text-slate-400 flex items-center justify-between">
+                        <CardTitle className="text-lg font-semibold text-slate-900">{salary.role}</CardTitle>
+                        <CardDescription className="text-sm text-slate-600 flex items-center justify-between">
                           {salary.location}
                           <span className="text-xs font-medium bg-blue-900/50 text-blue-300 px-2 py-0.5 rounded-md">
                             {salary.level}
@@ -185,23 +185,23 @@ const CompanyDetailPage = () => {
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="pt-0">
-                        <p className="text-2xl font-bold text-slate-100">{formatCurrency(salary.medianTotalComp)} <span className="text-base font-normal text-slate-300">(Median Total Comp)</span></p>
-                        <p className="text-sm text-slate-400 mt-1">vs. {formatCurrency(salary.blsBenchmark)} BLS Benchmark</p>
+                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(salary.medianTotalComp)} <span className="text-base font-normal text-slate-300">(Median Total Comp)</span></p>
+                        <p className="text-sm text-slate-600 mt-1">vs. {formatCurrency(salary.blsBenchmark)} BLS Benchmark</p>
                         <p className="text-xs text-slate-500 mt-2">Based on {salary.count} data points.</p>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
               ) : (
-                <p className="text-slate-400 text-center py-8">No detailed salary data available for this company.</p>
+                <p className="text-slate-600 text-center py-8">No detailed salary data available for this company.</p>
               )}
             </CardContent>
           </Card>
           
           {/* Related Links / Action Section */}
-          <Card className="bg-slate-900/50 border-slate-800">
+          <Card className="bg-white border-slate-200">
             <CardHeader>
-              <CardTitle className="text-slate-100">More Actions</CardTitle>
+              <CardTitle className="text-slate-900">More Actions</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
