@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { MARKET_DATA } from '@/app/lib/data'; // Import shared data source
+import { DataTable } from "@/components/data-table"; // Assuming you have a reusable table component
 
 // Helper to generate company metadata (descriptions/logos) since MARKET_DATA is just numbers
 const COMPANY_METADATA: Record<string, { description: string; website: string; logoUrl?: string }> = {
@@ -46,13 +47,13 @@ const COMPANY_METADATA: Record<string, { description: string; website: string; l
   }
 };
 
-interface SalaryDisplayData {
+interface SalarySummary {
   role: string;
-  location: string;
-  level: string;
-  medianTotalComp: number;
-  blsMedian: number;
-  count: number;
+  minComp: number;
+  maxComp: number;
+  medianComp: number;
+  levelsCount: number;
+  dataPoints: number;
 }
 
 interface CompanyInfo {
@@ -60,13 +61,12 @@ interface CompanyInfo {
   website: string;
   description: string;
   logoUrl?: string;
-  salaries?: SalaryDisplayData[];
+  salarySummary?: SalarySummary[];
 }
 
 const CompanyDetailPage = () => {
   const params = useParams();
   const companyNameFromUrl = params?.companyName as string || decodeURIComponent(params?.companyName as string); 
-  // Handle URL encoding if present (e.g. %20)
   const companyName = decodeURIComponent(companyNameFromUrl);
 
   const [companyData, setCompanyData] = useState<CompanyInfo | null>(null);
@@ -77,32 +77,41 @@ const CompanyDetailPage = () => {
     setIsLoading(true);
     setError(null);
     
-    // Fetch data from our shared MARKET_DATA source
     const fetchCompanyData = () => {
-      // 1. Check if company exists in our data
       const rawData = MARKET_DATA[companyName];
       
       if (rawData) {
-        // 2. Transform nested MARKET_DATA into flat list for display
-        const salaries: SalaryDisplayData[] = [];
-        
-        // Structure: Company -> Role -> Location -> Level -> Data
+        // Consolidated logic: Group by Role
+        const roleMap: Record<string, { totalComp: number[], count: number, levels: Set<string> }> = {};
+
         Object.entries(rawData).forEach(([role, locations]) => {
           Object.entries(locations).forEach(([location, levels]) => {
             Object.entries(levels).forEach(([level, data]) => {
-              salaries.push({
-                role,
-                location,
-                level,
-                medianTotalComp: data.median,
-                blsMedian: data.blsMedian,
-                count: 10 + Math.floor(Math.random() * 50) // Mock count since simple data structure doesn't store it yet
-              });
+              if (!roleMap[role]) {
+                roleMap[role] = { totalComp: [], count: 0, levels: new Set() };
+              }
+              roleMap[role].totalComp.push(data.median);
+              roleMap[role].count += (10 + Math.floor(Math.random() * 50)); // Mock count
+              roleMap[role].levels.add(level);
             });
           });
         });
 
-        // 3. Get Metadata (or fallback)
+        const salarySummary: SalarySummary[] = Object.entries(roleMap).map(([role, stats]) => {
+          const sortedComps = stats.totalComp.sort((a, b) => a - b);
+          const sum = sortedComps.reduce((a, b) => a + b, 0);
+          const median = sortedComps[Math.floor(sortedComps.length / 2)];
+          
+          return {
+            role,
+            minComp: sortedComps[0],
+            maxComp: sortedComps[sortedComps.length - 1],
+            medianComp: median,
+            levelsCount: stats.levels.size,
+            dataPoints: stats.count
+          };
+        });
+
         const metadata = COMPANY_METADATA[companyName] || {
           description: `${companyName} is a prominent company in the tech industry.`,
           website: "#",
@@ -112,18 +121,16 @@ const CompanyDetailPage = () => {
         setCompanyData({
           name: companyName,
           ...metadata,
-          salaries
+          salarySummary
         });
         setIsLoading(false);
 
       } else {
-        // Handle case where company name doesn't match
         setError(`Company "${companyName}" not found in our database.`);
         setIsLoading(false);
       }
     };
     
-    // Small delay to simulate hydration/fetch
     setTimeout(fetchCompanyData, 100);
   }, [companyName]);
 
@@ -166,6 +173,23 @@ const CompanyDetailPage = () => {
     );
   }
 
+  // Prepare data for the consolidated table
+  const tableHeaders = [
+    { label: "Job Title", key: "role" },
+    { label: "Total Comp Range", key: "range" },
+    { label: "Median Comp", key: "median" },
+    { label: "Levels", key: "levels" },
+    { label: "Data Points", key: "count" }
+  ];
+
+  const tableRows = companyData.salarySummary?.map(s => [
+    s.role,
+    `${formatCurrency(s.minComp)} - ${formatCurrency(s.maxComp)}`,
+    formatCurrency(s.medianComp),
+    `${s.levelsCount} Levels`,
+    s.dataPoints.toLocaleString()
+  ]) || [];
+
   return (
     <main className="min-h-screen bg-white">
       <div className="px-6 py-12">
@@ -195,41 +219,15 @@ const CompanyDetailPage = () => {
             </CardContent>
           </Card>
           
-          {/* Salary Data Section */}
+          {/* Consolidated Salary Overview */}
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-slate-900">Salary Insights</CardTitle>
-              <CardDescription className="text-slate-500">Compensation data for {companyData.name}.</CardDescription>
+              <CardTitle className="text-slate-900">Salary Overview by Role</CardTitle>
+              <CardDescription className="text-slate-500">Aggregated compensation data for {companyData.name}.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {companyData.salaries && companyData.salaries.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {companyData.salaries.map((salary, index) => (
-                    <Card key={index} className="bg-white border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all duration-200">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-lg font-semibold text-slate-900">{salary.role}</CardTitle>
-                        <CardDescription className="text-sm text-slate-500 flex flex-col gap-1">
-                          <span>{salary.location}</span>
-                          <span className="inline-block w-fit text-xs font-medium bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-100">
-                            {salary.level}
-                          </span>
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-2">
-                        <div className="flex justify-between items-end">
-                          <div>
-                            <p className="text-2xl font-bold text-slate-900">{formatCurrency(salary.medianTotalComp)}</p>
-                            <p className="text-xs text-slate-500">Median Total Comp</p>
-                          </div>
-                          <div className="text-right">
-                             <p className="text-sm font-medium text-slate-600">{formatCurrency(salary.blsMedian)}</p>
-                             <p className="text-xs text-slate-400">BLS Benchmark</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+            <CardContent>
+              {tableRows.length > 0 ? (
+                <DataTable headers={tableHeaders} rows={tableRows} />
               ) : (
                 <p className="text-slate-500 text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-200">
                   No detailed salary data available for this company yet.
