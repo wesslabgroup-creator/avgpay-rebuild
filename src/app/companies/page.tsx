@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Navigation } from "@/components/navigation";
 import { COMPANIES } from "@/lib/data"; // Import COMPANIES constant
 
 export const metadata: Metadata = {

@@ -1,4 +1,3 @@
-import { Navigation } from "@/components/navigation";
 import { generatePageMeta } from "@/lib/meta";
 import Head from "next/head";
 

@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/navigation";
 import { ArticleSchema } from "@/components/schema-markup";
 
 export const metadata: Metadata = {

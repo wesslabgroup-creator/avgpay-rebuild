@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SalaryChart } from "@/components/salary-chart";
 import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/navigation";
 import { getMarketData, COMPANIES, ROLES, LOCATIONS } from "@/lib/data"; // Import necessary constants
 import { BreadcrumbSchema } from "@/components/schema-markup";
 import Link from "next/link";

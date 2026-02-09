@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/navigation";
 import { DataTable } from "@/components/data-table";
 import { ArticleSchema } from "@/components/schema-markup";
 import Link from "next/link";

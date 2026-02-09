@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
-import { Navigation } from "@/components/navigation";
 
 export default function ContributePage() {
   const [submitted, setSubmitted] = useState(false);

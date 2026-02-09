@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Database, Shield, TrendingUp, CheckCircle } from "lucide-react";
-import { Navigation } from "@/components/navigation";
 
 export const metadata: Metadata = {
   title: "Our Methodology | AvgPay",
