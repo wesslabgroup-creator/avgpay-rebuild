@@ -31,7 +31,7 @@ export default function StartupVsBigTechGuidePage() {
         <div className="not-prose my-8 p-6 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
           <h2 className="text-lg font-semibold text-indigo-300 mb-2">Coming Soon</h2>
           <p className="text-slate-300">
-            This analysis comparing compensation between startups and Big Tech firms is currently under development. We are crunching the numbers on equity, salary, and cash bonuses to see when high-growth startups truly outperform established tech giants. Stay tuned for the results!
+            This analysis comparing compensation between startups and Big Tech firms is currently under development. We&apos;re crunching the numbers on equity, salary, and cash bonuses to see when high-growth startups truly outperform established tech giants. Stay tuned for the results!
           </p>
         </div>
 

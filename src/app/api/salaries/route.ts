@@ -1,4 +1,4 @@
-// src/app/api/salaries/browse/route.ts
+// src/app/api/salaries/route.ts
 import type { NextRequest } from 'next/server';
 import { COMPANIES, ROLES, LOCATIONS, MARKET_DATA } from '@/lib/data'; // Assuming MARKET_DATA is structured appropriately
 
@@ -10,11 +10,11 @@ function getAggregatedSalaryData(filters: {
   location?: string;
   level?: string;
 }) {
-  let data = [];
-  let companyList = filters.company ? [filters.company] : COMPANIES;
-  let roleList = filters.role ? [filters.role] : ROLES;
-  let locationList = filters.location ? [filters.location] : LOCATIONS;
-  let levelList = filters.level ? [filters.level] : ["Junior (L1-L2)", "Mid (L3-L4)", "Senior (L5-L6)", "Staff+ (L7+)"];
+  const data = [];
+  const companyList = filters.company ? [filters.company] : COMPANIES;
+  const roleList = filters.role ? [filters.role] : ROLES;
+  const locationList = filters.location ? [filters.location] : LOCATIONS;
+  const levelList = filters.level ? [filters.level] : ["Junior (L1-L2)", "Mid (L3-L4)", "Senior (L5-L6)", "Staff+ (L7+)"];
 
   // Expand data based on filters
   companyList.forEach(comp => {

@@ -88,21 +88,20 @@ export default function SWEGuidePage() {
         <h3>1. Multiple Offers are Key</h3>
         <p>
           Engineers with competing offers see an average initial offer increase of 22%. 
-          Companies have specific bands, but competing offers unlock "out-of-band" approvals.
+          Companies have specific bands, but competing offers unlock &quot;out-of-band&quot; approvals.
         </p>
 
         <h3>2. Understand the Equity Grant</h3>
         <p>
           Ask about the 409A valuation (for private companies) or the grant price (public). 
-          Understand the vesting schedule—Amazon is back-weighted (5/15/40/40), while verify
-          Google is front-weighted (33/33/22/12) or flat (25% annually).
+          Understand the vesting schedule—Amazon is back-weighted (5/15/40/40), while Google is front-weighted (33/33/22/12) or flat (25% annually).
         </p>
 
         <h3>3. Sign-on Bonuses</h3>
         <p>
           Sign-on bonuses, often ranging from $20k to $100k+, are the easiest lever for recruiters 
           to pull to close a candidate without disrupting salary bands. 
-          Allows ask for a sign-on if the base salary is inflexible.
+          Always ask for a sign-on if the base salary is inflexible.
         </p>
 
         <h2>Future Outlook</h2>

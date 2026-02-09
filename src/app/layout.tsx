@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { Navigation } from "@/components/navigation";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,7 +28,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} antialiased bg-slate-950 text-slate-100`}>
+      <body className={`${inter.className} antialiased bg-slate-950 text-slate-100 pt-20`}>
+        <Navigation />
         {children}
       </body>
     </html>

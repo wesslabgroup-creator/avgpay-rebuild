@@ -31,7 +31,7 @@ export default function NegotiationGuidePage() {
         <div className="not-prose my-8 p-6 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
           <h2 className="text-lg font-semibold text-indigo-300 mb-2">Coming Soon</h2>
           <p className="text-slate-300">
-            This guide is currently under development. We are compiling data-driven insights and strategies to help you maximize your compensation. Check back soon for detailed advice on negotiation tactics, leverage, and handling competing offers.
+            This guide is currently under development. We&apos;re compiling data-driven insights and strategies to help you maximize your compensation. Check back soon for detailed advice on negotiation tactics, leverage, and handling competing offers.
           </p>
         </div>
 

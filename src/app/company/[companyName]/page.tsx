@@ -6,9 +6,7 @@ import { useParams } from 'next/navigation';
 import { Navigation } from '@/components/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react'; // Ensure ExternalLink is imported
-import { COMPANIES, ROLES, LOCATIONS, LEVELS } from '@/lib/data'; 
 
 // Mock data for company-specific details and salaries
 // In a real app, this would come from an API or a more sophisticated data source.
