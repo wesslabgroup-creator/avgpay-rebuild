@@ -1,163 +1,152 @@
 import { Metadata } from "next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
+import { Check, X, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Pricing | AvgPay",
-  description: "Free salary insights or upgrade to PRO for full analysis and negotiation tools.",
+  description: "Invest in your career. Get the data you need to negotiate a 20% raise.",
 };
 
 export default function PricingPage() {
   return (
     <main className="min-h-screen bg-white">
       
-      <div className="px-6 py-12">
-        <div className="max-w-4xl mx-auto space-y-12">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-slate-900">Simple Pricing</h1>
+      <div className="px-6 py-20">
+        <div className="max-w-5xl mx-auto space-y-16">
+          <div className="text-center space-y-6 max-w-2xl mx-auto">
+            <h1 className="text-5xl font-extrabold text-slate-900 tracking-tight">
+              Negotiate Like a Pro
+            </h1>
             <p className="text-xl text-slate-600">
-              Free for everyone. Upgrade for power users.
+              Most candidates leave <span className="font-semibold text-indigo-600">$20k - $50k</span> on the table because they don't know the real market rate. 
+              Small investment, massive ROI.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Free Tier */}
-            <Card className="border-slate-700 bg-slate-900">
+            <Card className="border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardHeader>
-                <CardTitle className="text-2xl text-slate-900">Free</CardTitle>
-                <p className="text-slate-600">For job seekers exploring options</p>
+                <CardTitle className="text-2xl font-bold text-slate-900">Basic</CardTitle>
+                <CardDescription className="text-slate-500">For casual browsing</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold text-slate-900">$0</div>
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>View all salary pages</span>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3 text-slate-600">
+                    <Check className="w-5 h-5 text-green-500 shrink-0" />
+                    <span>Browse public salary data</span>
                   </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>1 basic Offer Analyzer use</span>
+                  <li className="flex items-start gap-3 text-slate-600">
+                    <Check className="w-5 h-5 text-green-500 shrink-0" />
+                    <span>Basic "Grade My Offer" check</span>
                   </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Contribute salary data</span>
+                  <li className="flex items-start gap-3 text-slate-400">
+                    <X className="w-5 h-5 shrink-0" />
+                    <span>Detailed equity & bonus breakdown</span>
                   </li>
-                  <li className="flex items-center gap-2 text-slate-500">
-                    <X className="w-5 h-5" />
-                    <span>Multi-offer comparison</span>
+                  <li className="flex items-start gap-3 text-slate-400">
+                    <X className="w-5 h-5 shrink-0" />
+                    <span>Negotiation email templates</span>
                   </li>
-                  <li className="flex items-center gap-2 text-slate-500">
-                    <X className="w-5 h-5" />
-                    <span>Negotiation scripts</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-500">
-                    <X className="w-5 h-5" />
-                    <span>4-year equity projection</span>
+                  <li className="flex items-start gap-3 text-slate-400">
+                    <X className="w-5 h-5 shrink-0" />
+                    <span>Verified "Real Offer" database</span>
                   </li>
                 </ul>
-                <Button variant="outline" className="w-full">Get Started</Button>
+                <Button variant="outline" className="w-full">Continue Free</Button>
               </CardContent>
             </Card>
 
-            {/* Monthly Tier */}
-            <Card className="border-slate-700 bg-slate-900">
-              <CardHeader>
-                <CardTitle className="text-2xl text-slate-900">Monthly</CardTitle>
-                <p className="text-slate-600">Flexible access</p>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-slate-900">$29</span>
-                  <span className="text-slate-600">/month</span>
-                </div>
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Everything in Free</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Full Offer Analyzer</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Multi-offer comparison</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Company-specific negotiation scripts</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>4-year equity projection</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Save offers (12 months)</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Market change alerts</span>
-                  </li>
-                </ul>
-                <Button variant="outline" className="w-full">Subscribe Monthly</Button>
-              </CardContent>
-            </Card>
-
-            {/* Lifetime Tier */}
-            <Card className="border-indigo-500 relative overflow-hidden bg-slate-900">
-              <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs px-3 py-1 rounded-bl-lg">
-                Best Value
+            {/* Interview Pass */}
+            <Card className="border-indigo-200 bg-indigo-50/50 shadow-md relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
+                Popular
               </div>
               <CardHeader>
-                <CardTitle className="text-2xl text-slate-900">Lifetime</CardTitle>
-                <p className="text-slate-600">Pay once, negotiate forever</p>
+                <CardTitle className="text-2xl font-bold text-indigo-900">Interview Pass</CardTitle>
+                <CardDescription className="text-indigo-600/80">7-day full access</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-slate-900">$49</span>
-                  <span className="text-slate-600">one-time</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-bold text-indigo-900">$19</span>
+                  <span className="text-indigo-600 font-medium">/ week</span>
                 </div>
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Everything in Free</span>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3 text-indigo-800">
+                    <Check className="w-5 h-5 text-indigo-600 shrink-0" />
+                    <span><strong>Full Salary & Equity Data</strong></span>
                   </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Full Offer Analyzer</span>
+                  <li className="flex items-start gap-3 text-indigo-800">
+                    <Check className="w-5 h-5 text-indigo-600 shrink-0" />
+                    <span>Verified "Real Offer" database</span>
                   </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Multi-offer comparison</span>
+                  <li className="flex items-start gap-3 text-indigo-800">
+                    <Check className="w-5 h-5 text-indigo-600 shrink-0" />
+                    <span><strong>Negotiation Scripts</strong> (Copy/Paste)</span>
                   </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Company-specific negotiation scripts</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>4-year equity projection</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Save offers (12 months)</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span>Market change alerts</span>
+                  <li className="flex items-start gap-3 text-indigo-800">
+                    <Check className="w-5 h-5 text-indigo-600 shrink-0" />
+                    <span>Unlimited Offer Analysis</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-gradient-to-r from-indigo-600 to-violet-600">
-                  Upgrade to PRO
+                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
+                  Get 7-Day Access
                 </Button>
+                <p className="text-xs text-center text-indigo-500">One-time payment. No auto-renew.</p>
+              </CardContent>
+            </Card>
+
+            {/* Career Lifetime */}
+            <Card className="border-slate-200 bg-white shadow-lg hover:shadow-xl transition-all scale-105 z-10">
+              <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+              <CardHeader>
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-amber-500 fill-amber-500" />
+                  <span className="text-sm font-bold text-amber-600 uppercase tracking-wide">Best Value</span>
+                </div>
+                <CardTitle className="text-2xl font-bold text-slate-900">Career Lifetime</CardTitle>
+                <CardDescription className="text-slate-500">Negotiate every job forever</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-bold text-slate-900">$49</span>
+                  <span className="text-slate-500 font-medium">one-time</span>
+                </div>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <Check className="w-5 h-5 text-green-500 shrink-0" />
+                    <span><strong>Everything in Interview Pass</strong></span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <Check className="w-5 h-5 text-green-500 shrink-0" />
+                    <span><strong>Lifetime Access</strong> (All future updates)</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <Check className="w-5 h-5 text-green-500 shrink-0" />
+                    <span>Compare Competing Offers Tool</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <Check className="w-5 h-5 text-green-500 shrink-0" />
+                    <span>Early access to new features</span>
+                  </li>
+                </ul>
+                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 text-lg shadow-lg">
+                  Buy Lifetime Access
+                </Button>
+                <p className="text-xs text-center text-slate-400">Pay once, own it forever.</p>
               </CardContent>
             </Card>
           </div>
 
-          <div className="text-center text-slate-500 text-sm">
-            30-day money-back guarantee. No questions asked.
+          <div className="bg-slate-50 rounded-2xl p-8 md:p-12 text-center border border-slate-100">
+            <h3 className="text-2xl font-bold text-slate-900 mb-4">Why charge for this?</h3>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              We charge a small fee so we don't have to sell your data to recruiters. 
+              Most salary sites are actually lead-gen for recruiting agencies. 
+              <strong> We work for you, not them.</strong>
+            </p>
           </div>
         </div>
       </div>

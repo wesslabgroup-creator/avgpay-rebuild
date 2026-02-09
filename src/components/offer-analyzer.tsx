@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { calculateGrade } from "@/lib/data";
 import { SalaryChart } from "@/components/salary-chart";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Lock, CheckCircle2, AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 const ROLES = [
   "Software Engineer",
@@ -33,7 +34,7 @@ const LOCATIONS = [
   "Denver, CO",
   "Chicago, IL",
   "Los Angeles, CA",
-  "London, UK", // Added international option
+  "London, UK",
 ];
 
 const LEVELS = [
@@ -85,7 +86,6 @@ export function OfferAnalyzer() {
       parseInt(formData.bonus || "0");
 
     try {
-      // Fetch market data from API
       const params = new URLSearchParams({
         role: formData.role,
         location: formData.location,
@@ -101,7 +101,6 @@ export function OfferAnalyzer() {
       const marketData: MarketData = await response.json();
 
       if (marketData.count === 0) {
-        // Fallback to mock data if no database entries yet
         const mockData = getFallbackData(formData.role, formData.location, formData.level);
         const grade = calculateGrade(total, mockData.median);
         const percentile = Math.min(Math.round((total / mockData.median) * 50), 99);
@@ -172,6 +171,36 @@ export function OfferAnalyzer() {
     };
   };
 
+  const getFeedback = (grade: string) => {
+    switch (grade) {
+      case "A":
+        return {
+          title: "Excellent Offer",
+          text: "You are well above market rate. Focus negotiation on equity or sign-on bonus.",
+          color: "text-green-600",
+          icon: <CheckCircle2 className="w-6 h-6 text-green-600" />
+        };
+      case "B":
+        return {
+          title: "Solid Market Rate",
+          text: "This is a fair offer, but there's room to push. You are right at the median.",
+          color: "text-emerald-600",
+          icon: <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+        };
+      case "C":
+      case "D":
+      case "F":
+        return {
+          title: "Lowball Offer",
+          text: "You are significantly underpaid relative to the market. You have strong leverage to negotiate.",
+          color: "text-red-600",
+          icon: <AlertCircle className="w-6 h-6 text-red-600" />
+        };
+      default:
+        return { title: "Analysis Complete", text: "", color: "text-slate-900", icon: null };
+    }
+  };
+
   if (step === "analyzing") {
     return (
       <Card className="w-full max-w-2xl mx-auto bg-white border-slate-200">
@@ -201,62 +230,99 @@ export function OfferAnalyzer() {
   }
 
   if (step === "results" && result) {
-    const gradeColor = {
-      A: "text-green-600",
-      B: "text-emerald-600",
-      C: "text-yellow-600",
-      D: "text-orange-600",
-      F: "text-red-600",
-    }[result.grade];
+    const feedback = getFeedback(result.grade);
 
     return (
-      <Card className="w-full max-w-3xl mx-auto bg-white border-slate-200 shadow-lg">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-slate-900">Your Compensation Analysis</CardTitle>
-              <CardDescription className="text-slate-500">
-                {result.count > 0 
-                  ? `Based on ${result.count} verified data points`
-                  : "Based on market benchmarks (database coming soon)"
-                }
-              </CardDescription>
+      <div className="space-y-8">
+        <Card className="w-full max-w-3xl mx-auto bg-white border-slate-200 shadow-lg">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-slate-900">Your Compensation Analysis</CardTitle>
+                <CardDescription className="text-slate-500">
+                  {result.count > 0 
+                    ? `Based on ${result.count} verified data points`
+                    : "Based on market benchmarks (database coming soon)"
+                  }
+                </CardDescription>
+              </div>
+              <div className={`text-6xl font-bold ${feedback.color}`}>{result.grade}</div>
             </div>
-            <div className={`text-6xl font-bold ${gradeColor}`}>{result.grade}</div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100">
-              <div className="text-2xl font-bold text-indigo-600">${(result.yourTotal / 1000).toFixed(0)}k</div>
-              <div className="text-sm text-slate-500">Your Total Comp</div>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            {/* Feedback Section */}
+            <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
+              {feedback.icon}
+              <div>
+                <h4 className={`font-semibold ${feedback.color}`}>{feedback.title}</h4>
+                <p className="text-slate-600">{feedback.text}</p>
+              </div>
             </div>
-            <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100">
-              <div className="text-2xl font-bold text-slate-800">${(result.marketMedian / 1000).toFixed(0)}k</div>
-              <div className="text-sm text-slate-500">Market Median</div>
-            </div>
-            <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100">
-              <div className="text-2xl font-bold text-slate-800">{result.percentile}th</div>
-              <div className="text-sm text-slate-500">Percentile</div>
-            </div>
-          </div>
 
-          <SalaryChart 
-            yourSalary={result.yourTotal} 
-            marketMedian={result.marketMedian}
-            blsMedian={result.blsMedian}
-          />
+            {/* Stats Grid */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                <div className="text-2xl font-bold text-indigo-600">${(result.yourTotal / 1000).toFixed(0)}k</div>
+                <div className="text-sm text-slate-500">Your Total</div>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                <div className="text-2xl font-bold text-slate-800">${(result.marketMedian / 1000).toFixed(0)}k</div>
+                <div className="text-sm text-slate-500">Market Median</div>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                <div className="text-2xl font-bold text-slate-800">{result.percentile}th</div>
+                <div className="text-sm text-slate-500">Percentile</div>
+              </div>
+            </div>
 
-          <div className="flex gap-4">
-            <Button onClick={() => setStep("form")} variant="outline" className="flex-1">
-              Analyze Another Offer
-            </Button>
-            <Button onClick={() => alert("Feature coming soon: Full report generation!")} className="flex-1 bg-gradient-to-r from-indigo-600 to-violet-600 text-white">
-              Get Full Report <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            <SalaryChart 
+              yourSalary={result.yourTotal} 
+              marketMedian={result.marketMedian}
+              blsMedian={result.blsMedian}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Negotiation Upsell Card */}
+        <Card className="w-full max-w-3xl mx-auto bg-indigo-50 border-indigo-100 shadow-sm overflow-hidden">
+          <CardHeader>
+            <CardTitle className="text-indigo-900 flex items-center gap-2">
+              <Lock className="w-5 h-5 text-indigo-500" />
+              Unlock Your Negotiation Script
+            </CardTitle>
+            <CardDescription className="text-indigo-700/80">
+              Copy/paste email templates tailored to your offer grade ({result.grade}).
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="relative">
+            {/* Blurred Preview */}
+            <div className="space-y-2 filter blur-sm select-none opacity-50">
+              <p className="text-slate-800 font-medium">Subject: Thoughts on the offer</p>
+              <p className="text-slate-600">Hi [Recruiter Name],</p>
+              <p className="text-slate-600">
+                Thank you so much for the offer. I'm really excited about the team. 
+                However, looking at market data for [Role] in [Location], 
+                I noticed the base salary is...
+              </p>
+            </div>
+            
+            {/* CTA Overlay */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Link href="/pricing">
+                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg">
+                  Unlock Full Script ($19)
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-center">
+          <Button onClick={() => setStep("form")} variant="ghost" className="text-slate-500">
+            Analyze Another Offer
+          </Button>
+        </div>
+      </div>
     );
   }
 

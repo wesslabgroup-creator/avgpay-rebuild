@@ -9,40 +9,40 @@ export const metadata: Metadata = {
   description: "From L3 to Staff+. Compensation breakdowns at Google, Meta, Amazon, and startups. Plus leveling guides.",
   openGraph: {
     type: "article",
-    publishedTime: "2026-02-05",
+    publishedTime: "2026-02-09",
   },
 };
 
 export default function SWEGuidePage() {
   const levelData = {
-    headers: ["Level", "Base Salary", "Equity (Annual)", "Bonus", "Total Comp"],
+    headers: [{label: "Level", key: "0"}, {label: "Base Salary", key: "1"}, {label: "Equity (Annual)", key: "2"}, {label: "Bonus", key: "3"}, {label: "Total Comp", key: "4"}],
     rows: [
-      ["Junior (L3)", 140000, 25000, 15000, 180000],
-      ["Mid-Level (L4)", 175000, 60000, 25000, 260000],
-      ["Senior (L5)", 210000, 120000, 40000, 370000],
-      ["Staff (L6)", 260000, 220000, 70000, 550000],
-      ["Principal (L7+)", 320000, 400000, 100000, 820000],
+      ["Junior (L3)", "$140,000", "$25,000", "$15,000", "$180,000"],
+      ["Mid-Level (L4)", "$175,000", "$60,000", "$25,000", "$260,000"],
+      ["Senior (L5)", "$210,000", "$120,000", "$40,000", "$370,000"],
+      ["Staff (L6)", "$260,000", "$220,000", "$70,000", "$550,000"],
+      ["Principal (L7+)", "$320,000", "$400,000", "$100,000", "$820,000"],
     ],
   };
 
   const locationData = {
-    headers: ["Location", "Median Total Comp", "Premium/Discount"],
+    headers: [{label: "Location", key: "0"}, {label: "Median Total Comp", key: "1"}, {label: "Premium/Discount", key: "2"}],
     rows: [
-      ["San Francisco Bay Area", 280000, "+30%"],
-      ["New York", 260000, "+22%"],
-      ["Seattle", 255000, "+20%"],
-      ["Austin", 210000, "+2%"],
-      ["Remote (US)", 220000, "+6%"],
+      ["San Francisco Bay Area", "$280,000", "+30%"],
+      ["New York", "$260,000", "+22%"],
+      ["Seattle", "$255,000", "+20%"],
+      ["Austin", "$210,000", "+2%"],
+      ["Remote (US)", "$220,000", "+6%"],
     ],
   };
 
   return (
     <main className="min-h-screen bg-white">
-      <ArticleSchema headline="Software Engineer Salary Guide 2026" datePublished="2026-02-05" authorName="AvgPay Team" />
+      <ArticleSchema headline="Software Engineer Salary Guide 2026" datePublished="2026-02-09" authorName="AvgPay Team" />
       
-      <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">
+      <article className="max-w-3xl mx-auto px-6 py-12 prose prose-slate lg:prose-lg">
         <div className="mb-8 not-prose">
-          <span className="text-indigo-400 text-sm font-medium">February 2026</span>
+          <span className="text-indigo-600 text-sm font-medium">February 2026</span>
           <h1 className="text-4xl font-bold text-slate-900 mt-2">Software Engineer Salary Guide 2026</h1>
           <p className="text-xl text-slate-600 mt-4">
             A deep dive into Software Engineering compensation across the tech industry. 
@@ -50,9 +50,9 @@ export default function SWEGuidePage() {
           </p>
         </div>
 
-        <div className="not-prose my-8 p-6 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
-          <h2 className="text-lg font-semibold text-indigo-300 mb-2">Executive Summary</h2>
-          <p className="text-slate-300">
+        <div className="not-prose my-8 p-6 bg-indigo-50 border border-indigo-200 rounded-lg">
+          <h2 className="text-lg font-semibold text-indigo-700 mb-2">Executive Summary</h2>
+          <p className="text-slate-700">
             Software Engineers command the highest median compensation in tech, with a median total comp of $260,000 for mid-level roles in major hubs. 
             AI/ML specializations are seeing a 20-30% premium over generalist roles.
           </p>
@@ -109,13 +109,13 @@ export default function SWEGuidePage() {
           model deployment pipelines are seeing faster career velocity.
         </p>
 
-        <div className="not-prose my-8 p-6 bg-slate-800/50 border border-slate-700 rounded-lg text-center">
-          <h3 className="text-lg font-semibold text-slate-200 mb-2">Check your market rate</h3>
+        <div className="not-prose my-12 p-8 bg-slate-50 border border-slate-200 rounded-xl text-center">
+          <h3 className="text-2xl font-bold text-slate-900 mb-2">Check your market rate</h3>
           <p className="text-slate-600 mb-4">
             See exactly where your offer lands against verified benchmarks.
           </p>
           <Link href="/#analyzer">
-            <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600">
+            <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
               Analyze Your Offer
             </Button>
           </Link>

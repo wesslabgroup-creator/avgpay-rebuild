@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
-import { DataTable } from '@/components/data-data-table';
+import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { COMPANIES, ROLES, LOCATIONS, LEVELS } from '@/app/lib/data';
