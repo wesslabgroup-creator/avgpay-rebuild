@@ -195,7 +195,7 @@ export default function SalariesPage() {
                   <label className="block text-sm font-medium text-slate-400 mb-1">Level</label>
                   <Select value={filters.level} onChange={(e) => handleFilterChange('level', e.target.value)}>
                     <option value="">All Levels</option>
-                    {LEVELS.map(lvl => <option key={lvl.value} value={lvl.value}>{lvl.label}</option>)}
+                    {LEVELS.map(lvl => <option key={lvl.value} value={lvl.label}>{lvl.label}</option>)}
                   </Select>
                 </div>
               </div>
