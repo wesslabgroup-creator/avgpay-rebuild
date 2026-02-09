@@ -46,7 +46,7 @@ export function Navigation() {
             Contribute
           </Link>
           <Link 
-            href="#analyzer" 
+            href="/analyze-offer" 
             className="px-5 py-2.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg"
           >
             Analyze Offer
@@ -101,7 +101,7 @@ export function Navigation() {
             </Link>
             <div className="pt-4">
               <Link 
-                href="#analyzer" 
+                href="/analyze-offer" 
                 onClick={toggleMenu}
                 className="block w-full text-center px-6 py-4 text-lg font-bold bg-emerald-600 text-white rounded-xl shadow-lg hover:bg-emerald-700 transition-colors"
               >
