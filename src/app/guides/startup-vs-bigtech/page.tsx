@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/navigation";
 import { ArticleSchema } from "@/components/schema-markup";
 
 export const metadata: Metadata = {
@@ -16,7 +15,6 @@ export const metadata: Metadata = {
 export default function StartupVsBigTechGuidePage() {
   return (
     <main className="min-h-screen bg-slate-950">
-      <Navigation />
       <ArticleSchema headline="Startup vs Big Tech Compensation" datePublished="2026-02-07" authorName="AvgPay Team" />
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">

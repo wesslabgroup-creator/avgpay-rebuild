@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SalaryChart } from "@/components/salary-chart";
 import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/navigation";
 import { getMarketData, COMPANIES, ROLES, LOCATIONS } from "@/lib/data"; // Import necessary constants
 import { BreadcrumbSchema } from "@/components/schema-markup";
 import Link from "next/link";
@@ -70,7 +69,6 @@ export default function SalaryPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-slate-950">
-      <Navigation />
       
       <div className="px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-8">

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
-import { Navigation } from '@/components/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
 import { DataTable } from '@/components/data-data-table';
@@ -155,7 +154,6 @@ export default function SalariesPage() {
 
   return (
     <main className="min-h-screen bg-slate-950">
-      <Navigation />
       <div className="px-6 py-12">
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="text-center space-y-4">

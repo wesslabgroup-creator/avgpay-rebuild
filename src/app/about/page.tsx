@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Navigation } from "@/components/navigation";
 
 export const metadata: Metadata = {
   title: "About | AvgPay",
@@ -11,7 +10,6 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-slate-950">
-      <Navigation />
       
       <div className="px-6 py-12">
         <div className="max-w-3xl mx-auto space-y-12">
