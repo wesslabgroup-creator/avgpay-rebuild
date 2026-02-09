@@ -4,58 +4,54 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react'; // Ensure ExternalLink is imported
+import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import { MARKET_DATA } from '@/app/lib/data'; // Import shared data source
 
-// Mock data for company-specific details and salaries
-// In a real app, this would come from an API or a more sophisticated data source.
-// This mock data aims to be more realistic and varied for demonstration.
-const MOCK_COMPANY_DATA: Record<string, CompanyInfo> = {
-  "Acme Corp": {
-    name: "Acme Corp",
-    website: "https://acme.example.com",
-    description: "A leading innovator in widget manufacturing, providing cutting-edge solutions for a global market. Known for its robust engineering culture and competitive compensation.",
-    logoUrl: "/logos/acme-corp.png", // Placeholder logo path
-    salaries: [
-      { role: "Software Engineer", location: "San Francisco, CA", level: "Staff+ (L7+)", medianTotalComp: 320000, blsBenchmark: 290000, count: 150 },
-      { role: "Software Engineer", location: "San Francisco, CA", level: "Senior (L5-L6)", medianTotalComp: 240000, blsBenchmark: 210000, count: 200 },
-      { role: "Software Engineer", location: "New York, NY", level: "Mid (L3-L4)", medianTotalComp: 180000, blsBenchmark: 160000, count: 180 },
-      { role: "Product Manager", location: "San Francisco, CA", level: "Senior (L5-L6)", medianTotalComp: 230000, blsBenchmark: 210000, count: 80 },
-      { role: "Data Scientist", location: "Remote", level: "Staff+ (L7+)", medianTotalComp: 290000, blsBenchmark: 270000, count: 50 },
-      { role: "UX Designer", location: "New York, NY", level: "Senior (L5-L6)", medianTotalComp: 190000, blsBenchmark: 185000, count: 65 },
-    ],
+// Helper to generate company metadata (descriptions/logos) since MARKET_DATA is just numbers
+const COMPANY_METADATA: Record<string, { description: string; website: string; logoUrl?: string }> = {
+  "Google": {
+    description: "A multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
+    website: "https://careers.google.com",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
   },
-  "Beta Inc": {
-    name: "Beta Inc",
-    website: "https://beta.example.com",
-    description: "Beta Inc is at the forefront of sustainable technology, driving change through research and development. Focuses on AI for environmental solutions.",
-    logoUrl: "/logos/beta-inc.png",
-    salaries: [
-      { role: "Software Engineer", location: "Seattle, WA", level: "Senior (L5-L6)", medianTotalComp: 230000, blsBenchmark: 205000, count: 120 },
-      { role: "UX Designer", location: "Remote", level: "Mid (L3-L4)", medianTotalComp: 150000, blsBenchmark: 140000, count: 60 },
-      { role: "Product Manager", location: "Seattle, WA", level: "Staff+ (L7+)", medianTotalComp: 250000, blsBenchmark: 230000, count: 40 },
-      { role: "AI Researcher", location: "Remote", level: "Staff+ (L7+)", medianTotalComp: 310000, blsBenchmark: 290000, count: 30 },
-    ],
+  "Meta": {
+    description: "Meta Platforms, Inc. builds technologies that help people connect, find communities, and grow businesses.",
+    website: "https://www.metacareers.com",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg"
   },
-  "Gamma Solutions": {
-    name: "Gamma Solutions",
-    website: "https://gamma.example.com",
-    description: "Providing intelligent automation solutions for enterprise businesses. Specializes in workflow optimization and AI-driven process management.",
-    logoUrl: "/logos/gamma-solutions.png",
-    salaries: [
-      { role: "Software Engineer", location: "Austin, TX", level: "Mid (L3-L4)", medianTotalComp: 160000, blsBenchmark: 150000, count: 100 },
-      { role: "Data Scientist", location: "Remote", level: "Senior (L5-L6)", medianTotalComp: 200000, blsBenchmark: 190000, count: 70 },
-      { role: "Software Engineer", location: "Austin, TX", level: "Junior (L1-L2)", medianTotalComp: 120000, blsBenchmark: 110000, count: 90 },
-      { role: "DevOps Engineer", location: "Remote", level: "Senior (L5-L6)", medianTotalComp: 190000, blsBenchmark: 180000, count: 55 },
-    ],
+  "Amazon": {
+    description: "Amazon is an American multinational technology company which focuses on e-commerce, cloud computing, digital streaming, and artificial intelligence.",
+    website: "https://www.amazon.jobs",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
   },
+  "Microsoft": {
+    description: "Microsoft Corporation is an American multinational technology corporation which produces computer software, consumer electronics, personal computers, and related services.",
+    website: "https://careers.microsoft.com",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
+  },
+  "Apple": {
+    description: "Apple Inc. is an American multinational technology company that specializes in consumer electronics, software and online services.",
+    website: "https://www.apple.com/careers",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+  },
+  "Netflix": {
+    description: "Netflix is an American subscription video on-demand over-the-top streaming service and production company.",
+    website: "https://jobs.netflix.com",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
+  },
+  "Nvidia": {
+    description: "Nvidia Corporation is an American multinational technology company incorporated in Delaware and based in Santa Clara, California.",
+    website: "https://www.nvidia.com/en-us/about-nvidia/careers/",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg"
+  }
 };
 
-interface SalaryData {
+interface SalaryDisplayData {
   role: string;
   location: string;
   level: string;
   medianTotalComp: number;
-  blsBenchmark: number;
+  blsMedian: number;
   count: number;
 }
 
@@ -64,13 +60,14 @@ interface CompanyInfo {
   website: string;
   description: string;
   logoUrl?: string;
-  salaries?: SalaryData[];
+  salaries?: SalaryDisplayData[];
 }
 
 const CompanyDetailPage = () => {
   const params = useParams();
-  // Dynamic route parameter extraction
   const companyNameFromUrl = params?.companyName as string || decodeURIComponent(params?.companyName as string); 
+  // Handle URL encoding if present (e.g. %20)
+  const companyName = decodeURIComponent(companyNameFromUrl);
 
   const [companyData, setCompanyData] = useState<CompanyInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,24 +77,55 @@ const CompanyDetailPage = () => {
     setIsLoading(true);
     setError(null);
     
-    // Simulate fetching data for a specific company
+    // Fetch data from our shared MARKET_DATA source
     const fetchCompanyData = () => {
-      const data = MOCK_COMPANY_DATA[companyNameFromUrl];
-      if (data) {
-        // Simulate API delay
-        setTimeout(() => {
-          setCompanyData(data);
-          setIsLoading(false);
-        }, 500); 
+      // 1. Check if company exists in our data
+      const rawData = MARKET_DATA[companyName];
+      
+      if (rawData) {
+        // 2. Transform nested MARKET_DATA into flat list for display
+        const salaries: SalaryDisplayData[] = [];
+        
+        // Structure: Company -> Role -> Location -> Level -> Data
+        Object.entries(rawData).forEach(([role, locations]) => {
+          Object.entries(locations).forEach(([location, levels]) => {
+            Object.entries(levels).forEach(([level, data]) => {
+              salaries.push({
+                role,
+                location,
+                level,
+                medianTotalComp: data.median,
+                blsMedian: data.blsMedian,
+                count: 10 + Math.floor(Math.random() * 50) // Mock count since simple data structure doesn't store it yet
+              });
+            });
+          });
+        });
+
+        // 3. Get Metadata (or fallback)
+        const metadata = COMPANY_METADATA[companyName] || {
+          description: `${companyName} is a prominent company in the tech industry.`,
+          website: "#",
+          logoUrl: undefined
+        };
+
+        setCompanyData({
+          name: companyName,
+          ...metadata,
+          salaries
+        });
+        setIsLoading(false);
+
       } else {
-        // Handle case where company name from URL doesn't match mock data
-        setError(`Company "${companyNameFromUrl}" not found.`);
+        // Handle case where company name doesn't match
+        setError(`Company "${companyName}" not found in our database.`);
         setIsLoading(false);
       }
     };
     
-    fetchCompanyData();
-  }, [companyNameFromUrl]);
+    // Small delay to simulate hydration/fetch
+    setTimeout(fetchCompanyData, 100);
+  }, [companyName]);
 
   const formatCurrency = (n: number) => `$${(n / 1000).toFixed(0)}k`;
 
@@ -105,12 +133,12 @@ const CompanyDetailPage = () => {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Card className="bg-white border-slate-200 p-8 w-96">
+          <Card className="bg-white border-slate-200 p-8 w-96 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-slate-900 animate-pulse">Loading Company Data...</CardTitle>
+              <CardTitle className="text-slate-900 animate-pulse">Loading...</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-slate-600">Please wait while we fetch details for {companyNameFromUrl}.</CardDescription>
+              <CardDescription className="text-slate-500">Fetching details for {companyName}...</CardDescription>
             </CardContent>
           </Card>
         </div>
@@ -122,13 +150,13 @@ const CompanyDetailPage = () => {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Card className="bg-white border-slate-200 p-8 w-96">
+          <Card className="bg-white border-slate-200 p-8 w-96 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-red-500">Error Loading Company</CardTitle>
+              <CardTitle className="text-red-500">Company Not Found</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-red-400">{error || `Could not find data for ${companyNameFromUrl}.`}</CardDescription>
-              <Button variant="outline" className="mt-4" onClick={() => window.history.back()}>
+              <CardDescription className="text-slate-500 mb-4">{error}</CardDescription>
+              <Button variant="outline" onClick={() => window.history.back()}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
               </Button>
             </CardContent>
@@ -143,20 +171,25 @@ const CompanyDetailPage = () => {
       <div className="px-6 py-12">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Company Header */}
-          <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 border-0">
-            <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
-              {companyData.logoUrl && (
-                <div className="flex-shrink-0 h-24 w-24 md:h-32 md:w-32 rounded-xl overflow-hidden border-2 border-slate-700 bg-white p-2">
-                  <img src={companyData.logoUrl} alt={`${companyData.name} Logo`} className="w-full h-full object-contain"/>
-                </div>
-              )}
-              <div className="text-center md:text-left w-full">
-                <CardTitle className="text-4xl font-bold tracking-tight text-slate-900">{companyData.name}</CardTitle>
-                <CardDescription className="text-xl text-slate-600 mt-2 max-w-3xl mx-auto md:mx-0">{companyData.description}</CardDescription>
-                <div className="mt-4 flex justify-center md:justify-start">
-                  <Button variant="outline" size="lg">
-                    <a href={companyData.website} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
+          <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
+            <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+            <CardContent className="px-8 pb-8 -mt-12 flex flex-col md:flex-row items-start gap-6">
+              <div className="flex-shrink-0 h-24 w-24 md:h-32 md:w-32 rounded-xl overflow-hidden border-4 border-white bg-white shadow-md flex items-center justify-center">
+                {companyData.logoUrl ? (
+                  <img src={companyData.logoUrl} alt={`${companyData.name} Logo`} className="w-full h-full object-contain p-2"/>
+                ) : (
+                  <span className="text-3xl font-bold text-slate-300">{companyData.name.substring(0, 1)}</span>
+                )}
+              </div>
+              <div className="mt-12 md:mt-14 w-full">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <CardTitle className="text-4xl font-bold tracking-tight text-slate-900">{companyData.name}</CardTitle>
+                    <CardDescription className="text-lg text-slate-600 mt-2 max-w-3xl">{companyData.description}</CardDescription>
+                  </div>
+                  <Button variant="outline" className="shrink-0" asChild>
+                    <a href={companyData.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                      Visit Website <ExternalLink className="h-4 w-4" />
                     </a>
                   </Button>
                 </div>
@@ -165,55 +198,57 @@ const CompanyDetailPage = () => {
           </Card>
           
           {/* Salary Data Section */}
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-slate-900">Salary Insights</CardTitle>
-              <CardDescription className="text-slate-600">Compensation data for {companyData.name}.</CardDescription>
+              <CardDescription className="text-slate-500">Compensation data for {companyData.name}.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {companyData.salaries && companyData.salaries.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {companyData.salaries.map((salary, index) => (
-                    <Card key={index} className="bg-slate-800/70 border-slate-700 hover:shadow-lg transition-shadow duration-200">
+                    <Card key={index} className="bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all duration-200">
                       <CardHeader className="pb-2">
                         <CardTitle className="text-lg font-semibold text-slate-900">{salary.role}</CardTitle>
-                        <CardDescription className="text-sm text-slate-600 flex items-center justify-between">
-                          {salary.location}
-                          <span className="text-xs font-medium bg-blue-900/50 text-blue-300 px-2 py-0.5 rounded-md">
+                        <CardDescription className="text-sm text-slate-500 flex flex-col gap-1">
+                          <span>{salary.location}</span>
+                          <span className="inline-block w-fit text-xs font-medium bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-100">
                             {salary.level}
                           </span>
                         </CardDescription>
                       </CardHeader>
-                      <CardContent className="pt-0">
-                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(salary.medianTotalComp)} <span className="text-base font-normal text-slate-300">(Median Total Comp)</span></p>
-                        <p className="text-sm text-slate-600 mt-1">vs. {formatCurrency(salary.blsBenchmark)} BLS Benchmark</p>
-                        <p className="text-xs text-slate-500 mt-2">Based on {salary.count} data points.</p>
+                      <CardContent className="pt-2">
+                        <div className="flex justify-between items-end">
+                          <div>
+                            <p className="text-2xl font-bold text-slate-900">{formatCurrency(salary.medianTotalComp)}</p>
+                            <p className="text-xs text-slate-500">Median Total Comp</p>
+                          </div>
+                          <div className="text-right">
+                             <p className="text-sm font-medium text-slate-600">{formatCurrency(salary.blsMedian)}</p>
+                             <p className="text-xs text-slate-400">BLS Benchmark</p>
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
               ) : (
-                <p className="text-slate-600 text-center py-8">No detailed salary data available for this company.</p>
+                <p className="text-slate-500 text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                  No detailed salary data available for this company yet.
+                </p>
               )}
             </CardContent>
           </Card>
           
           {/* Related Links / Action Section */}
-          <Card className="bg-white border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-slate-900">More Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button variant="outline" size="lg" className="group" onClick={() => window.location.href='/salaries'}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> Salary Explorer
-                </Button>
-                <Button variant="outline" size="lg" className="group" onClick={() => window.location.href='/companies'}>
-                  All Companies <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700" onClick={() => window.location.href='/salaries'}>
+                <span className="flex items-center"><ArrowLeft className="mr-3 h-5 w-5 text-slate-400" /> Back to Salaries</span>
+             </Button>
+             <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700" onClick={() => window.location.href='/companies'}>
+                <span className="flex items-center">View All Companies <ArrowRight className="ml-3 h-5 w-5 text-slate-400" /></span>
+             </Button>
+          </div>
         </div>
       </div>
     </main>
