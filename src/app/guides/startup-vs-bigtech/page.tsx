@@ -5,7 +5,7 @@ import { ArticleSchema } from "@/components/schema-markup";
 
 export const metadata: Metadata = {
   title: "Startup vs Big Tech Compensation | AvgPay",
-  description: "When does startup equity beat FAANG total comp? A probabilistic analysis with real data.",
+  description: "When does startup equity beat Big Tech total comp? A probabilistic analysis with real data.",
   openGraph: {
     type: "article",
     publishedTime: "2026-02-09",
@@ -22,12 +22,12 @@ export default function StartupVsBigTechGuidePage() {
           <span className="text-emerald-600 text-sm font-medium">February 2026</span>
           <h1 className="text-4xl font-bold text-slate-900 mt-2">Startup vs Big Tech Compensation</h1>
           <p className="text-xl text-slate-600 mt-4">
-            The eternal dilemma: High-risk lottery tickets or guaranteed FAANG millions? 
+            The eternal dilemma: High-risk lottery tickets or guaranteed Big Tech millions? 
             We broke down the numbers to help you decide.
           </p>
         </div>
 
-        <h2>Big Tech (FAANG+): The Safe Path to Wealth</h2>
+        <h2>Big Tech (Big Tech+): The Safe Path to Wealth</h2>
         <p>
           Companies like Google, Meta, Apple, Netflix, and Amazon offer:
         </p>
@@ -62,7 +62,7 @@ export default function StartupVsBigTechGuidePage() {
         <ul>
           <li><strong>Lower Risk:</strong> Product-market fit is proven. Revenue is real.</li>
           <li><strong>Moderate Upside:</strong> You might get a 2-4x return on equity at IPO, not 100x.</li>
-          <li><strong>Competitive Base:</strong> Often matches FAANG base salaries, but total comp lags due to illiquidity.</li>
+          <li><strong>Competitive Base:</strong> Often matches Big Tech base salaries, but total comp lags due to illiquidity.</li>
         </ul>
         <p>
           <strong>Verdict:</strong> A balance of stability and upside. Good for those who missed the early boat but want more growth than Google.

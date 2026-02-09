@@ -45,7 +45,7 @@ const GUIDES = [
   },
   {
     title: "Startup vs Big Tech Compensation",
-    description: "When does startup equity beat FAANG total comp? A probabilistic analysis with real data.",
+    description: "When does startup equity beat Big Tech total comp? A probabilistic analysis with real data.",
     slug: "startup-vs-bigtech",
     readTime: "14 min",
     category: "Strategy",

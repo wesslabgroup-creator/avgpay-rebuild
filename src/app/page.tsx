@@ -171,7 +171,7 @@ export default function Home() {
                 <Star className="w-6 h-6 fill-current" />
               </div>
               <blockquote className="text-slate-300 font-medium leading-relaxed text-lg group-hover:text-white transition-colors">
-                \"Finally, reliable data that's not self-reported. Negotiated FAANG-level comp at startup thanks to AvgPay.\"
+                \"Finally, reliable data that's not self-reported. Negotiated Big Tech-level comp at startup thanks to AvgPay.\"
               </blockquote>
               <div className="flex items-center gap-3 pt-4 border-t border-slate-200/50">
                 <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center font-bold text-white">SM</div>
@@ -351,7 +351,7 @@ export default function Home() {
             </Link>
           </div>
           <p className="text-sm text-slate-500 font-medium pt-8">
-            ⚡ Instant results • 100% private • No credit card needed • Used by FAANG engineers
+            ⚡ Instant results • 100% private • No credit card needed • Used by Big Tech engineers
           </p>
         </div>
       </section>
