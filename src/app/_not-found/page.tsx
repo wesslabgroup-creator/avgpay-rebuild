@@ -12,10 +12,10 @@ export default function NotFound() {
       <Head>
         <meta name="robots" content="noindex" />
       </Head>
-      <main className="min-h-screen bg-slate-950">
+      <main className="min-h-screen bg-white">
         <div className="text-center py-24">
           <h1 className="text-4xl font-bold">404 - Page Not Found</h1>
-          <p className="text-slate-400 mt-4">The page you requested could not be found.</p>
+          <p className="text-slate-600 mt-4">The page you requested could not be found.</p>
         </div>
       </main>
     </>

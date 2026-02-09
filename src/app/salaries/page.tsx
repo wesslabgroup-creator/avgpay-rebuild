@@ -153,46 +153,46 @@ export default function SalariesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       <div className="px-6 py-12">
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight text-slate-100">Explore Salaries</h1>
-            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900">Explore Salaries</h1>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               Discover compensation benchmarks across companies, roles, locations, and experience levels.
             </p>
           </div>
 
           {/* Filter & Sort Section */}
-          <Card className="bg-slate-900/50 border-slate-800">
+          <Card className="bg-white border-slate-200">
             <CardHeader>
-              <CardTitle className="text-slate-100">Filter & Sort</CardTitle>
+              <CardTitle className="text-slate-900">Filter & Sort</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1">Company</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">Company</label>
                   <Select value={filters.company} onChange={(e) => handleFilterChange('company', e.target.value)}>
                     <option value="">All Companies</option>
                     {COMPANIES.map(comp => <option key={comp} value={comp}>{comp}</option>)}
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1">Role</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">Role</label>
                   <Select value={filters.role} onChange={(e) => handleFilterChange('role', e.target.value)}>
                     <option value="">All Roles</option>
                     {ROLES.map(role => <option key={role} value={role}>{role}</option>)}
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1">Location</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">Location</label>
                   <Select value={filters.location} onChange={(e) => handleFilterChange('location', e.target.value)}>
                     <option value="">All Locations</option>
                     {LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1">Level</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">Level</label>
                   <Select value={filters.level} onChange={(e) => handleFilterChange('level', e.target.value)}>
                     <option value="">All Levels</option>
                     {LEVELS.map(lvl => <option key={lvl.value} value={lvl.label}>{lvl.label}</option>)}
@@ -201,19 +201,19 @@ export default function SalariesPage() {
               </div>
 
               {/* Sort Controls - Instruct users to click headers */}
-              <div className="flex items-center gap-4 pt-4 border-t border-slate-800">
-                <span className="text-sm text-slate-400">Sort by clicking table headers:</span>
+              <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
+                <span className="text-sm text-slate-600">Sort by clicking table headers:</span>
               </div>
             </CardContent>
           </Card>
 
           {/* Results Table & Pagination */}
-          <Card className="bg-slate-900/50 border-slate-800">
+          <Card className="bg-white border-slate-200">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-slate-100">Salary Data</CardTitle>
+                <CardTitle className="text-slate-900">Salary Data</CardTitle>
                 {!isLoading && !error && (
-                  <CardDescription className="text-slate-400">
+                  <CardDescription className="text-slate-600">
                     Showing {paginatedResults.length} of {sortedResults.length} results
                   </CardDescription>
                 )}
@@ -222,7 +222,7 @@ export default function SalariesPage() {
               </div>
               {/* Items per page selector */}
               <div className="flex items-center gap-2">
-                <label htmlFor="items-per-page" className="text-sm text-slate-400 hidden md:inline">Rows per page:</label>
+                <label htmlFor="items-per-page" className="text-sm text-slate-600 hidden md:inline">Rows per page:</label>
                 <Select id="items-per-page" value={itemsPerPage} onChange={handleItemsPerPageChange}>
                   {ITEMS_PER_PAGE_OPTIONS.map(option => (
                     <option key={option} value={option}>{option}</option>
@@ -252,7 +252,7 @@ export default function SalariesPage() {
                     
                     {/* Pagination Controls */}
                     {totalPages > 1 && (
-                      <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-800">
+                      <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200">
                         <Button 
                           variant="outline" 
                           size="sm" 
@@ -263,7 +263,7 @@ export default function SalariesPage() {
                           <ChevronLeft className="w-4 h-4" /> Previous
                         </Button>
                         <div className="flex items-center gap-1 sm:gap-2">
-                           <span className="text-sm text-slate-400">Page</span>
+                           <span className="text-sm text-slate-600">Page</span>
                            {/* Render page numbers, perhaps with ellipsis for large numbers */}
                            <Button 
                              variant={currentPage === 1 ? 'default' : 'ghost'} 
@@ -271,7 +271,7 @@ export default function SalariesPage() {
                              onClick={() => setCurrentPage(1)}
                              className="px-2.5 py-1.5 h-auto"
                            >1</Button>
-                           {currentPage > 2 && <span className="text-sm text-slate-400">...</span>}
+                           {currentPage > 2 && <span className="text-sm text-slate-600">...</span>}
                            {currentPage > 1 && currentPage < totalPages && (
                              <Button 
                                variant='default' 
@@ -279,7 +279,7 @@ export default function SalariesPage() {
                                className="px-2.5 py-1.5 h-auto"
                              >{currentPage}</Button>
                            )}
-                           {currentPage < totalPages -1 && <span className="text-sm text-slate-400">...</span>}
+                           {currentPage < totalPages -1 && <span className="text-sm text-slate-600">...</span>}
                            {totalPages > 1 && (
                               <Button 
                                 variant={currentPage === totalPages ? 'default' : 'ghost'} 
@@ -302,7 +302,7 @@ export default function SalariesPage() {
                     )}
                   </>
                 ) : (
-                  <p className="text-slate-400 text-center py-8">No results found for your selected filters.</p>
+                  <p className="text-slate-600 text-center py-8">No results found for your selected filters.</p>
                 )
               )}
             </CardContent>

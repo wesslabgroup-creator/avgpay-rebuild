@@ -14,14 +14,14 @@ export const metadata: Metadata = {
 
 export default function NegotiationGuidePage() {
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       <ArticleSchema headline="How to Negotiate Tech Offers" datePublished="2026-02-07" authorName="AvgPay Team" />
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">
         <div className="mb-8 not-prose">
           <span className="text-indigo-400 text-sm font-medium">February 2026</span>
-          <h1 className="text-4xl font-bold text-slate-100 mt-2">How to Negotiate Tech Offers</h1>
-          <p className="text-xl text-slate-400 mt-4">
+          <h1 className="text-4xl font-bold text-slate-900 mt-2">How to Negotiate Tech Offers</h1>
+          <p className="text-xl text-slate-600 mt-4">
             Data-driven strategies for negotiating compensation. Learn when to push, what to ask for, and how to handle competing offers.
           </p>
         </div>
@@ -34,7 +34,7 @@ export default function NegotiationGuidePage() {
         </div>
 
         <div className="text-center not-prose mt-12">
-          <p className="text-slate-400 mb-4">
+          <p className="text-slate-600 mb-4">
             In the meantime, analyze your current offer to see how it stacks up.
           </p>
           <Link href="/#analyzer">

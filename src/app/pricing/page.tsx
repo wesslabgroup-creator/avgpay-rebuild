@@ -10,13 +10,13 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       
       <div className="px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-slate-100">Simple Pricing</h1>
-            <p className="text-xl text-slate-400">
+            <h1 className="text-4xl font-bold text-slate-900">Simple Pricing</h1>
+            <p className="text-xl text-slate-600">
               Free for everyone. Upgrade for power users.
             </p>
           </div>
@@ -25,11 +25,11 @@ export default function PricingPage() {
             {/* Free Tier */}
             <Card className="border-slate-700 bg-slate-900">
               <CardHeader>
-                <CardTitle className="text-2xl text-slate-100">Free</CardTitle>
-                <p className="text-slate-400">For job seekers exploring options</p>
+                <CardTitle className="text-2xl text-slate-900">Free</CardTitle>
+                <p className="text-slate-600">For job seekers exploring options</p>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="text-4xl font-bold text-slate-100">$0</div>
+                <div className="text-4xl font-bold text-slate-900">$0</div>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-2 text-slate-300">
                     <Check className="w-5 h-5 text-green-400" />
@@ -63,13 +63,13 @@ export default function PricingPage() {
             {/* Monthly Tier */}
             <Card className="border-slate-700 bg-slate-900">
               <CardHeader>
-                <CardTitle className="text-2xl text-slate-100">Monthly</CardTitle>
-                <p className="text-slate-400">Flexible access</p>
+                <CardTitle className="text-2xl text-slate-900">Monthly</CardTitle>
+                <p className="text-slate-600">Flexible access</p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-slate-100">$29</span>
-                  <span className="text-slate-400">/month</span>
+                  <span className="text-4xl font-bold text-slate-900">$29</span>
+                  <span className="text-slate-600">/month</span>
                 </div>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-2 text-slate-300">
@@ -111,13 +111,13 @@ export default function PricingPage() {
                 Best Value
               </div>
               <CardHeader>
-                <CardTitle className="text-2xl text-slate-100">Lifetime</CardTitle>
-                <p className="text-slate-400">Pay once, negotiate forever</p>
+                <CardTitle className="text-2xl text-slate-900">Lifetime</CardTitle>
+                <p className="text-slate-600">Pay once, negotiate forever</p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-slate-100">$49</span>
-                  <span className="text-slate-400">one-time</span>
+                  <span className="text-4xl font-bold text-slate-900">$49</span>
+                  <span className="text-slate-600">one-time</span>
                 </div>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-2 text-slate-300">

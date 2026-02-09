@@ -68,7 +68,7 @@ export default function SalaryPage({ params }: PageProps) {
   const formatCurrency = (n: number) => `$${(n / 1000).toFixed(0)}k`;
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       
       <div className="px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-8">
@@ -81,7 +81,7 @@ export default function SalaryPage({ params }: PageProps) {
           ]} />
           
           {/* Visual Breadcrumb */}
-          <nav className="text-sm text-slate-400">
+          <nav className="text-sm text-slate-600">
             <Link href="/" className="hover:text-slate-200 transition duration-300">Home</Link>
             <span className="mx-2">/</span>
             <Link href={`/${encodeURIComponent(company)}`} className="hover:text-slate-200 transition duration-300">{company}</Link>
@@ -93,44 +93,44 @@ export default function SalaryPage({ params }: PageProps) {
 
           {/* Header */}
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold tracking-tight text-slate-100">
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900">
               {role} Salary at {company}
             </h1>
-            <p className="text-xl text-slate-400">{location}</p>
+            <p className="text-xl text-slate-600">{location}</p>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-400">Median Total Comp</CardTitle>
+                <CardTitle className="text-sm font-medium text-slate-600">Median Total Comp</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-100">{formatCurrency(data.median)}</div>
+                <div className="text-2xl font-bold text-slate-900">{formatCurrency(data.median)}</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-400">BLS Benchmark</CardTitle>
+                <CardTitle className="text-sm font-medium text-slate-600">BLS Benchmark</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-100">{formatCurrency(data.blsMedian)}</div>
+                <div className="text-2xl font-bold text-slate-900">{formatCurrency(data.blsMedian)}</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-400">75th Percentile</CardTitle>
+                <CardTitle className="text-sm font-medium text-slate-600">75th Percentile</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-100">{formatCurrency(data.p75)}</div>
+                <div className="text-2xl font-bold text-slate-900">{formatCurrency(data.p75)}</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-400">90th Percentile</CardTitle>
+                <CardTitle className="text-sm font-medium text-slate-600">90th Percentile</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-100">{formatCurrency(data.p90)}</div>
+                <div className="text-2xl font-bold text-slate-900">{formatCurrency(data.p90)}</div>
               </CardContent>
             </Card>
           </div>
@@ -138,7 +138,7 @@ export default function SalaryPage({ params }: PageProps) {
           {/* Chart */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-slate-100">Salary Distribution</CardTitle>
+              <CardTitle className="text-slate-900">Salary Distribution</CardTitle>
             </CardHeader>
             <CardContent>
               <SalaryChart 
@@ -164,7 +164,7 @@ export default function SalaryPage({ params }: PageProps) {
           </div>
 
           {/* Data Provenance */}
-          <div className="p-6 rounded-lg bg-slate-800/30 border border-slate-700 text-sm text-slate-400">
+          <div className="p-6 rounded-lg bg-slate-800/30 border border-slate-700 text-sm text-slate-600">
             <h3 className="font-semibold text-slate-200 mb-2">Data Sources</h3>
             <ul className="space-y-1">
               <li>• Bureau of Labor Statistics (BLS) Occupational Employment Data</li>

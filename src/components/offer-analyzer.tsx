@@ -103,11 +103,6 @@ export function OfferAnalyzer() {
       if (marketData.count === 0) {
         // Fallback to mock data if no database entries yet
         const mockData = getFallbackData(formData.role, formData.location, formData.level);
-        // Simplified grading logic for demonstration.
-        // TODO: Implement a more sophisticated grading system based on
-        //       multiple data sources, confidence scores, and user context.
-        //       Consider factors like job level, location multipliers, and bonus/equity
-        //       structures that deviate significantly from the median.
         const grade = calculateGrade(total, mockData.median);
         const percentile = Math.min(Math.round((total / mockData.median) * 50), 99);
 
@@ -115,17 +110,11 @@ export function OfferAnalyzer() {
           grade,
           percentile,
           marketMedian: mockData.median,
-          // Placeholder for BLS median when available from API, otherwise use a conservative estimate.
           blsMedian: mockData.blsMedian || Math.round(marketData.median * 0.95),
           yourTotal: total,
           count: 0,
         });
       } else {
-        // Simplified grading logic for demonstration.
-        // TODO: Implement a more sophisticated grading system based on
-        //       multiple data sources, confidence scores, and user context.
-        //       Consider factors like job level, location multipliers, and bonus/equity
-        //       structures that deviate significantly from the median.
         const grade = calculateGrade(total, marketData.median);
         const percentile = Math.min(Math.round((total / marketData.median) * 50), 99);
 
@@ -148,18 +137,7 @@ export function OfferAnalyzer() {
     }
   };
 
-  /**
-   * getFallbackData:
-   * Provides mock salary data when the primary data source (Supabase) is not yet configured
-   * or returns no entries. This ensures the application remains functional and user-facing
-   * during development or in edge cases.
-   *
-   * TODO: Replace hardcoded values with real data from API or database.
-   *       Consider fetching this from a dedicated endpoint if Supabase is unavailable.
-   *       Include more roles and locations for broader coverage.
-   */
   const getFallbackData = (role: string, location: string, level: string) => {
-    // Fallback mock data when Supabase is not yet configured
     const baseSalaries: Record<string, number> = {
       "Software Engineer": 160000,
       "Product Manager": 155000,
@@ -196,11 +174,11 @@ export function OfferAnalyzer() {
 
   if (step === "analyzing") {
     return (
-      <Card className="w-full max-w-2xl mx-auto">
+      <Card className="w-full max-w-2xl mx-auto bg-white border-slate-200">
         <CardContent className="pt-6">
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
-            <p className="text-slate-400">Analyzing against BLS, H-1B, and market data...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <p className="text-slate-500">Analyzing against BLS, H-1B, and market data...</p>
           </div>
         </CardContent>
       </Card>
@@ -209,10 +187,10 @@ export function OfferAnalyzer() {
 
   if (step === "error") {
     return (
-      <Card className="w-full max-w-2xl mx-auto">
+      <Card className="w-full max-w-2xl mx-auto bg-white border-slate-200">
         <CardContent className="pt-6">
           <div className="text-center py-8 space-y-4">
-            <p className="text-red-400">Failed to analyze. Please try again.</p>
+            <p className="text-red-500">Failed to analyze. Please try again.</p>
             <Button onClick={() => setStep("form")} variant="outline">
               Try Again
             </Button>
@@ -224,20 +202,20 @@ export function OfferAnalyzer() {
 
   if (step === "results" && result) {
     const gradeColor = {
-      A: "text-green-400",
-      B: "text-emerald-400",
-      C: "text-yellow-400",
-      D: "text-orange-400",
-      F: "text-red-400",
+      A: "text-green-600",
+      B: "text-emerald-600",
+      C: "text-yellow-600",
+      D: "text-orange-600",
+      F: "text-red-600",
     }[result.grade];
 
     return (
-      <Card className="w-full max-w-3xl mx-auto">
+      <Card className="w-full max-w-3xl mx-auto bg-white border-slate-200 shadow-lg">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Your Compensation Analysis</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-slate-900">Your Compensation Analysis</CardTitle>
+              <CardDescription className="text-slate-500">
                 {result.count > 0 
                   ? `Based on ${result.count} verified data points`
                   : "Based on market benchmarks (database coming soon)"
@@ -249,17 +227,17 @@ export function OfferAnalyzer() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-              <div className="text-2xl font-bold text-indigo-400">${(result.yourTotal / 1000).toFixed(0)}k</div>
-              <div className="text-sm text-slate-400">Your Total Comp</div>
+            <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="text-2xl font-bold text-indigo-600">${(result.yourTotal / 1000).toFixed(0)}k</div>
+              <div className="text-sm text-slate-500">Your Total Comp</div>
             </div>
-            <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-              <div className="text-2xl font-bold text-slate-200">${(result.marketMedian / 1000).toFixed(0)}k</div>
-              <div className="text-sm text-slate-400">Market Median</div>
+            <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="text-2xl font-bold text-slate-800">${(result.marketMedian / 1000).toFixed(0)}k</div>
+              <div className="text-sm text-slate-500">Market Median</div>
             </div>
-            <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-              <div className="text-2xl font-bold text-slate-200">{result.percentile}th</div>
-              <div className="text-sm text-slate-400">Percentile</div>
+            <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100">
+              <div className="text-2xl font-bold text-slate-800">{result.percentile}th</div>
+              <div className="text-sm text-slate-500">Percentile</div>
             </div>
           </div>
 
@@ -273,7 +251,7 @@ export function OfferAnalyzer() {
             <Button onClick={() => setStep("form")} variant="outline" className="flex-1">
               Analyze Another Offer
             </Button>
-            <Button onClick={() => alert("Feature coming soon: Full report generation!")} className="flex-1 bg-gradient-to-r from-indigo-600 to-violet-600">
+            <Button onClick={() => alert("Feature coming soon: Full report generation!")} className="flex-1 bg-gradient-to-r from-indigo-600 to-violet-600 text-white">
               Get Full Report <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -283,16 +261,16 @@ export function OfferAnalyzer() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto bg-white border-slate-200 shadow-sm">
       <CardHeader>
-        <CardTitle>Compare Your Offer</CardTitle>
-        <CardDescription>Enter your compensation details to see how you stack up</CardDescription>
+        <CardTitle className="text-slate-900">Compare Your Offer</CardTitle>
+        <CardDescription className="text-slate-500">Enter your compensation details to see how you stack up</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Role *</label>
+              <label className="text-sm font-medium text-slate-700">Role *</label>
               <Select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
@@ -305,7 +283,7 @@ export function OfferAnalyzer() {
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Location *</label>
+              <label className="text-sm font-medium text-slate-700">Location *</label>
               <Select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -320,7 +298,7 @@ export function OfferAnalyzer() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Experience Level</label>
+            <label className="text-sm font-medium text-slate-700">Experience Level</label>
             <Select
               value={formData.level}
               onChange={(e) => setFormData({ ...formData, level: e.target.value })}
@@ -334,39 +312,42 @@ export function OfferAnalyzer() {
 
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Base Salary *</label>
+              <label className="text-sm font-medium text-slate-700">Base Salary *</label>
               <Input
                 type="number"
                 placeholder="150000"
                 value={formData.baseSalary}
                 onChange={(e) => setFormData({ ...formData, baseSalary: e.target.value })}
                 required
+                className="bg-white border-slate-200"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Annual Equity</label>
+              <label className="text-sm font-medium text-slate-700">Annual Equity</label>
               <Input
                 type="number"
                 placeholder="50000"
                 value={formData.equity}
                 onChange={(e) => setFormData({ ...formData, equity: e.target.value })}
+                className="bg-white border-slate-200"
               />
               <p className="text-xs text-slate-500 mt-1">*Assumes 4-year vesting</p>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Annual Bonus</label>
+              <label className="text-sm font-medium text-slate-700">Annual Bonus</label>
               <Input
                 type="number"
                 placeholder="20000"
                 value={formData.bonus}
                 onChange={(e) => setFormData({ ...formData, bonus: e.target.value })}
+                className="bg-white border-slate-200"
               />
             </div>
           </div>
 
           <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-indigo-600 to-violet-600"
+                className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white"
                 disabled={isLoading}
               >
                 {isLoading ? (

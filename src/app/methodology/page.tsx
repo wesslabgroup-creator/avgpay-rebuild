@@ -9,51 +9,51 @@ export const metadata: Metadata = {
 
 export default function MethodologyPage() {
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       
       <div className="px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-slate-100">Our Methodology</h1>
-            <p className="text-xl text-slate-400">
+            <h1 className="text-4xl font-bold text-slate-900">Our Methodology</h1>
+            <p className="text-xl text-slate-600">
               Transparent data sources and confidence scoring
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <Card className="bg-slate-900 border-slate-800">
+            <Card className="bg-slate-900 border-slate-200">
               <CardHeader>
                 <Database className="w-8 h-8 text-indigo-400 mb-4" />
-                <CardTitle className="text-slate-100">BLS Data</CardTitle>
+                <CardTitle className="text-slate-900">BLS Data</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-400">
+                <p className="text-slate-600">
                   Official Bureau of Labor Statistics occupational employment statistics. 
                   Updated annually with comprehensive salary data across all U.S. metros.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-900 border-slate-800">
+            <Card className="bg-slate-900 border-slate-200">
               <CardHeader>
                 <Shield className="w-8 h-8 text-emerald-400 mb-4" />
-                <CardTitle className="text-slate-100">H-1B Filings</CardTitle>
+                <CardTitle className="text-slate-900">H-1B Filings</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-400">
+                <p className="text-slate-600">
                   Publicly disclosed salary data from visa applications. Legally required 
                   to be accurate and updated quarterly from DOL databases.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-900 border-slate-800">
+            <Card className="bg-slate-900 border-slate-200">
               <CardHeader>
                 <TrendingUp className="w-8 h-8 text-violet-400 mb-4" />
-                <CardTitle className="text-slate-100">Pay Transparency</CardTitle>
+                <CardTitle className="text-slate-900">Pay Transparency</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-400">
+                <p className="text-slate-600">
                   Live data from pay transparency law job postings in CA, NY, CO, and WA. 
                   Real-time market rates from actual job openings.
                 </p>
@@ -61,12 +61,12 @@ export default function MethodologyPage() {
             </Card>
           </div>
 
-          <Card className="bg-slate-900 border-slate-800">
+          <Card className="bg-slate-900 border-slate-200">
             <CardHeader>
-              <CardTitle className="text-slate-100">Confidence Scoring</CardTitle>
+              <CardTitle className="text-slate-900">Confidence Scoring</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-slate-400">
+              <p className="text-slate-600">
                 We assign confidence scores based on data volume and source quality:
               </p>
               <ul className="space-y-2">
@@ -86,11 +86,11 @@ export default function MethodologyPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-900 border-slate-800">
+          <Card className="bg-slate-900 border-slate-200">
             <CardHeader>
-              <CardTitle className="text-slate-100">Data Processing Pipeline</CardTitle>
+              <CardTitle className="text-slate-900">Data Processing Pipeline</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-slate-400">
+            <CardContent className="space-y-4 text-slate-600">
               <ol className="space-y-2 list-decimal list-inside">
                 <li><strong className="text-slate-300">Ingest:</strong> Daily automated scrapers pull from 100+ company career pages</li>
                 <li><strong className="text-slate-300">Normalize:</strong> Job titles mapped to canonical roles, locations to metro areas</li>

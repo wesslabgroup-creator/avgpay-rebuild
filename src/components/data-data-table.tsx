@@ -18,12 +18,12 @@ export function DataTable({ headers, rows }: DataTableProps) {
       {/* Mobile: Cards */}
       <div className="block md:hidden space-y-4">
         {rows.map((row, rowIndex) => (
-          <div key={rowIndex} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 space-y-2">
+          <div key={rowIndex} className="bg-white border border-slate-200 rounded-lg p-4 space-y-2 shadow-sm">
             {headers.map((header, colIndex) => (
               row[colIndex] && (
                 <div key={colIndex} className="flex justify-between">
-                  <span className="text-slate-400 text-sm font-medium">{header.label as string}:</span>
-                  <span>{row[colIndex]}</span>
+                  <span className="text-slate-500 text-sm font-medium">{header.label as string}:</span>
+                  <span className="text-slate-900">{row[colIndex]}</span>
                 </div>
               )
             ))}
@@ -33,11 +33,11 @@ export function DataTable({ headers, rows }: DataTableProps) {
       
       {/* Desktop: Table */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full border-collapse border-spacing-0 bg-slate-800/50 border border-slate-700 rounded-lg">
+        <table className="w-full border-collapse border-spacing-0 bg-white border border-slate-200 rounded-lg shadow-sm">
           <thead>
-            <tr className="border-b border-slate-700">
+            <tr className="border-b border-slate-200 bg-slate-50">
               {headers.map((header, index) => (
-                <th key={index} className="p-4 text-left text-sm font-semibold text-slate-300 border-r border-slate-700 last:border-r-0">
+                <th key={index} className="p-4 text-left text-sm font-semibold text-slate-700 border-r border-slate-200 last:border-r-0">
                   {header.label}
                 </th>
               ))}
@@ -45,9 +45,9 @@ export function DataTable({ headers, rows }: DataTableProps) {
           </thead>
           <tbody>
             {rows.map((row, rowIndex) => (
-              <tr key={rowIndex} className="border-b border-slate-700 last:border-b-0 hover:bg-slate-800/30 transition-colors">
+              <tr key={rowIndex} className="border-b border-slate-200 last:border-b-0 hover:bg-slate-50 transition-colors">
                 {row.map((cell, colIndex) => (
-                  <td key={colIndex} className="p-4 text-sm text-slate-200 border-r border-slate-700 last:border-r-0">
+                  <td key={colIndex} className="p-4 text-sm text-slate-700 border-r border-slate-200 last:border-r-0">
                     {cell}
                   </td>
                 ))}

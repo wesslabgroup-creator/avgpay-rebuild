@@ -57,12 +57,12 @@ export default function ContributePage() {
 
   if (submitted) {
     return (
-      <main className="min-h-screen bg-slate-950">
+      <main className="min-h-screen bg-white">
         <div className="px-6 py-12">
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <CheckCircle className="w-16 h-16 text-green-400 mx-auto" />
-            <h1 className="text-3xl font-bold text-slate-100">Thank You!</h1>
-            <p className="text-xl text-slate-400">
+            <h1 className="text-3xl font-bold text-slate-900">Thank You!</h1>
+            <p className="text-xl text-slate-600">
               Your submission has been received and is pending review. 
               Once verified, it will help others negotiate better compensation.
             </p>
@@ -76,18 +76,18 @@ export default function ContributePage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       
       <div className="px-6 py-12">
         <div className="max-w-2xl mx-auto space-y-8">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-slate-100">Contribute Your Salary</h1>
-            <p className="text-xl text-slate-400">
+            <h1 className="text-4xl font-bold text-slate-900">Contribute Your Salary</h1>
+            <p className="text-xl text-slate-600">
               Help others negotiate better. Your data stays anonymous.
             </p>
           </div>
 
-          <Card className="bg-slate-900 border-slate-800">
+          <Card className="bg-slate-900 border-slate-200">
             <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
@@ -197,7 +197,7 @@ export default function ContributePage() {
                   </div>
                 </div>
 
-                <div className="p-4 bg-slate-800/50 rounded-lg text-sm text-slate-400">
+                <div className="p-4 bg-slate-800/50 rounded-lg text-sm text-slate-600">
                   <p className="font-medium text-slate-200 mb-2">Privacy Promise</p>
                   <ul className="space-y-1">
                     <li>• Your submission is anonymized immediately</li>

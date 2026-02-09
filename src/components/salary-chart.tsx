@@ -23,15 +23,15 @@ export function SalaryChart({ yourSalary, marketMedian, blsMedian }: SalaryChart
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
           <XAxis 
             dataKey="name" 
-            stroke="#94a3b8" 
+            stroke="#64748b" 
             fontSize={12}
             tickLine={false}
           />
           <YAxis 
-            stroke="#94a3b8" 
+            stroke="#64748b" 
             fontSize={12}
             tickLine={false}
             tickFormatter={formatCurrency}
@@ -39,10 +39,12 @@ export function SalaryChart({ yourSalary, marketMedian, blsMedian }: SalaryChart
           <Tooltip 
             formatter={(value) => [formatCurrency(Number(value)), "Salary"]}
             contentStyle={{ 
-              backgroundColor: "#0f172a", 
-              border: "1px solid #1e293b",
-              borderRadius: "6px"
+              backgroundColor: "#ffffff", 
+              border: "1px solid #e2e8f0",
+              borderRadius: "6px",
+              color: "#0f172a"
             }}
+            itemStyle={{ color: "#0f172a" }}
           />
           <Bar dataKey="value" radius={[4, 4, 0, 0]}>
             {data.map((entry, index) => (
