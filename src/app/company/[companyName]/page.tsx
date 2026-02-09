@@ -104,7 +104,6 @@ const CompanyDetailPage = () => {
   if (isLoading) {
     return (
       <main className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <Navigation />
         <div className="text-center">
           <Card className="bg-slate-900/50 border-slate-800 p-8 w-96">
             <CardHeader>
@@ -122,7 +121,6 @@ const CompanyDetailPage = () => {
   if (error || !companyData) {
     return (
       <main className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <Navigation />
         <div className="text-center">
           <Card className="bg-slate-900/50 border-slate-800 p-8 w-96">
             <CardHeader>
@@ -142,7 +140,6 @@ const CompanyDetailPage = () => {
 
   return (
     <main className="min-h-screen bg-slate-950">
-      <Navigation />
       <div className="px-6 py-12">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Company Header */}

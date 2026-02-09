@@ -15,7 +15,6 @@ export const metadata: Metadata = {
 export default function StartupVsBigTechGuidePage() {
   return (
     <main className="min-h-screen bg-slate-950">
-      <Navigation />
       <ArticleSchema headline="Startup vs Big Tech Compensation" datePublished="2026-02-07" authorName="AvgPay Team" />
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">

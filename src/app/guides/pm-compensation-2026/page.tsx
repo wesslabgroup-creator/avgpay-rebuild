@@ -37,7 +37,6 @@ export default function PMGuidePage() {
 
   return (
     <main className="min-h-screen bg-slate-950">
-      <Navigation />
       <ArticleSchema headline="Product Manager Compensation Guide 2026" datePublished="2026-02-01" authorName="AvgPay Team" />
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg">

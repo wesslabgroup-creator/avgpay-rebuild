@@ -58,7 +58,6 @@ export default function ContributePage() {
   if (submitted) {
     return (
       <main className="min-h-screen bg-slate-950">
-        <Navigation />
         <div className="px-6 py-12">
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <CheckCircle className="w-16 h-16 text-green-400 mx-auto" />
@@ -78,7 +77,6 @@ export default function ContributePage() {
 
   return (
     <main className="min-h-screen bg-slate-950">
-      <Navigation />
       
       <div className="px-6 py-12">
         <div className="max-w-2xl mx-auto space-y-8">

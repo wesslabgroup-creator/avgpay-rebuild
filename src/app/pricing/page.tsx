@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default function PricingPage() {
   return (
     <main className="min-h-screen bg-slate-950">
-      <Navigation />
       
       <div className="px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-12">
