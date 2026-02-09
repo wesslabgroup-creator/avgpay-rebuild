@@ -50,7 +50,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="bg-slate-900 border-slate-200">
               <CardHeader>
-                <CardTitle className="text-4xl font-bold text-indigo-400">50K+</CardTitle>
+                <CardTitle className="text-4xl font-bold text-emerald-400">50K+</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-slate-600">Salary data points</p>
@@ -59,7 +59,7 @@ export default function AboutPage() {
 
             <Card className="bg-slate-900 border-slate-200">
               <CardHeader>
-                <CardTitle className="text-4xl font-bold text-indigo-400">100+</CardTitle>
+                <CardTitle className="text-4xl font-bold text-emerald-400">100+</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-slate-600">Tech companies tracked</p>
@@ -68,7 +68,7 @@ export default function AboutPage() {
 
             <Card className="bg-slate-900 border-slate-200">
               <CardHeader>
-                <CardTitle className="text-4xl font-bold text-indigo-400">25+</CardTitle>
+                <CardTitle className="text-4xl font-bold text-emerald-400">25+</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-slate-600">Metro areas covered</p>
@@ -77,7 +77,7 @@ export default function AboutPage() {
           </div>
 
           <div className="text-center">
-            <Link href="/contribute" className="text-indigo-400 hover:text-indigo-300">
+            <Link href="/contribute" className="text-emerald-400 hover:text-emerald-300">
               Help us grow the database →
             </Link>
           </div>

@@ -124,7 +124,7 @@ export default function SalariesPage() {
 
   // Prepare data for DataTable using paginated results
   const tableData = paginatedResults.map((res, index) => [ // Added index for unique keys if needed inside DataTable rows
-    <Link key={`company-${index}`} href={`/company/${encodeURIComponent(res.company)}`} className="text-indigo-400 hover:text-indigo-300 transition-colors">
+    <Link key={`company-${index}`} href={`/company/${encodeURIComponent(res.company)}`} className="text-emerald-600 hover:text-emerald-500 font-medium transition-colors">
       {res.company}
     </Link>,
     res.role,
@@ -171,28 +171,28 @@ export default function SalariesPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">Company</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Company</label>
                   <Select value={filters.company} onChange={(e) => handleFilterChange('company', e.target.value)}>
                     <option value="">All Companies</option>
                     {COMPANIES.map(comp => <option key={comp} value={comp}>{comp}</option>)}
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">Role</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Role</label>
                   <Select value={filters.role} onChange={(e) => handleFilterChange('role', e.target.value)}>
                     <option value="">All Roles</option>
                     {ROLES.map(role => <option key={role} value={role}>{role}</option>)}
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">Location</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
                   <Select value={filters.location} onChange={(e) => handleFilterChange('location', e.target.value)}>
                     <option value="">All Locations</option>
                     {LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">Level</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Level</label>
                   <Select value={filters.level} onChange={(e) => handleFilterChange('level', e.target.value)}>
                     <option value="">All Levels</option>
                     {LEVELS.map(lvl => <option key={lvl.value} value={lvl.label}>{lvl.label}</option>)}
@@ -202,7 +202,7 @@ export default function SalariesPage() {
 
               {/* Sort Controls - Instruct users to click headers */}
               <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
-                <span className="text-sm text-slate-600">Sort by clicking table headers:</span>
+                <span className="text-sm text-slate-500">Sort by clicking table headers:</span>
               </div>
             </CardContent>
           </Card>
@@ -258,7 +258,7 @@ export default function SalariesPage() {
                           size="sm" 
                           onClick={goToPrevPage} 
                           disabled={currentPage === 1}
-                          className="flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed text-slate-700 border-slate-300 hover:bg-slate-50"
                         >
                           <ChevronLeft className="w-4 h-4" /> Previous
                         </Button>
@@ -269,23 +269,23 @@ export default function SalariesPage() {
                              variant={currentPage === 1 ? 'default' : 'ghost'} 
                              size="sm" 
                              onClick={() => setCurrentPage(1)}
-                             className="px-2.5 py-1.5 h-auto"
+                             className={`px-2.5 py-1.5 h-auto ${currentPage === 1 ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'text-slate-600 hover:bg-slate-100'}`}
                            >1</Button>
-                           {currentPage > 2 && <span className="text-sm text-slate-600">...</span>}
+                           {currentPage > 2 && <span className="text-sm text-slate-400">...</span>}
                            {currentPage > 1 && currentPage < totalPages && (
                              <Button 
                                variant='default' 
                                size="sm"
-                               className="px-2.5 py-1.5 h-auto"
+                               className="px-2.5 py-1.5 h-auto bg-emerald-600 text-white hover:bg-emerald-700"
                              >{currentPage}</Button>
                            )}
-                           {currentPage < totalPages -1 && <span className="text-sm text-slate-600">...</span>}
+                           {currentPage < totalPages -1 && <span className="text-sm text-slate-400">...</span>}
                            {totalPages > 1 && (
                               <Button 
                                 variant={currentPage === totalPages ? 'default' : 'ghost'} 
                                 size="sm" 
                                 onClick={() => setCurrentPage(totalPages)}
-                                className="px-2.5 py-1.5 h-auto"
+                                className={`px-2.5 py-1.5 h-auto ${currentPage === totalPages ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'text-slate-600 hover:bg-slate-100'}`}
                               >{totalPages}</Button>
                            )}
                         </div>
@@ -294,7 +294,7 @@ export default function SalariesPage() {
                           size="sm" 
                           onClick={goToNextPage} 
                           disabled={currentPage === totalPages}
-                          className="flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed text-slate-700 border-slate-300 hover:bg-slate-50"
                         >
                           Next <ChevronRight className="w-4 h-4" />
                         </Button>

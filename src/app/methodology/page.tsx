@@ -23,7 +23,7 @@ export default function MethodologyPage() {
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="bg-slate-900 border-slate-200">
               <CardHeader>
-                <Database className="w-8 h-8 text-indigo-400 mb-4" />
+                <Database className="w-8 h-8 text-emerald-400 mb-4" />
                 <CardTitle className="text-slate-900">BLS Data</CardTitle>
               </CardHeader>
               <CardContent>
@@ -49,7 +49,7 @@ export default function MethodologyPage() {
 
             <Card className="bg-slate-900 border-slate-200">
               <CardHeader>
-                <TrendingUp className="w-8 h-8 text-violet-400 mb-4" />
+                <TrendingUp className="w-8 h-8 text-teal-400 mb-4" />
                 <CardTitle className="text-slate-900">Pay Transparency</CardTitle>
               </CardHeader>
               <CardContent>

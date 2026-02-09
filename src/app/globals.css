@@ -5,19 +5,19 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a; /* slate-900 */
-  --primary: #4f46e5; /* indigo-600 */
+  --primary: #059669; /* emerald-600 */
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9; /* slate-100 */
   --secondary-foreground: #0f172a;
   --muted: #f8fafc; /* slate-50 */
   --muted-foreground: #64748b; /* slate-500 */
-  --accent: #8b5cf6;
+  --accent: #10b981; /* emerald-500 */
   --accent-foreground: #ffffff;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #e2e8f0; /* slate-200 */
   --input: #e2e8f0;
-  --ring: #4f46e5;
+  --ring: #059669; /* emerald-600 */
   --radius: 0.5rem;
 }
 
@@ -32,6 +32,6 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500;
   }
 }

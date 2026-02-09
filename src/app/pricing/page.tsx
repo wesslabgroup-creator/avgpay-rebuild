@@ -19,7 +19,7 @@ export default function PricingPage() {
               Negotiate Like a Pro
             </h1>
             <p className="text-xl text-slate-600">
-              Most candidates leave <span className="font-semibold text-indigo-600">$20k - $50k</span> on the table because they don't know the real market rate. 
+              Most candidates leave <span className="font-semibold text-emerald-600">$20k - $50k</span> on the table because they don't know the real market rate. 
               Small investment, massive ROI.
             </p>
           </div>
@@ -60,47 +60,47 @@ export default function PricingPage() {
             </Card>
 
             {/* Interview Pass */}
-            <Card className="border-indigo-200 bg-indigo-50/50 shadow-md relative overflow-hidden">
-              <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
+            <Card className="border-emerald-200 bg-emerald-50/50 shadow-md relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
                 Popular
               </div>
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-indigo-900">Interview Pass</CardTitle>
-                <CardDescription className="text-indigo-600/80">7-day full access</CardDescription>
+                <CardTitle className="text-2xl font-bold text-emerald-900">Interview Pass</CardTitle>
+                <CardDescription className="text-emerald-600/80">7-day full access</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-indigo-900">$19</span>
-                  <span className="text-indigo-600 font-medium">/ week</span>
+                  <span className="text-4xl font-bold text-emerald-900">$19</span>
+                  <span className="text-emerald-600 font-medium">/ week</span>
                 </div>
                 <ul className="space-y-4">
-                  <li className="flex items-start gap-3 text-indigo-800">
-                    <Check className="w-5 h-5 text-indigo-600 shrink-0" />
+                  <li className="flex items-start gap-3 text-emerald-800">
+                    <Check className="w-5 h-5 text-emerald-600 shrink-0" />
                     <span><strong>Full Salary & Equity Data</strong></span>
                   </li>
-                  <li className="flex items-start gap-3 text-indigo-800">
-                    <Check className="w-5 h-5 text-indigo-600 shrink-0" />
+                  <li className="flex items-start gap-3 text-emerald-800">
+                    <Check className="w-5 h-5 text-emerald-600 shrink-0" />
                     <span>Verified "Real Offer" database</span>
                   </li>
-                  <li className="flex items-start gap-3 text-indigo-800">
-                    <Check className="w-5 h-5 text-indigo-600 shrink-0" />
+                  <li className="flex items-start gap-3 text-emerald-800">
+                    <Check className="w-5 h-5 text-emerald-600 shrink-0" />
                     <span><strong>Negotiation Scripts</strong> (Copy/Paste)</span>
                   </li>
-                  <li className="flex items-start gap-3 text-indigo-800">
-                    <Check className="w-5 h-5 text-indigo-600 shrink-0" />
+                  <li className="flex items-start gap-3 text-emerald-800">
+                    <Check className="w-5 h-5 text-emerald-600 shrink-0" />
                     <span>Unlimited Offer Analysis</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
+                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
                   Get 7-Day Access
                 </Button>
-                <p className="text-xs text-center text-indigo-500">One-time payment. No auto-renew.</p>
+                <p className="text-xs text-center text-emerald-500">One-time payment. No auto-renew.</p>
               </CardContent>
             </Card>
 
             {/* Career Lifetime */}
             <Card className="border-slate-200 bg-white shadow-lg hover:shadow-xl transition-all scale-105 z-10">
-              <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+              <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500"></div>
               <CardHeader>
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="w-5 h-5 text-amber-500 fill-amber-500" />

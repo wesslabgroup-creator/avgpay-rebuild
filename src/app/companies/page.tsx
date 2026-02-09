@@ -26,7 +26,7 @@ export default function CompaniesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedCompanies.map((company) => (
               <Link key={company} href={`/company/${encodeURIComponent(company)}`}>
-                <div className="p-6 rounded-lg bg-white border border-slate-200 hover:border-indigo-500 transition-colors cursor-pointer">
+                <div className="p-6 rounded-lg bg-white border border-slate-200 hover:border-emerald-500 transition-colors cursor-pointer">
                   <h2 className="text-2xl font-bold text-slate-900 mb-2">{company}</h2>
                   <p className="text-sm text-slate-600">View salary data</p>
                 </div>

@@ -10,9 +10,9 @@ interface SalaryChartProps {
 
 export function SalaryChart({ yourSalary, marketMedian, blsMedian }: SalaryChartProps) {
   const data = [
-    { name: "BLS Data", value: blsMedian, color: "#64748b" },
-    { name: "Market Median", value: marketMedian, color: "#818cf8" },
-    { name: "Your Offer", value: yourSalary, color: "#6366f1" },
+    { name: "BLS Data", value: blsMedian, color: "#64748b" }, // Slate 500
+    { name: "Market Median", value: marketMedian, color: "#34d399" }, // Emerald 400
+    { name: "Your Offer", value: yourSalary, color: "#059669" }, // Emerald 600
   ];
 
   const formatCurrency = (value: number) => {

@@ -209,7 +209,7 @@ export default function ContributePage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-indigo-600 to-violet-600"
+                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600"
                   disabled={loading}
                 >
                   {loading ? 'Submitting...' : 'Submit Anonymously'}

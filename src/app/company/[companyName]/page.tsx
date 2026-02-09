@@ -172,7 +172,7 @@ const CompanyDetailPage = () => {
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Company Header */}
           <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
-            <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+            <div className="h-32 bg-gradient-to-r from-emerald-500 to-teal-600"></div>
             <CardContent className="px-8 pb-8 -mt-12 flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0 h-24 w-24 md:h-32 md:w-32 rounded-xl overflow-hidden border-4 border-white bg-white shadow-md flex items-center justify-center">
                 {companyData.logoUrl ? (
@@ -205,12 +205,12 @@ const CompanyDetailPage = () => {
               {companyData.salaries && companyData.salaries.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {companyData.salaries.map((salary, index) => (
-                    <Card key={index} className="bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all duration-200">
+                    <Card key={index} className="bg-white border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all duration-200">
                       <CardHeader className="pb-2">
                         <CardTitle className="text-lg font-semibold text-slate-900">{salary.role}</CardTitle>
                         <CardDescription className="text-sm text-slate-500 flex flex-col gap-1">
                           <span>{salary.location}</span>
-                          <span className="inline-block w-fit text-xs font-medium bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-100">
+                          <span className="inline-block w-fit text-xs font-medium bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-100">
                             {salary.level}
                           </span>
                         </CardDescription>

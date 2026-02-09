@@ -206,7 +206,7 @@ export function OfferAnalyzer() {
       <Card className="w-full max-w-2xl mx-auto bg-white border-slate-200">
         <CardContent className="pt-6">
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
             <p className="text-slate-500">Analyzing against BLS, H-1B, and market data...</p>
           </div>
         </CardContent>
@@ -262,7 +262,7 @@ export function OfferAnalyzer() {
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
-                <div className="text-2xl font-bold text-indigo-600">${(result.yourTotal / 1000).toFixed(0)}k</div>
+                <div className="text-2xl font-bold text-emerald-600">${(result.yourTotal / 1000).toFixed(0)}k</div>
                 <div className="text-sm text-slate-500">Your Total</div>
               </div>
               <div className="text-center p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
@@ -284,13 +284,13 @@ export function OfferAnalyzer() {
         </Card>
 
         {/* Negotiation Upsell Card */}
-        <Card className="w-full max-w-3xl mx-auto bg-indigo-50 border-indigo-100 shadow-sm overflow-hidden">
+        <Card className="w-full max-w-3xl mx-auto bg-emerald-50 border-emerald-100 shadow-sm overflow-hidden">
           <CardHeader>
-            <CardTitle className="text-indigo-900 flex items-center gap-2">
-              <Lock className="w-5 h-5 text-indigo-500" />
+            <CardTitle className="text-emerald-900 flex items-center gap-2">
+              <Lock className="w-5 h-5 text-emerald-500" />
               Unlock Your Negotiation Script
             </CardTitle>
-            <CardDescription className="text-indigo-700/80">
+            <CardDescription className="text-emerald-700/80">
               Copy/paste email templates tailored to your offer grade ({result.grade}).
             </CardDescription>
           </CardHeader>
@@ -309,7 +309,7 @@ export function OfferAnalyzer() {
             {/* CTA Overlay */}
             <div className="absolute inset-0 flex items-center justify-center">
               <Link href="/pricing">
-                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg">
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg">
                   Unlock Full Script ($19)
                 </Button>
               </Link>
@@ -413,7 +413,7 @@ export function OfferAnalyzer() {
 
           <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white"
+                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white"
                 disabled={isLoading}
               >
                 {isLoading ? (

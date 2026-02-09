@@ -19,7 +19,7 @@ export default function StartupVsBigTechGuidePage() {
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-slate lg:prose-lg">
         <div className="mb-8 not-prose">
-          <span className="text-indigo-600 text-sm font-medium">February 2026</span>
+          <span className="text-emerald-600 text-sm font-medium">February 2026</span>
           <h1 className="text-4xl font-bold text-slate-900 mt-2">Startup vs Big Tech Compensation</h1>
           <p className="text-xl text-slate-600 mt-4">
             The eternal dilemma: High-risk lottery tickets or guaranteed FAANG millions? 
@@ -82,7 +82,7 @@ export default function StartupVsBigTechGuidePage() {
             Input your base, bonus, and equity to see the annualized value.
           </p>
           <Link href="/#analyzer">
-            <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
               Compare Your Offer
             </Button>
           </Link>

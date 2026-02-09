@@ -19,7 +19,7 @@ export default function NegotiationGuidePage() {
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-slate lg:prose-lg">
         <div className="mb-8 not-prose">
-          <span className="text-indigo-600 text-sm font-medium">February 2026</span>
+          <span className="text-emerald-600 text-sm font-medium">February 2026</span>
           <h1 className="text-4xl font-bold text-slate-900 mt-2">How to Negotiate Tech Offers</h1>
           <p className="text-xl text-slate-600 mt-4">
             Stop leaving money on the table. A data-driven framework to increase your total compensation by 10-20% without risking the offer.
@@ -76,7 +76,7 @@ export default function NegotiationGuidePage() {
             Don't guess. See exactly where your current offer stands against verified market data.
           </p>
           <Link href="/#analyzer">
-            <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
               Analyze Your Offer Now
             </Button>
           </Link>

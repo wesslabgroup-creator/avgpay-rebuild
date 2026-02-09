@@ -152,7 +152,7 @@ export default function SalaryPage({ params }: PageProps) {
           {/* CTA */}
           <div className="flex justify-center gap-4">
             <Link href="/#analyzer">
-              <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600">
+              <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-600">
                 Analyze Your Offer
               </Button>
             </Link>

@@ -42,7 +42,7 @@ export default function SWEGuidePage() {
       
       <article className="max-w-3xl mx-auto px-6 py-12 prose prose-slate lg:prose-lg">
         <div className="mb-8 not-prose">
-          <span className="text-indigo-600 text-sm font-medium">February 2026</span>
+          <span className="text-emerald-600 text-sm font-medium">February 2026</span>
           <h1 className="text-4xl font-bold text-slate-900 mt-2">Software Engineer Salary Guide 2026</h1>
           <p className="text-xl text-slate-600 mt-4">
             A deep dive into Software Engineering compensation across the tech industry. 
@@ -50,8 +50,8 @@ export default function SWEGuidePage() {
           </p>
         </div>
 
-        <div className="not-prose my-8 p-6 bg-indigo-50 border border-indigo-200 rounded-lg">
-          <h2 className="text-lg font-semibold text-indigo-700 mb-2">Executive Summary</h2>
+        <div className="not-prose my-8 p-6 bg-emerald-50 border border-emerald-200 rounded-lg">
+          <h2 className="text-lg font-semibold text-emerald-700 mb-2">Executive Summary</h2>
           <p className="text-slate-700">
             Software Engineers command the highest median compensation in tech, with a median total comp of $260,000 for mid-level roles in major hubs. 
             AI/ML specializations are seeing a 20-30% premium over generalist roles.
@@ -115,7 +115,7 @@ export default function SWEGuidePage() {
             See exactly where your offer lands against verified benchmarks.
           </p>
           <Link href="/#analyzer">
-            <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
               Analyze Your Offer
             </Button>
           </Link>

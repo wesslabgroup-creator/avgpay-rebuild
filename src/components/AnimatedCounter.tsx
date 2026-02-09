@@ -27,5 +27,5 @@ export function AnimatedCounter({ target, duration = 2000 }: AnimatedCounterProp
     return () => clearInterval(timer);
   }, [target, duration]);
 
-  return <span className="font-bold text-indigo-400 text-4xl lg:text-5xl">{count.toLocaleString()}</span>;
+  return <span className="font-bold text-emerald-400 text-4xl lg:text-5xl">{count.toLocaleString()}</span>;
 }

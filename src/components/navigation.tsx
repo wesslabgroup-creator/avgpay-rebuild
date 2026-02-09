@@ -14,7 +14,7 @@ export function Navigation() {
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 border-b border-slate-200 bg-white/80 backdrop-blur-md">
         <Link 
           href="/" 
-          className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hover:scale-105 transition-all"
+          className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent hover:scale-105 transition-all"
         >
           AvgPay
         </Link>
@@ -41,7 +41,7 @@ export function Navigation() {
           </Link>
           <Link 
             href="#analyzer" 
-            className="px-5 py-2.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg"
+            className="px-5 py-2.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg"
           >
             Analyze Offer
           </Link>
@@ -90,7 +90,7 @@ export function Navigation() {
               <Link 
                 href="#analyzer" 
                 onClick={toggleMenu}
-                className="block w-full text-center px-6 py-4 text-lg font-bold bg-indigo-600 text-white rounded-xl shadow-lg hover:bg-indigo-700 transition-colors"
+                className="block w-full text-center px-6 py-4 text-lg font-bold bg-emerald-600 text-white rounded-xl shadow-lg hover:bg-emerald-700 transition-colors"
               >
                 Analyze Your Offer
               </Link>
