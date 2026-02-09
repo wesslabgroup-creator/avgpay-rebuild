@@ -1,71 +1,71 @@
-// src/app/api/salaries/route.ts
-import type { NextRequest } from 'next/server';
-import { COMPANIES, ROLES, LOCATIONS, MARKET_DATA } from '@/lib/data'; // Assuming MARKET_DATA is structured appropriately
+import { NextResponse } from 'next/server';
+import { MARKET_DATA } from '../../../lib/data';
 
-// Mock function to simulate fetching aggregated data
-// In a real app, this would query a database based on filters
-function getAggregatedSalaryData(filters: {
-  company?: string;
-  role?: string;
-  location?: string;
-  level?: string;
-}) {
-  const data: Array<{company: string, role: string, location: string, level: string, median: number, blsMedian: number}> = [];
-  const companyList = filters.company ? [filters.company] : COMPANIES;
-  const roleList = filters.role ? [filters.role] : ROLES;
-  const locationList = filters.location ? [filters.location] : LOCATIONS;
-  const levelList = filters.level ? [filters.level] : ["Junior (L1-L2)", "Mid (L3-L4)", "Senior (L5-L6)", "Staff+ (L7+)"];
-
-  // Expand data based on filters
-  companyList.forEach(comp => {
-    roleList.forEach(rol => {
-      locationList.forEach(loc => {
-        levelList.forEach(lvl => {
-          const companyData = MARKET_DATA[comp];
-          if (companyData) {
-            const roleData = companyData[rol];
-            if (roleData) {
-              const locationData = roleData[loc];
-              if (locationData) {
-                const levelData = locationData[lvl];
-                if (levelData) {
-                  data.push({
-                    company: comp,
-                    role: rol,
-                    location: loc,
-                    level: lvl,
-                    ...levelData, // Spread median, blsMedian etc.
-                  });
-                }
-              }
-            }
-          }
-        });
-      });
-    });
-  });
-
-  // Simulate count and return basic structure
-  return data.map(item => ({
-    company: item.company,
-    role: item.role,
-    location: item.location,
-    level: item.level,
-    medianTotalComp: item.median,
-    blsBenchmark: item.blsMedian,
-    count: 1, // Each item is a unique mock entry for now
-  }));
+interface SalaryResult {
+  company: string;
+  role: string;
+  location: string;
+  level: string;
+  medianTotalComp: number;
+  blsBenchmark: number;
+  count: number;
 }
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const company = searchParams.get('company') ?? undefined;
-  const role = searchParams.get('role') ?? undefined;
-  const location = searchParams.get('location') ?? undefined;
-  const level = searchParams.get('level') ?? undefined;
+function flattenMarketData(): SalaryResult[] {
+  const results: SalaryResult[] = [];
+  for (const [company, companyRoles] of Object.entries(MARKET_DATA)) {
+    for (const [role, roleLocations] of Object.entries(companyRoles)) {
+      for (const [location, locationLevels] of Object.entries(roleLocations)) {
+        for (const [level, values] of Object.entries<{ median: number; blsMedian: number }>(locationLevels)) {
+          results.push({
+            company,
+            role,
+            location,
+            level,
+            medianTotalComp: values.median,
+            blsBenchmark: values.blsMedian,
+            count: Math.floor(Math.random() * 100) + 10, // Mock count 10-110
+          });
+        }
+      }
+    }
+  }
+  return results;
+}
 
-  const filters = { company, role, location, level };
-  const salaryData = getAggregatedSalaryData(filters);
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    let data = flattenMarketData();
 
-  return Response.json(salaryData);
+    // Filter logic
+    const companyFilter = searchParams.get('company');
+    if (companyFilter) {
+      data = data.filter((item) => item.company.toLowerCase() === companyFilter.toLowerCase());
+    }
+
+    const roleFilter = searchParams.get('role');
+    if (roleFilter) {
+      data = data.filter((item) => item.role === roleFilter);
+    }
+
+    const locationFilter = searchParams.get('location');
+    if (locationFilter) {
+      data = data.filter((item) => item.location === locationFilter);
+    }
+
+    const levelFilter = searchParams.get('level');
+    if (levelFilter) {
+      // Note: LEVELS values are 'Junior', but data keys are 'Junior (L1-L2)'. Mapping needed for full fix.
+      // Quick mock: match partial
+      data = data.filter((item) => 
+        item.level.toLowerCase().startsWith(levelFilter.toLowerCase())
+      );
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 }
