@@ -6,6 +6,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     
     const {
+      company,
       role,
       location,
       level,
@@ -24,9 +25,10 @@ export async function POST(request: Request) {
     const { data, error } = await supabaseAdmin
       .from('analysis_submissions')
       .insert({
+        company: company || null,
         role,
         location,
-        level,
+        level: level || null,
         base_salary: baseSalary,
         equity: equity || 0,
         bonus: bonus || 0,

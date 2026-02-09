@@ -41,6 +41,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
   const [step, setStep] = useState<"form" | "analyzing" | "results" | "error">("form");
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
+    company: "",
     role: "",
     location: "",
     level: "",
@@ -50,6 +51,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
   });
   const [result, setResult] = useState<AnalysisResult | null>(null);
   
+  const [companies, setCompanies] = useState<string[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
 
@@ -58,6 +60,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
       try {
         const response = await fetch('/api/analyzer-data');
         const data = await response.json();
+        if (data.companies) setCompanies(data.companies);
         if (data.roles) setRoles(data.roles);
         if (data.locations) setLocations(data.locations);
       } catch (error) {
@@ -80,6 +83,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
     try {
       // Fetch market data
       const params = new URLSearchParams({
+        company: formData.company,
         role: formData.role,
         location: formData.location,
         level: formData.level,
@@ -112,6 +116,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          company: formData.company,
           role: formData.role,
           location: formData.location,
           level: formData.level,
@@ -255,6 +260,13 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SearchableSelect
+              label="Company"
+              value={formData.company}
+              onChange={(value) => setFormData({ ...formData, company: value })}
+              options={companies}
+              placeholder="Search companies..."
+            />
+            <SearchableSelect
               label="Job Title"
               value={formData.role}
               onChange={(value) => setFormData({ ...formData, role: value })}
@@ -262,6 +274,9 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
               placeholder="Search job titles..."
               required
             />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SearchableSelect
               label="Location"
               value={formData.location}
@@ -270,15 +285,14 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
               placeholder="Search locations..."
               required
             />
+            <SearchableSelect
+              label="Experience Level"
+              value={formData.level}
+              onChange={(value) => setFormData({ ...formData, level: value })}
+              options={LEVELS.map(l => l.label)}
+              placeholder="Select experience level..."
+            />
           </div>
-
-          <SearchableSelect
-            label="Experience Level"
-            value={formData.level}
-            onChange={(value) => setFormData({ ...formData, level: value })}
-            options={LEVELS.map(l => l.label)}
-            placeholder="Select experience level..."
-          />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
@@ -318,7 +332,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
 
           <Button
             type="submit"
-            disabled={isLoading || !formData.role || !formData.location || !formData.baseSalary}
+            disabled={isLoading || !formData.role || !formData.location || !formData.baseSalary || !formData.company}
             className="w-full py-6 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300"
           >
             {isLoading ? "Analyzing..." : mode === "offer" ? "Analyze My Offer" : "Check My Value"}
