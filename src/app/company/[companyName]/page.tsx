@@ -2,51 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
-import { MARKET_DATA } from '@/app/lib/data'; // Import shared data source
-import { DataTable } from "@/components/data-table"; // Assuming you have a reusable table component
-
-// Helper to generate company metadata (descriptions/logos) since MARKET_DATA is just numbers
-const COMPANY_METADATA: Record<string, { description: string; website: string; logoUrl?: string }> = {
-  "Google": {
-    description: "A multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.",
-    website: "https://careers.google.com",
-    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
-  },
-  "Meta": {
-    description: "Meta Platforms, Inc. builds technologies that help people connect, find communities, and grow businesses.",
-    website: "https://www.metacareers.com",
-    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg"
-  },
-  "Amazon": {
-    description: "Amazon is an American multinational technology company which focuses on e-commerce, cloud computing, digital streaming, and artificial intelligence.",
-    website: "https://www.amazon.jobs",
-    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
-  },
-  "Microsoft": {
-    description: "Microsoft Corporation is an American multinational technology corporation which produces computer software, consumer electronics, personal computers, and related services.",
-    website: "https://careers.microsoft.com",
-    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
-  },
-  "Apple": {
-    description: "Apple Inc. is an American multinational technology company that specializes in consumer electronics, software and online services.",
-    website: "https://www.apple.com/careers",
-    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
-  },
-  "Netflix": {
-    description: "Netflix is an American subscription video on-demand over-the-top streaming service and production company.",
-    website: "https://jobs.netflix.com",
-    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
-  },
-  "Nvidia": {
-    description: "Nvidia Corporation is an American multinational technology company incorporated in Delaware and based in Santa Clara, California.",
-    website: "https://www.nvidia.com/en-us/about-nvidia/careers/",
-    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg"
-  }
-};
+import { DataTable } from "@/components/data-table";
 
 interface SalarySummary {
   role: string;
@@ -67,72 +27,41 @@ interface CompanyInfo {
 
 const CompanyDetailPage = () => {
   const params = useParams();
-  const companyNameFromUrl = params?.companyName as string || decodeURIComponent(params?.companyName as string); 
-  const companyName = decodeURIComponent(companyNameFromUrl);
+  const companyName = decodeURIComponent(params?.companyName as string || '');
 
   const [companyData, setCompanyData] = useState<CompanyInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsLoading(true);
-    setError(null);
-    
-    const fetchCompanyData = () => {
-      const rawData = MARKET_DATA[companyName];
-      
-      if (rawData) {
-        // Consolidated logic: Group by Role
-        const roleMap: Record<string, { totalComp: number[], count: number, levels: Set<string> }> = {};
+    if (!companyName) return;
 
-        Object.entries(rawData).forEach(([role, locations]) => {
-          Object.entries(locations).forEach(([location, levels]) => {
-            Object.entries(levels).forEach(([level, data]) => {
-              if (!roleMap[role]) {
-                roleMap[role] = { totalComp: [], count: 0, levels: new Set() };
-              }
-              roleMap[role].totalComp.push(data.median);
-              roleMap[role].count += (10 + Math.floor(Math.random() * 50)); // Mock count
-              roleMap[role].levels.add(level);
-            });
-          });
-        });
-
-        const salarySummary: SalarySummary[] = Object.entries(roleMap).map(([role, stats]) => {
-          const sortedComps = stats.totalComp.sort((a, b) => a - b);
-          const sum = sortedComps.reduce((a, b) => a + b, 0);
-          const median = sortedComps[Math.floor(sortedComps.length / 2)];
-          
-          return {
-            role,
-            minComp: sortedComps[0],
-            maxComp: sortedComps[sortedComps.length - 1],
-            medianComp: median,
-            levelsCount: stats.levels.size,
-            dataPoints: stats.count
-          };
-        });
-
-        const metadata = COMPANY_METADATA[companyName] || {
-          description: `${companyName} is a prominent company in the tech industry.`,
-          website: "#",
-          logoUrl: undefined
-        };
-
+    const fetchCompanyData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/company-details?companyName=${encodeURIComponent(companyName)}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const { companyData: fetchedData, salarySummary } = await response.json();
+        
         setCompanyData({
-          name: companyName,
-          ...metadata,
-          salarySummary
+          name: fetchedData.name,
+          website: fetchedData.website || '#',
+          description: fetchedData.description,
+          logoUrl: fetchedData.logoUrl, // Assuming logoUrl is in DB
+          salarySummary,
         });
-        setIsLoading(false);
-
-      } else {
-        setError(`Company "${companyName}" not found in our database.`);
+      } catch (err: any) {
+        setError(`Failed to load data for "${companyName}".`);
+        console.error(err);
+      } finally {
         setIsLoading(false);
       }
     };
-    
-    setTimeout(fetchCompanyData, 100);
+
+    fetchCompanyData();
   }, [companyName]);
 
   const formatCurrency = (n: number) => `$${(n / 1000).toFixed(0)}k`;
