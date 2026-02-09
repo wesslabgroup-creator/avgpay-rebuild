@@ -46,6 +46,12 @@ export function Navigation() {
             Contribute
           </Link>
           <Link 
+            href="/analyze-salary" 
+            className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
+          >
+            Check Your Value
+          </Link>
+          <Link 
             href="/analyze-offer" 
             className="px-5 py-2.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg"
           >
@@ -99,7 +105,14 @@ export function Navigation() {
             >
               Contribute Data
             </Link>
-            <div className="pt-4">
+            <div className="pt-4 space-y-3">
+              <Link 
+                href="/analyze-salary" 
+                onClick={toggleMenu}
+                className="block w-full text-center px-6 py-4 text-lg font-bold bg-slate-100 text-slate-800 rounded-xl hover:bg-slate-200 transition-colors"
+              >
+                Check Your Value
+              </Link>
               <Link 
                 href="/analyze-offer" 
                 onClick={toggleMenu}
