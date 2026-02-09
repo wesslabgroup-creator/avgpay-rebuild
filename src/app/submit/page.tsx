@@ -24,6 +24,24 @@ export default function SubmitSalaryPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [locations, setLocations] = useState<string[]>([]);
+  const [levels, setLevels] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const response = await fetch('/api/analyzer-data');
+        const data = await response.json();
+        if (data.locations) setLocations(data.locations);
+        // Assuming your analyzer-data endpoint can also provide levels
+        if (data.levels) setLevels(data.levels); 
+      } catch (error) {
+        console.error("Failed to fetch dropdown data:", error);
+      }
+    };
+    fetchDropdownData();
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -138,7 +156,7 @@ export default function SubmitSalaryPage() {
                   className="w-full text-base py-3 px-4 h-auto"
                 >
                   <option value="" disabled>Select Location</option>
-                  {LOCATIONS.map(loc => (
+                  {locations.map(loc => (
                     <option key={loc} value={loc} className="text-base py-2 px-3">
                       {loc}
                     </option>
@@ -156,7 +174,7 @@ export default function SubmitSalaryPage() {
                   className="w-full text-base py-3 px-4 h-auto"
                 >
                   <option value="" disabled>Select Level</option>
-                  {LEVELS.map(lvl => (
+                  {levels.map(lvl => (
                     <option key={lvl.value} value={lvl.label} className="text-base py-2 px-3">
                       {lvl.label}
                     </option>

@@ -216,9 +216,13 @@ export default function JobDetailPage() {
             <CardContent>
               <div className="flex flex-wrap gap-2">
                 {relatedJobs.map(job => (
-                  <Button key={job.title} variant="outline" size="sm" asChild>
-                    <Link href={`/jobs/${encodeURIComponent(job.title)}`}>{job.title}</Link>
-                  </Button>
+                  <Link
+                    key={job.title}
+                    href={`/jobs/${encodeURIComponent(job.title)}`}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                  >
+                    {job.title}
+                  </Link>
                 ))}
               </div>
             </CardContent>
