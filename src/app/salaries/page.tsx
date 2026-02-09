@@ -6,59 +6,52 @@ import { Select } from '@/components/ui/select';
 import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { COMPANIES, ROLES, LOCATIONS, LEVELS } from '@/app/lib/data';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { COMPANIES, ROLES, LOCATIONS } from '@/app/lib/data';
+import { Building2, Briefcase, MapPin } from 'lucide-react';
 
-interface SalaryResult {
-  company: string;
-  role: string;
-  location: string;
-  level: string;
+type ViewType = 'company' | 'role_location' | 'role_global';
+
+interface AggregatedResult {
+  groupKey: string;
+  secondaryKey?: string;
   medianTotalComp: number;
-  blsBenchmark: number;
+  minComp: number;
+  maxComp: number;
   count: number;
+  levelsCount: number;
 }
 
-const ITEMS_PER_PAGE_OPTIONS = [10, 25, 50, 100]; // Options for items per page
-
 export default function SalariesPage() {
+  const [view, setView] = useState<ViewType>('role_global');
   const [filters, setFilters] = useState({
     company: '',
     role: '',
     location: '',
-    level: '',
   });
-  const [results, setResults] = useState<SalaryResult[]>([]);
+  const [results, setResults] = useState<AggregatedResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Sorting state
-  const [sortConfig, setSortConfig] = useState<{ key: keyof SalaryResult | null, direction: 'ascending' | 'descending' }>({ key: 'medianTotalComp', direction: 'descending' });
+  const [sortConfig, setSortConfig] = useState<{ key: string | null, direction: 'ascending' | 'descending' }>({ key: 'medianTotalComp', direction: 'descending' });
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[0]); // Default to first option
-
-  // Fetch data on filter or itemsPerPage change
+  // Fetch aggregated data
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
-      setCurrentPage(1); // Reset to page 1 when filters or itemsPerPage change
       try {
         const params = new URLSearchParams();
+        params.append('view', view);
         if (filters.role) params.append('role', filters.role);
         if (filters.location) params.append('location', filters.location);
         if (filters.company) params.append('company', filters.company);
-        if (filters.level) params.append('level', filters.level);
-        // Note: API currently doesn't support itemsPerPage for fetching, but UI has it.
-        // If API Supported: params.append('limit', itemsPerPage.toString());
 
         const response = await fetch(`/api/salaries?${params.toString()}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data: SalaryResult[] = await response.json();
+        const data: AggregatedResult[] = await response.json();
         setResults(data);
       } catch (err) {
         console.error("Failed to fetch salary data:", err);
@@ -69,15 +62,10 @@ export default function SalariesPage() {
     };
 
     fetchData();
-  }, [filters, itemsPerPage]); // Re-fetch when filters or itemsPerPage change
+  }, [view, filters]);
 
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setItemsPerPage(parseInt(e.target.value, 10));
-    setCurrentPage(1); // Reset to page 1 when itemsPerPage changes
   };
 
   const formatCurrency = (n: number) => `$${(n / 1000).toFixed(0)}k`;
@@ -87,8 +75,8 @@ export default function SalariesPage() {
     const sortableItems = [...results];
     if (sortConfig.key !== null) {
       sortableItems.sort((a, b) => {
-        const aValue = a[sortConfig.key!];
-        const bValue = b[sortConfig.key!];
+        const aValue = a[sortConfig.key as keyof AggregatedResult];
+        const bValue = b[sortConfig.key as keyof AggregatedResult];
         
         if (aValue === undefined || bValue === undefined) return 0;
 
@@ -103,54 +91,71 @@ export default function SalariesPage() {
     return sortableItems;
   }, [results, sortConfig]);
 
-  // Pagination logic
-  const totalPages = Math.ceil(sortedResults.length / itemsPerPage);
-  const paginatedResults = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return sortedResults.slice(startIndex, startIndex + itemsPerPage);
-  }, [sortedResults, currentPage, itemsPerPage]);
-
-  const requestSort = (key: keyof SalaryResult) => {
+  const requestSort = (key: string) => {
     let direction: 'ascending' | 'descending' = 'ascending';
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
       direction = 'descending';
     }
     setSortConfig({ key, direction });
-    setCurrentPage(1); // Reset to page 1 when sorting changes
   };
 
-  const goToNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
-  const goToPrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+  // Get view-specific labels and table setup
+  const getViewConfig = () => {
+    switch (view) {
+      case 'company':
+        return {
+          title: "Salaries by Company",
+          description: "Aggregated compensation data for major tech companies.",
+          primaryLabel: "Company",
+          showSecondary: false
+        };
+      case 'role_location':
+        return {
+          title: "Salaries by Role & Location",
+          description: "Compensation benchmarks for specific roles in specific cities.",
+          primaryLabel: "Job Title",
+          showSecondary: true,
+          secondaryLabel: "Location"
+        };
+      case 'role_global':
+      default:
+        return {
+          title: "Salaries by Job Title",
+          description: "National average compensation by role across all companies and locations.",
+          primaryLabel: "Job Title",
+          showSecondary: false
+        };
+    }
+  };
 
-  // Prepare data for DataTable using paginated results
-  const tableData = paginatedResults.map((res, index) => [ // Added index for unique keys if needed inside DataTable rows
-    <Link key={`company-${index}`} href={`/company/${encodeURIComponent(res.company)}`} className="text-emerald-600 hover:text-emerald-500 font-medium transition-colors">
-      {res.company}
-    </Link>,
-    res.role,
-    res.location,
-    res.level,
-    formatCurrency(res.medianTotalComp),
-    formatCurrency(res.blsBenchmark),
-    res.count,
-  ]);
+  const viewConfig = getViewConfig();
 
-  // Define table headers with onClick for sorting
+  // Prepare table headers
   const tableHeaders = [
-    { key: 'company', label: "Company", onClick: () => requestSort('company') },
-    { key: 'role', label: "Role", onClick: () => requestSort('role') },
-    { key: 'location', label: "Location", onClick: () => requestSort('location') },
-    { key: 'level', label: "Level", onClick: () => requestSort('level') },
-    { key: 'medianTotalComp', label: "Median Total Comp", onClick: () => requestSort('medianTotalComp') },
-    { key: 'blsBenchmark', label: "BLS Benchmark", onClick: () => requestSort('blsBenchmark') },
-    { key: 'count', label: "Data Points", onClick: () => requestSort('count') },
+    { label: viewConfig.primaryLabel, key: "groupKey" },
+    ...(viewConfig.showSecondary ? [{ label: viewConfig.secondaryLabel || "Location", key: "secondaryKey" }] : []),
+    { label: "Comp Range", key: "range" },
+    { label: "Median Comp", key: "medianTotalComp" },
+    { label: "Data Points", key: "count" }
   ];
-  
-  // Helper to render sort indicator
-  const SortIndicator = ({ columnKey }: { columnKey: keyof SalaryResult }) => {
-    if (sortConfig.key !== columnKey) return null;
-    return sortConfig.direction === 'ascending' ? ' ↑' : ' ↓';
-  };
+
+  // Prepare table rows
+  const tableRows = sortedResults.map((res, index) => {
+    const row = [
+      view === 'company' ? (
+        <Link key={`link-${index}`} href={`/company/${encodeURIComponent(res.groupKey)}`} className="text-emerald-600 hover:text-emerald-500 font-medium transition-colors">
+          {res.groupKey}
+        </Link>
+      ) : (
+        <span key={`span-${index}`} className="font-medium text-slate-900">{res.groupKey}</span>
+      ),
+      ...(viewConfig.showSecondary ? [res.secondaryKey || "—"] : []),
+      `${formatCurrency(res.minComp)} – ${formatCurrency(res.maxComp)}`,
+      <span key={`median-${index}`} className="font-semibold text-emerald-700">{formatCurrency(res.medianTotalComp)}</span>,
+      res.count.toLocaleString()
+    ];
+    return row;
+  });
 
   return (
     <main className="min-h-screen bg-white">
@@ -159,152 +164,108 @@ export default function SalariesPage() {
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold tracking-tight text-slate-900">Explore Salaries</h1>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Discover compensation benchmarks across companies, roles, locations, and experience levels.
+              Aggregated compensation benchmarks. All data is anonymized and rolled up by median.
             </p>
           </div>
 
-          {/* Filter & Sort Section */}
+          {/* View Selector Tabs */}
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button
+              variant={view === 'company' ? 'default' : 'outline'}
+              onClick={() => setView('company')}
+              className={view === 'company' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'text-slate-700 border-slate-300'}
+            >
+              <Building2 className="w-4 h-4 mr-2" />
+              By Company
+            </Button>
+            <Button
+              variant={view === 'role_global' ? 'default' : 'outline'}
+              onClick={() => setView('role_global')}
+              className={view === 'role_global' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'text-slate-700 border-slate-300'}
+            >
+              <Briefcase className="w-4 h-4 mr-2" />
+              By Job Title
+            </Button>
+            <Button
+              variant={view === 'role_location' ? 'default' : 'outline'}
+              onClick={() => setView('role_location')}
+              className={view === 'role_location' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'text-slate-700 border-slate-300'}
+            >
+              <MapPin className="w-4 h-4 mr-2" />
+              By Job + Location
+            </Button>
+          </div>
+
+          {/* Filters (conditional based on view) */}
           <Card className="bg-white border-slate-200">
             <CardHeader>
-              <CardTitle className="text-slate-900">Filter & Sort</CardTitle>
+              <CardTitle className="text-slate-900">Filters</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Company</label>
-                  <Select value={filters.company} onChange={(e) => handleFilterChange('company', e.target.value)}>
-                    <option value="">All Companies</option>
-                    {COMPANIES.map(comp => <option key={comp} value={comp}>{comp}</option>)}
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Role</label>
-                  <Select value={filters.role} onChange={(e) => handleFilterChange('role', e.target.value)}>
-                    <option value="">All Roles</option>
-                    {ROLES.map(role => <option key={role} value={role}>{role}</option>)}
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
-                  <Select value={filters.location} onChange={(e) => handleFilterChange('location', e.target.value)}>
-                    <option value="">All Locations</option>
-                    {LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Level</label>
-                  <Select value={filters.level} onChange={(e) => handleFilterChange('level', e.target.value)}>
-                    <option value="">All Levels</option>
-                    {LEVELS.map(lvl => <option key={lvl.value} value={lvl.label}>{lvl.label}</option>)}
-                  </Select>
-                </div>
-              </div>
-
-              {/* Sort Controls - Instruct users to click headers */}
-              <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
-                <span className="text-sm text-slate-500">Sort by clicking table headers:</span>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {view !== 'company' && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Job Title</label>
+                    <Select value={filters.role} onChange={(e) => handleFilterChange('role', e.target.value)}>
+                      <option value="">All Roles</option>
+                      {ROLES.map(role => <option key={role} value={role}>{role}</option>)}
+                    </Select>
+                  </div>
+                )}
+                {view === 'role_location' && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
+                    <Select value={filters.location} onChange={(e) => handleFilterChange('location', e.target.value)}>
+                      <option value="">All Locations</option>
+                      {LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                    </Select>
+                  </div>
+                )}
+                {view === 'company' && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Company</label>
+                    <Select value={filters.company} onChange={(e) => handleFilterChange('company', e.target.value)}>
+                      <option value="">All Companies</option>
+                      {COMPANIES.map(comp => <option key={comp} value={comp}>{comp}</option>)}
+                    </Select>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
 
-          {/* Results Table & Pagination */}
+          {/* Results Table */}
           <Card className="bg-white border-slate-200">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-slate-900">Salary Data</CardTitle>
-                {!isLoading && !error && (
-                  <CardDescription className="text-slate-600">
-                    Showing {paginatedResults.length} of {sortedResults.length} results
-                  </CardDescription>
-                )}
-                {isLoading && <CardDescription>Loading data...</CardDescription>}
-                {error && <CardDescription className="text-red-400">{error}</CardDescription>}
-              </div>
-              {/* Items per page selector */}
-              <div className="flex items-center gap-2">
-                <label htmlFor="items-per-page" className="text-sm text-slate-600 hidden md:inline">Rows per page:</label>
-                <Select id="items-per-page" value={itemsPerPage} onChange={handleItemsPerPageChange}>
-                  {ITEMS_PER_PAGE_OPTIONS.map(option => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </Select>
-              </div>
+            <CardHeader>
+              <CardTitle className="text-slate-900">{viewConfig.title}</CardTitle>
+              <CardDescription className="text-slate-500">{viewConfig.description}</CardDescription>
+              {!isLoading && !error && (
+                <CardDescription className="text-slate-600 mt-1">
+                  Showing {sortedResults.length} aggregated results
+                </CardDescription>
+              )}
+              {isLoading && <CardDescription>Loading data...</CardDescription>}
+              {error && <CardDescription className="text-red-500">{error}</CardDescription>}
             </CardHeader>
             <CardContent>
-              {!isLoading && !error && (
-                sortedResults.length > 0 ? (
-                  <>
-                    {/* Pass headers with onClick for sorting, and render sort indicator */}
-                    <DataTable 
-                      headers={tableHeaders.map(header => ({
-                        label: (
-                          <div className="flex items-center cursor-pointer" onClick={header.onClick}>
-                            {header.label}
-                            {sortConfig.key === header.key && (
-                              <SortIndicator columnKey={header.key} />
-                            )}
-                          </div>
-                        ),
-                        key: header.key // Ensure DataTable has a way to identify headers, using key
-                      }))} 
-                      rows={tableData} 
-                    />
-                    
-                    {/* Pagination Controls */}
-                    {totalPages > 1 && (
-                      <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={goToPrevPage} 
-                          disabled={currentPage === 1}
-                          className="flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed text-slate-700 border-slate-300 hover:bg-slate-50"
-                        >
-                          <ChevronLeft className="w-4 h-4" /> Previous
-                        </Button>
-                        <div className="flex items-center gap-1 sm:gap-2">
-                           <span className="text-sm text-slate-600">Page</span>
-                           {/* Render page numbers, perhaps with ellipsis for large numbers */}
-                           <Button 
-                             variant={currentPage === 1 ? 'default' : 'ghost'} 
-                             size="sm" 
-                             onClick={() => setCurrentPage(1)}
-                             className={`px-2.5 py-1.5 h-auto ${currentPage === 1 ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'text-slate-600 hover:bg-slate-100'}`}
-                           >1</Button>
-                           {currentPage > 2 && <span className="text-sm text-slate-400">...</span>}
-                           {currentPage > 1 && currentPage < totalPages && (
-                             <Button 
-                               variant='default' 
-                               size="sm"
-                               className="px-2.5 py-1.5 h-auto bg-emerald-600 text-white hover:bg-emerald-700"
-                             >{currentPage}</Button>
-                           )}
-                           {currentPage < totalPages -1 && <span className="text-sm text-slate-400">...</span>}
-                           {totalPages > 1 && (
-                              <Button 
-                                variant={currentPage === totalPages ? 'default' : 'ghost'} 
-                                size="sm" 
-                                onClick={() => setCurrentPage(totalPages)}
-                                className={`px-2.5 py-1.5 h-auto ${currentPage === totalPages ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'text-slate-600 hover:bg-slate-100'}`}
-                              >{totalPages}</Button>
-                           )}
-                        </div>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={goToNextPage} 
-                          disabled={currentPage === totalPages}
-                          className="flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed text-slate-700 border-slate-300 hover:bg-slate-50"
-                        >
-                          Next <ChevronRight className="w-4 h-4" />
-                        </Button>
+              {!isLoading && !error && sortedResults.length > 0 ? (
+                <DataTable 
+                  headers={tableHeaders.map(header => ({
+                    label: (
+                      <div className="flex items-center cursor-pointer select-none" onClick={() => requestSort(header.key)}>
+                        {header.label}
+                        {sortConfig.key === header.key && (
+                          <span className="ml-1">{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
+                        )}
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-slate-600 text-center py-8">No results found for your selected filters.</p>
-                )
-              )}
+                    ),
+                    key: header.key
+                  }))} 
+                  rows={tableRows} 
+                />
+              ) : !isLoading && !error ? (
+                <p className="text-slate-500 text-center py-8">No results found for your filters.</p>
+              ) : null}
             </CardContent>
           </Card>
         </div>
