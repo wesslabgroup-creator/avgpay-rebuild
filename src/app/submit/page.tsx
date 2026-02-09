@@ -17,10 +17,15 @@ const EXPERIENCE_LEVELS = [
   { value: "Staff+ (10+ years)", label: "Staff+ (10+ years)" },
 ];
 
-interface LocationSuggestion {
-  name: string;
-  state?: string;
-}
+// Common US states for dropdown
+const US_STATES = [
+  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+  "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+  "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+  "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+  "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+  "DC", "Remote"
+];
 
 export default function SubmitSalaryPage() {
   const router = useRouter();
@@ -28,53 +33,27 @@ export default function SubmitSalaryPage() {
   const [formData, setFormData] = useState({
     jobTitle: '',
     companyName: '',
-    location: '',
+    city: '',
+    state: '',
     baseSalary: '',
     stockOptions: '',
     bonus: '',
     otherComp: '',
-    totalComp: '',
     experienceLevel: '',
     yearsAtCompany: '',
-    yearsInIndustry: '',
     userNotes: '',
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [locations, setLocations] = useState<string[]>([]);
-  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await fetch('/api/analyzer-data');
-        const data = await response.json();
-        if (data.locations) setLocations(data.locations);
-      } catch (error) {
-        console.error("Failed to fetch locations:", error);
-      }
-    };
-    fetchLocations();
-  }, []);
-
-  // Autocomplete location as user types
-  useEffect(() => {
-    if (formData.location.length < 2) {
-      setLocationSuggestions([]);
-      return;
-    }
-    const lowerQuery = formData.location.toLowerCase();
-    const suggestions = locations.filter(loc => 
-      loc.toLowerCase().includes(lowerQuery)
-    ).slice(0, 5);
-    setLocationSuggestions(suggestions);
-  }, [formData.location, locations]);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setTouched(prev => ({ ...prev, [name]: true }));
+    setError(null); // Clear error on change
   };
 
   const calculateTotalComp = () => {
@@ -85,35 +64,61 @@ export default function SubmitSalaryPage() {
     return base + stock + bonus + other;
   };
 
+  const validateForm = (): boolean => {
+    const requiredFields = ['jobTitle', 'companyName', 'city', 'state', 'baseSalary', 'experienceLevel'];
+    const missingFields = requiredFields.filter(field => {
+      const value = formData[field as keyof typeof formData];
+      return !value || value.trim() === '';
+    });
+
+    if (missingFields.length > 0) {
+      setError(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      // Mark all fields as touched to show validation errors
+      const allTouched: Record<string, boolean> = {};
+      requiredFields.forEach(f => allTouched[f] = true);
+      setTouched(allTouched);
+      return false;
+    }
+
+    if (parseInt(formData.baseSalary) <= 0) {
+      setError("Base salary must be greater than 0");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
-    // Validation - base salary is required
-    if (!formData.baseSalary || parseInt(formData.baseSalary) <= 0) {
-      setError("Base salary is required and must be greater than 0.");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.jobTitle || !formData.companyName || !formData.location || !formData.experienceLevel) {
-      setError("Please fill in all required fields.");
-      setIsLoading(false);
-      return;
-    }
-
     const totalComp = calculateTotalComp();
+    const location = `${formData.city}, ${formData.state}`;
 
     try {
       const response = await fetch('/api/submit-salary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
+          jobTitle: formData.jobTitle,
+          companyName: formData.companyName,
+          location: location,
+          baseSalary: formData.baseSalary,
+          stockOptions: formData.stockOptions || '0',
+          bonus: formData.bonus || '0',
+          otherComp: formData.otherComp || '0',
           totalComp: totalComp.toString(),
+          experienceLevel: formData.experienceLevel,
+          yearsAtCompany: formData.yearsAtCompany || '0',
+          userNotes: formData.userNotes,
           submittedAt: new Date().toISOString(),
-          status: 'pending_review', // For quality checks
+          status: 'pending_review',
         }),
       });
 
@@ -132,6 +137,10 @@ export default function SubmitSalaryPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const isFieldError = (fieldName: string) => {
+    return touched[fieldName] && !formData[fieldName as keyof typeof formData];
   };
 
   if (isSuccess) {
@@ -173,7 +182,7 @@ export default function SubmitSalaryPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               {/* Job Details */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Job Details</h3>
@@ -189,9 +198,11 @@ export default function SubmitSalaryPage() {
                       value={formData.jobTitle}
                       onChange={handleInputChange}
                       placeholder="e.g., Software Engineer"
-                      required
-                      className="text-base py-3 px-4"
+                      className={`text-base py-3 px-4 ${isFieldError('jobTitle') ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
+                    {isFieldError('jobTitle') && (
+                      <p className="text-red-500 text-xs mt-1">Job title is required</p>
+                    )}
                   </div>
 
                   <div>
@@ -204,69 +215,85 @@ export default function SubmitSalaryPage() {
                       value={formData.companyName}
                       onChange={handleInputChange}
                       placeholder="e.g., Google"
-                      required
-                      className="text-base py-3 px-4"
+                      className={`text-base py-3 px-4 ${isFieldError('companyName') ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
+                    {isFieldError('companyName') && (
+                      <p className="text-red-500 text-xs mt-1">Company name is required</p>
+                    )}
                   </div>
                 </div>
 
                 <SearchableSelect
-                  label="Experience Level"
+                  label="Experience Level *"
                   value={formData.experienceLevel}
-                  onChange={(value) => setFormData(prev => ({ ...prev, experienceLevel: value }))}
+                  onChange={(value) => {
+                    setFormData(prev => ({ ...prev, experienceLevel: value }));
+                    setTouched(prev => ({ ...prev, experienceLevel: true }));
+                    setError(null);
+                  }}
                   options={EXPERIENCE_LEVELS.map(l => l.label)}
                   placeholder="Select experience level..."
                   required
                 />
+                {isFieldError('experienceLevel') && (
+                  <p className="text-red-500 text-xs mt-1">Experience level is required</p>
+                )}
 
+                {/* Location - City and State */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="relative">
-                    <label htmlFor="location" className="block text-sm font-medium text-slate-700 mb-1">
-                      Location (City, State) <span className="text-red-500">*</span>
+                  <div>
+                    <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-1">
+                      City <span className="text-red-500">*</span>
                     </label>
                     <Input
-                      id="location"
-                      name="location"
-                      value={formData.location}
+                      id="city"
+                      name="city"
+                      value={formData.city}
                       onChange={handleInputChange}
-                      placeholder="e.g., San Francisco, CA"
-                      required
-                      className="text-base py-3 px-4"
+                      placeholder="e.g., San Francisco"
+                      className={`text-base py-3 px-4 ${isFieldError('city') ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
-                    {locationSuggestions.length > 0 && (
-                      <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg">
-                        {locationSuggestions.map((suggestion) => (
-                          <button
-                            key={suggestion}
-                            type="button"
-                            onClick={() => {
-                              setFormData(prev => ({ ...prev, location: suggestion }));
-                              setLocationSuggestions([]);
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-slate-50 text-slate-700"
-                          >
-                            {suggestion}
-                          </button>
-                        ))}
-                      </div>
+                    {isFieldError('city') && (
+                      <p className="text-red-500 text-xs mt-1">City is required</p>
                     )}
                   </div>
 
                   <div>
-                    <label htmlFor="yearsAtCompany" className="block text-sm font-medium text-slate-700 mb-1">
-                      Years at Company
+                    <label htmlFor="state" className="block text-sm font-medium text-slate-700 mb-1">
+                      State <span className="text-red-500">*</span>
                     </label>
-                    <Input
-                      id="yearsAtCompany"
-                      name="yearsAtCompany"
-                      type="number"
-                      value={formData.yearsAtCompany}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 2"
-                      min="0"
-                      className="text-base py-3 px-4"
+                    <SearchableSelect
+                      label=""
+                      value={formData.state}
+                      onChange={(value) => {
+                        setFormData(prev => ({ ...prev, state: value }));
+                        setTouched(prev => ({ ...prev, state: true }));
+                        setError(null);
+                      }}
+                      options={US_STATES}
+                      placeholder="Select state..."
+                      required
                     />
+                    {isFieldError('state') && (
+                      <p className="text-red-500 text-xs mt-1">State is required</p>
+                    )}
                   </div>
+                </div>
+
+                <div>
+                  <label htmlFor="yearsAtCompany" className="block text-sm font-medium text-slate-700 mb-1">
+                    Years at Company
+                  </label>
+                  <Input
+                    id="yearsAtCompany"
+                    name="yearsAtCompany"
+                    type="number"
+                    value={formData.yearsAtCompany}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 2"
+                    min="0"
+                    className="text-base py-3 px-4"
+                  />
                 </div>
               </div>
 
@@ -286,11 +313,13 @@ export default function SubmitSalaryPage() {
                       value={formData.baseSalary}
                       onChange={handleInputChange}
                       placeholder="e.g., 150000"
-                      required
                       min="1"
-                      className="text-base py-3 px-4"
+                      className={`text-base py-3 px-4 ${isFieldError('baseSalary') || (touched.baseSalary && parseInt(formData.baseSalary) <= 0) ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
-                    <p className="text-xs text-slate-400 mt-1">Required - your annual base pay</p>
+                    {(isFieldError('baseSalary') || (touched.baseSalary && parseInt(formData.baseSalary) <= 0)) && (
+                      <p className="text-red-500 text-xs mt-1">Valid base salary is required</p>
+                    )}
+                    <p className="text-xs text-slate-400 mt-1">Your annual base pay</p>
                   </div>
 
                   <div>
@@ -303,7 +332,7 @@ export default function SubmitSalaryPage() {
                       type="number"
                       value={formData.stockOptions}
                       onChange={handleInputChange}
-                      placeholder="e.g., 400000 (total over 4 years)"
+                      placeholder="e.g., 400000"
                       min="0"
                       className="text-base py-3 px-4"
                     />
@@ -337,7 +366,7 @@ export default function SubmitSalaryPage() {
                       type="number"
                       value={formData.otherComp}
                       onChange={handleInputChange}
-                      placeholder="e.g., 5000 (signing bonus, etc.)"
+                      placeholder="e.g., 5000"
                       min="0"
                       className="text-base py-3 px-4"
                     />
@@ -345,13 +374,13 @@ export default function SubmitSalaryPage() {
                   </div>
                 </div>
 
-                <div className="bg-slate-50 p-4 rounded-lg">
-                  <p className="text-sm text-slate-600">
-                    <span className="font-medium">Calculated Total Comp:</span>{' '}
-                    <span className="text-lg font-bold text-emerald-600">
+                <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                  <p className="text-sm text-slate-700">
+                    <span className="font-semibold">Calculated Total Comp:</span>{' '}
+                    <span className="text-lg font-bold text-emerald-700">
                       ${calculateTotalComp().toLocaleString()}
                     </span>
-                    <span className="text-xs text-slate-400 ml-2">(Base + Equity/4 + Bonus + Other)</span>
+                    <span className="text-xs text-slate-500 ml-2">(Base + Equity/4 + Bonus + Other)</span>
                   </p>
                 </div>
               </div>
@@ -371,7 +400,7 @@ export default function SubmitSalaryPage() {
                     onChange={handleInputChange}
                     placeholder="Any additional context about your compensation (benefits, unique circumstances, etc.)"
                     rows={4}
-                    className="text-base py-3 px-4"
+                    className="text-base py-3 px-4 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
               </div>
