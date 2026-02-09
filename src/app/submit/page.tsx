@@ -68,11 +68,20 @@ export default function SubmitSalaryPage() {
     const requiredFields = ['jobTitle', 'companyName', 'city', 'state', 'baseSalary', 'experienceLevel'];
     const missingFields = requiredFields.filter(field => {
       const value = formData[field as keyof typeof formData];
-      return !value || value.trim() === '';
+      const isMissing = !value || value.toString().trim() === '';
+      return isMissing;
     });
 
     if (missingFields.length > 0) {
-      setError(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      const fieldNames: Record<string, string> = {
+        jobTitle: 'Job Title',
+        companyName: 'Company Name', 
+        city: 'City',
+        state: 'State',
+        baseSalary: 'Base Salary',
+        experienceLevel: 'Experience Level'
+      };
+      setError(`Please fill in: ${missingFields.map(f => fieldNames[f] || f).join(', ')}`);
       // Mark all fields as touched to show validation errors
       const allTouched: Record<string, boolean> = {};
       requiredFields.forEach(f => allTouched[f] = true);
@@ -80,8 +89,10 @@ export default function SubmitSalaryPage() {
       return false;
     }
 
-    if (parseInt(formData.baseSalary) <= 0) {
-      setError("Base salary must be greater than 0");
+    const baseSalaryNum = parseInt(formData.baseSalary);
+    if (isNaN(baseSalaryNum) || baseSalaryNum <= 0) {
+      setError("Base salary must be a valid number greater than 0");
+      setTouched(prev => ({ ...prev, baseSalary: true }));
       return false;
     }
 
@@ -90,8 +101,12 @@ export default function SubmitSalaryPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Form submission started', formData);
     
     if (!validateForm()) {
+      console.log('Validation failed');
       return;
     }
 
@@ -99,7 +114,7 @@ export default function SubmitSalaryPage() {
     setError(null);
 
     const totalComp = calculateTotalComp();
-    const location = `${formData.city}, ${formData.state}`;
+    const location = `${formData.city.trim()}, ${formData.state}`;
 
     try {
       const response = await fetch('/api/submit-salary', {
@@ -224,7 +239,7 @@ export default function SubmitSalaryPage() {
                 </div>
 
                 <SearchableSelect
-                  label="Experience Level *"
+                  label="Experience Level"
                   value={formData.experienceLevel}
                   onChange={(value) => {
                     setFormData(prev => ({ ...prev, experienceLevel: value }));
@@ -259,11 +274,8 @@ export default function SubmitSalaryPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="state" className="block text-sm font-medium text-slate-700 mb-1">
-                      State <span className="text-red-500">*</span>
-                    </label>
                     <SearchableSelect
-                      label=""
+                      label="State"
                       value={formData.state}
                       onChange={(value) => {
                         setFormData(prev => ({ ...prev, state: value }));
