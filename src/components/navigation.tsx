@@ -40,6 +40,12 @@ export function Navigation() {
             Guides
           </Link>
           <Link 
+            href="/submit" 
+            className="text-emerald-600 hover:text-emerald-700 font-medium px-3 py-2 rounded-md transition-colors hover:bg-emerald-50"
+          >
+            Contribute
+          </Link>
+          <Link 
             href="#analyzer" 
             className="px-5 py-2.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg"
           >
@@ -85,6 +91,13 @@ export function Navigation() {
               className="block w-full px-4 py-4 text-xl font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 rounded-lg transition-colors"
             >
               Guides
+            </Link>
+            <Link 
+              href="/submit" 
+              onClick={toggleMenu}
+              className="block w-full px-4 py-4 text-xl font-semibold text-emerald-600 border-b border-slate-100 hover:bg-emerald-50 rounded-lg transition-colors"
+            >
+              Contribute Data
             </Link>
             <div className="pt-4">
               <Link 
