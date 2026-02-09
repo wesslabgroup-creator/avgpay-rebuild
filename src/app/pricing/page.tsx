@@ -21,7 +21,8 @@ export default function PricingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Free Tier */}
             <Card className="border-slate-700 bg-slate-900">
               <CardHeader>
                 <CardTitle className="text-2xl text-slate-100">Free</CardTitle>
@@ -59,17 +60,63 @@ export default function PricingPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-indigo-500 relative overflow-hidden bg-slate-900">
-              <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs px-3 py-1 rounded-bl-lg">
-                Recommended
-              </div>
+            {/* Monthly Tier */}
+            <Card className="border-slate-700 bg-slate-900">
               <CardHeader>
-                <CardTitle className="text-2xl text-slate-100">PRO</CardTitle>
-                <p className="text-slate-400">For serious negotiators</p>
+                <CardTitle className="text-2xl text-slate-100">Monthly</CardTitle>
+                <p className="text-slate-400">Flexible access</p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-slate-100">$79</span>
+                  <span className="text-4xl font-bold text-slate-100">$29</span>
+                  <span className="text-slate-400">/month</span>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <Check className="w-5 h-5 text-green-400" />
+                    <span>Everything in Free</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <Check className="w-5 h-5 text-green-400" />
+                    <span>Full Offer Analyzer</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <Check className="w-5 h-5 text-green-400" />
+                    <span>Multi-offer comparison</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <Check className="w-5 h-5 text-green-400" />
+                    <span>Company-specific negotiation scripts</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <Check className="w-5 h-5 text-green-400" />
+                    <span>4-year equity projection</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <Check className="w-5 h-5 text-green-400" />
+                    <span>Save offers (12 months)</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-slate-300">
+                    <Check className="w-5 h-5 text-green-400" />
+                    <span>Market change alerts</span>
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full">Subscribe Monthly</Button>
+              </CardContent>
+            </Card>
+
+            {/* Lifetime Tier */}
+            <Card className="border-indigo-500 relative overflow-hidden bg-slate-900">
+              <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs px-3 py-1 rounded-bl-lg">
+                Best Value
+              </div>
+              <CardHeader>
+                <CardTitle className="text-2xl text-slate-100">Lifetime</CardTitle>
+                <p className="text-slate-400">Pay once, negotiate forever</p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-slate-100">$49</span>
                   <span className="text-slate-400">one-time</span>
                 </div>
                 <ul className="space-y-3">
