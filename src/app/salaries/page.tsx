@@ -6,7 +6,6 @@ import { Select } from '@/components/ui/select';
 import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { COMPANIES, ROLES, LOCATIONS } from '@/app/lib/data';
 import { Building2, Briefcase, MapPin } from 'lucide-react';
 
 type ViewType = 'company' | 'role_location' | 'role_global';
@@ -34,6 +33,27 @@ export default function SalariesPage() {
 
   // Sorting state
   const [sortConfig, setSortConfig] = useState<{ key: string | null, direction: 'ascending' | 'descending' }>({ key: 'medianTotalComp', direction: 'descending' });
+
+  const [roles, setRoles] = useState<string[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [companies, setCompanies] = useState<string[]>([]);
+
+  // Fetch dynamic data for filters
+  useEffect(() => {
+    const fetchFilterData = async () => {
+      try {
+        const response = await fetch('/api/analyzer-data'); // Re-use the analyzer data endpoint
+        const data = await response.json();
+        if (data.roles) setRoles(data.roles);
+        if (data.locations) setLocations(data.locations);
+        // Assuming companies are also returned from this endpoint, or create a new one
+        if (data.companies) setCompanies(data.companies);
+      } catch (error) {
+        console.error("Failed to fetch filter data:", error);
+      }
+    };
+    fetchFilterData();
+  }, []);
 
   // Fetch aggregated data
   useEffect(() => {
@@ -217,7 +237,7 @@ export default function SalariesPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">Job Title</label>
                     <Select value={filters.role} onChange={(e) => handleFilterChange('role', e.target.value)}>
                       <option value="">All Roles</option>
-                      {ROLES.map(role => <option key={role} value={role}>{role}</option>)}
+                      {roles.map(role => <option key={role} value={role}>{role}</option>)}
                     </Select>
                   </div>
                 )}
@@ -226,7 +246,7 @@ export default function SalariesPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
                     <Select value={filters.location} onChange={(e) => handleFilterChange('location', e.target.value)}>
                       <option value="">All Locations</option>
-                      {LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                      {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
                     </Select>
                   </div>
                 )}
@@ -235,7 +255,7 @@ export default function SalariesPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">Company</label>
                     <Select value={filters.company} onChange={(e) => handleFilterChange('company', e.target.value)}>
                       <option value="">All Companies</option>
-                      {COMPANIES.map(comp => <option key={comp} value={comp}>{comp}</option>)}
+                      {companies.map(comp => <option key={comp} value={comp}>{comp}</option>)}
                     </Select>
                   </div>
                 )}

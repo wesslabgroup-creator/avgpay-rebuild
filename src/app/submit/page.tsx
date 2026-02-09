@@ -7,7 +7,6 @@ import { Select } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ROLES, COMPANIES, LOCATIONS, LEVELS } from '@/app/lib/data'; // Assuming these are available from lib/data
 
 export default function SubmitSalaryPage() {
   const router = useRouter();

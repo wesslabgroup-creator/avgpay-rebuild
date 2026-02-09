@@ -17,9 +17,17 @@ export async function GET(request: Request) {
 
     if (locationsError) throw new Error(`Error fetching locations: ${locationsError.message}`);
 
+    const { data: companies, error: companiesError } = await supabaseAdmin
+      .from('companies')
+      .select('name')
+      .order('name', { ascending: true });
+
+    if (companiesError) throw new Error(`Error fetching companies: ${companiesError.message}`);
+
     return NextResponse.json({
       roles: jobs.map(j => j.title),
       locations: locations.map(l => l.name),
+      companies: companies.map(c => c.name),
     });
 
   } catch (error: any) {
