@@ -141,14 +141,23 @@ export default function SalariesPage() {
 
   // Prepare table rows
   const tableRows = sortedResults.map((res, index) => {
-    const row = [
-      view === 'company' ? (
+    let primaryCell;
+    if (view === 'company') {
+      primaryCell = (
         <Link key={`link-${index}`} href={`/company/${encodeURIComponent(res.groupKey)}`} className="text-emerald-600 hover:text-emerald-500 font-medium transition-colors">
           {res.groupKey}
         </Link>
-      ) : (
-        <span key={`span-${index}`} className="font-medium text-slate-900">{res.groupKey}</span>
-      ),
+      );
+    } else { // 'role_global' or 'role_location'
+      primaryCell = (
+        <Link key={`link-${index}`} href={`/jobs/${encodeURIComponent(res.groupKey)}`} className="text-emerald-600 hover:text-emerald-500 font-medium transition-colors">
+          {res.groupKey}
+        </Link>
+      );
+    }
+
+    const row = [
+      primaryCell,
       ...(viewConfig.showSecondary ? [res.secondaryKey || "—"] : []),
       `${formatCurrency(res.minComp)} – ${formatCurrency(res.maxComp)}`,
       <span key={`median-${index}`} className="font-semibold text-emerald-700">{formatCurrency(res.medianTotalComp)}</span>,

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { MARKET_DATA } from '@/app/lib/data'; // Import shared data source
 import { DataTable } from "@/components/data-table"; // Assuming you have a reusable table component
@@ -182,8 +183,10 @@ const CompanyDetailPage = () => {
     { label: "Data Points", key: "count" }
   ];
 
-  const tableRows = companyData.salarySummary?.map(s => [
-    s.role,
+  const tableRows = companyData.salarySummary?.map((s, index) => [
+    <Link key={`link-${index}`} href={`/jobs/${encodeURIComponent(s.role)}`} className="text-emerald-600 hover:text-emerald-500 font-medium transition-colors">
+      {s.role}
+    </Link>,
     `${formatCurrency(s.minComp)} - ${formatCurrency(s.maxComp)}`,
     formatCurrency(s.medianComp),
     `${s.levelsCount} Levels`,
