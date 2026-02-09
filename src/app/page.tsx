@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import { OfferAnalyzer } from "@/components/offer-analyzer";
+import { HeroSearch } from "@/components/hero-search";
 import { Button } from "@/components/ui/button";
-import { Database, Shield, TrendingUp, Users, Award, Zap, Star } from "lucide-react";
+import { Database, Shield, TrendingUp, Users, Award, Zap, Star, Search } from "lucide-react";
 import Link from "next/link";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 
@@ -43,15 +44,20 @@ export default function Home() {
             </p>
           </div>
 
+          {/* Search Component */}
+          <div className="max-w-2xl mx-auto mb-8">
+            <HeroSearch />
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
-            <Link href="#analyzer" className="w-full sm:w-auto">
+            <Link href="/analyze-offer" className="w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-7 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 font-semibold tracking-wide rounded-2xl h-14 sm:h-auto">
-                <Zap className="w-5 h-5 mr-2" />Analyze My Offer Free
+                <Zap className="w-5 h-5 mr-2" />Analyze My Offer
               </Button>
             </Link>
-            <Link href="/salaries" className="w-full sm:w-auto">
+            <Link href="/analyze-salary" className="w-full sm:w-auto">
               <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8 py-7 border-2 border-slate-300 hover:border-emerald-500 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 rounded-2xl h-14 sm:h-auto font-semibold transition-all duration-300">
-                Browse Salaries
+                <Search className="w-5 h-5 mr-2" />Check Your Value
               </Button>
             </Link>
           </div>
