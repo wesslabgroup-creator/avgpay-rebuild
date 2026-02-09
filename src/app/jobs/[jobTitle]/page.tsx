@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,8 @@ interface JobDetailData {
 
 export default function JobDetailPage() {
   const router = useRouter();
-  const { jobTitle } = router.query; // Get job title from URL
+  const params = useParams();
+  const jobTitle = params.jobTitle as string; // Get job title from URL
 
   const [data, setData] = useState<JobDetailData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,18 +63,18 @@ export default function JobDetailPage() {
         // Mock data for rankings - in a real scenario, these would be fetched from separate API endpoints or derived
         // For now, we'll sort the global role data to simulate rankings
         const sortedByCompany = globalRoleData
-          .sort((a, b) => b.medianTotalComp - a.medianTotalComp)
+          .sort((a: { medianTotalComp: number }, b: { medianTotalComp: number }) => b.medianTotalComp - a.medianTotalComp)
           .slice(0, 10) // Top 10 companies
-          .map((item, index) => ({
+          .map((item: { groupKey: string; medianTotalComp: number }, index: number) => ({
             company: item.groupKey, // Assuming groupKey is company name
             medianComp: item.medianTotalComp,
             rank: index + 1,
           }));
 
         const sortedByLocation = globalRoleData
-          .sort((a, b) => b.medianTotalComp - a.medianTotalComp)
+          .sort((a: { medianTotalComp: number }, b: { medianTotalComp: number }) => b.medianTotalComp - a.medianTotalComp)
           .slice(0, 10) // Top 10 locations
-          .map((item, index) => ({
+          .map((item: { secondaryKey?: string; medianTotalComp: number }, index: number) => ({
             location: item.secondaryKey || "Unknown", // Assuming secondaryKey holds location for role_location view
             medianComp: item.medianTotalComp,
             rank: index + 1,

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Select } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -132,34 +132,36 @@ export default function SubmitSalaryPage() {
               {/* Location */}
               <div>
                 <label htmlFor="location" className="block text-sm font-medium text-slate-700 mb-1">Location *</label>
-                <Select onValueChange={(value) => handleSelectChange('location', value)} name="location" defaultValue={formData.location}>
-                  <SelectTrigger className="w-full text-base py-3 px-4 h-auto">
-                    <SelectValue placeholder="Select Location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LOCATIONS.map(loc => (
-                      <SelectItem key={loc} value={loc} className="text-base py-2 px-3">
-                        {loc}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                <Select
+                  name="location"
+                  value={formData.location}
+                  onChange={(e) => handleSelectChange('location', e.target.value)}
+                  className="w-full text-base py-3 px-4 h-auto"
+                >
+                  <option value="" disabled>Select Location</option>
+                  {LOCATIONS.map(loc => (
+                    <option key={loc} value={loc} className="text-base py-2 px-3">
+                      {loc}
+                    </option>
+                  ))}
                 </Select>
               </div>
 
               {/* Experience Level */}
               <div>
                 <label htmlFor="level" className="block text-sm font-medium text-slate-700 mb-1">Experience Level *</label>
-                <Select onValueChange={(value) => handleSelectChange('level', value)} name="level" defaultValue={formData.level}>
-                  <SelectTrigger className="w-full text-base py-3 px-4 h-auto">
-                    <SelectValue placeholder="Select Level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LEVELS.map(lvl => (
-                      <SelectItem key={lvl.value} value={lvl.label} className="text-base py-2 px-3">
-                        {lvl.label} {/* Assuming LEVELS has {value: string, label: string} */}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                <Select
+                  name="level"
+                  value={formData.level}
+                  onChange={(e) => handleSelectChange('level', e.target.value)}
+                  className="w-full text-base py-3 px-4 h-auto"
+                >
+                  <option value="" disabled>Select Level</option>
+                  {LEVELS.map(lvl => (
+                    <option key={lvl.value} value={lvl.label} className="text-base py-2 px-3">
+                      {lvl.label}
+                    </option>
+                  ))}
                 </Select>
               </div>
 
