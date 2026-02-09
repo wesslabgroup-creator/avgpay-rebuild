@@ -88,8 +88,8 @@ export default function PMGuidePage() {
         <h3>1. Know Your Leverage</h3>
         <p>
           The most powerful negotiation tool is a competing offer. PMs with 2+ offers 
-          negotiate 18% higher total compensation on average. If you don't have competing 
-          offers, emphasize unique skills or internal metrics you've moved.
+          negotiate 18% higher total compensation on average. If you don&apos;t have competing 
+          offers, emphasize unique skills or internal metrics you&apos;ve moved.
         </p>
 
         <h3>2. Negotiate Total Comp, Not Just Base</h3>

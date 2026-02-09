@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Navigation } from '@/components/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -132,7 +131,7 @@ const CompanyDetailPage = () => {
             </CardHeader>
             <CardContent>
               <CardDescription className="text-red-400">{error || `Could not find data for ${companyNameFromUrl}.`}</CardDescription>
-              <Button variant="secondary" className="mt-4" onClick={() => window.history.back()}>
+              <Button variant="outline" className="mt-4" onClick={() => window.history.back()}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
               </Button>
             </CardContent>
@@ -159,8 +158,8 @@ const CompanyDetailPage = () => {
                 <CardTitle className="text-4xl font-bold tracking-tight text-slate-100">{companyData.name}</CardTitle>
                 <CardDescription className="text-xl text-slate-400 mt-2 max-w-3xl mx-auto md:mx-0">{companyData.description}</CardDescription>
                 <div className="mt-4 flex justify-center md:justify-start">
-                  <Button variant="outline" size="lg" asChild>
-                    <a href={companyData.website} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" size="lg">
+                    <a href={companyData.website} target="_blank" rel="noopener noreferrer" className="flex items-center">
                       Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                     </a>
                   </Button>
@@ -210,15 +209,11 @@ const CompanyDetailPage = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button variant="outline" size="lg" asChild className="group">
-                  <Link href="/salaries">
-                    <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" /> Salary Explorer
-                  </Link>
+                <Button variant="outline" size="lg" className="group" onClick={() => window.location.href='/salaries'}>
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Salary Explorer
                 </Button>
-                <Button variant="outline" size="lg" asChild className="group">
-                  <Link href="/companies">
-                    All Companies <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-                  </Link>
+                <Button variant="outline" size="lg" className="group" onClick={() => window.location.href='/companies'}>
+                  All Companies <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
             </CardContent>

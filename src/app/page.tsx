@@ -83,7 +83,7 @@ export default function Home() {
           <div className="text-center space-y-3">
             <h2 className="text-2xl md:text-3xl font-bold text-slate-100">Struggling with Salary Negotiations?</h2>
             <p className="text-slate-400 text-lg">
-              Generic data leaves you guessing. HereHere's#39;s why it matters:
+              Generic data leaves you guessing. Here&apos;s why it matters:
             </p>
           </div>
 
@@ -119,7 +119,7 @@ export default function Home() {
           <div className="text-center space-y-3 lg:space-y-4">
             <h2 className="text-2xl md:text-3xl font-bold text-slate-100">Get Your Verified Offer Grade</h2>
             <p className="text-slate-400 text-lg max-w-xl mx-auto">
-              Input your offer details. We'll compare it against the most reliable market data available and provide your grade—plus actionable next steps.
+              Input your offer details. We&apos;ll compare it against the most reliable market data available and provide your grade—plus actionable next steps.
             </p>
           </div>
           
