@@ -10,7 +10,7 @@ function getAggregatedSalaryData(filters: {
   location?: string;
   level?: string;
 }) {
-  const data = [];
+  const data: Array<{company: string, role: string, location: string, level: string, median: number, blsMedian: number}> = [];
   const companyList = filters.company ? [filters.company] : COMPANIES;
   const roleList = filters.role ? [filters.role] : ROLES;
   const locationList = filters.location ? [filters.location] : LOCATIONS;
