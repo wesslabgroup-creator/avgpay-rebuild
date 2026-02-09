@@ -31,7 +31,7 @@ export default function EquityGuidePage() {
         <div className="not-prose my-8 p-6 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
           <h2 className="text-lg font-semibold text-indigo-300 mb-2">Coming Soon</h2>
           <p className="text-slate-300">
-            This comprehensive guide to tech equity is currently under development. WeWeWe're#39;re#39;re breaking down complex topics like RSUs, stock options, vesting, 409A valuations, and tax implications to help you make informed decisions about your compensation. Check back soon!
+            This comprehensive guide to tech equity is currently under development. We&apos;re breaking down complex topics like RSUs, stock options, vesting, 409A valuations, and tax implications to help you make informed decisions about your compensation. Check back soon!
           </p>
         </div>
 
