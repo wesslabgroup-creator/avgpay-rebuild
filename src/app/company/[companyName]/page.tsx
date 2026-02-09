@@ -211,7 +211,7 @@ const CompanyDetailPage = () => {
                     <CardTitle className="text-4xl font-bold tracking-tight text-slate-900">{companyData.name}</CardTitle>
                     <CardDescription className="text-lg text-slate-600 mt-2 max-w-3xl">{companyData.description}</CardDescription>
                   </div>
-                  <Button variant="outline" className="shrink-0" onClick={() => window.open(companyData.website, '_blank')}>
+                  <Button variant="outline" className="shrink-0 border-slate-300 text-slate-700 hover:bg-slate-50" onClick={() => window.open(companyData.website, '_blank')}>
                     Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                   </Button>
                 </div>

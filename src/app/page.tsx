@@ -25,36 +25,32 @@ export const metadata: Metadata = {
 /* eslint-disable react/no-unescaped-entities */
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative px-4 py-20 sm:py-24 md:py-28 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/30 via-slate-950/50 to-slate-950/80" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(120,119,198,0.1)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,119,198,0.1)_0%,transparent_50%)]" />
-        
+      <section className="relative px-4 py-20 sm:py-24 md:py-28 lg:py-32 overflow-hidden bg-slate-50">
         <div className="relative max-w-6xl mx-auto text-center space-y-8 lg:space-y-12">
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-emerald-500/10 border-2 border-emerald-500/20 backdrop-blur-sm text-emerald-300 text-sm font-medium max-w-md mx-auto">
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-emerald-500/10 border-2 border-emerald-500/20 text-emerald-700 text-sm font-medium max-w-md mx-auto">
             <Database className="w-5 h-5 flex-shrink-0" />
             Powered by BLS + H-1B + Pay Transparency Laws • Trusted by 10K+ Tech Workers
           </div>
           
           <div className="space-y-6">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight bg-gradient-to-r from-slate-100 via-white to-slate-100 bg-clip-text text-transparent leading-tight">
-              Know Your<br className="sm:hidden" /><span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-pink-400 bg-clip-text text-transparent"> Market Worth</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 leading-tight">
+              Know Your<br className="sm:hidden" /><span className="bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 bg-clip-text text-transparent"> Market Worth</span>
             </h1>
-            <p className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-light text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              Get instant, data-backed salary insights to<br className="md:hidden" /> <span className="font-semibold text-emerald-400">negotiate like a pro</span>.
+            <p className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-light text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              Get instant, data-backed salary insights to <span className="font-semibold text-emerald-600">negotiate like a pro</span>.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
             <Link href="#analyzer" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-7 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 font-semibold tracking-wide rounded-2xl h-14 sm:h-auto">
+              <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-7 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 font-semibold tracking-wide rounded-2xl h-14 sm:h-auto">
                 <Zap className="w-5 h-5 mr-2" />Analyze My Offer Free
               </Button>
             </Link>
             <Link href="/salaries" className="w-full sm:w-auto">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8 py-7 border-2 border-slate-700/50 hover:border-emerald-500/50 bg-white backdrop-blur-sm hover:bg-slate-800/50 text-slate-300 hover:text-white rounded-2xl h-14 sm:h-auto font-semibold transition-all duration-300">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8 py-7 border-2 border-slate-300 hover:border-emerald-500 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 rounded-2xl h-14 sm:h-auto font-semibold transition-all duration-300">
                 Browse Salaries
               </Button>
             </Link>
@@ -68,17 +64,17 @@ export default function Home() {
           </div>
 
           {/* Trust Badges */}
-          <div className="flex flex-wrap justify-center gap-8 pt-8 text-slate-500 text-sm font-medium">
-            <div className="flex items-center gap-3 p-4 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 hover:border-emerald-500/30 transition-all duration-200 min-w-[140px]">
-              <Shield className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+          <div className="flex flex-wrap justify-center gap-8 pt-8 text-slate-700 text-sm font-medium">
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 hover:border-emerald-500/30 transition-all duration-200 min-w-[140px]">
+              <Shield className="w-6 h-6 text-emerald-500 flex-shrink-0" />
               <span>BLS Verified</span>
             </div>
-            <div className="flex items-center gap-3 p-4 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 hover:border-emerald-500/30 transition-all duration-200 min-w-[140px]">
-              <TrendingUp className="w-6 h-6 text-teal-400 flex-shrink-0" />
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 hover:border-emerald-500/30 transition-all duration-200 min-w-[140px]">
+              <TrendingUp className="w-6 h-6 text-teal-500 flex-shrink-0" />
               <span>H-1B Data</span>
             </div>
-            <div className="flex items-center gap-3 p-4 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 hover:border-emerald-500/30 transition-all duration-200 min-w-[140px]">
-              <Users className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 hover:border-emerald-500/30 transition-all duration-200 min-w-[140px]">
+              <Users className="w-6 h-6 text-emerald-500 flex-shrink-0" />
               <span>Pay Transparency</span>
             </div>
           </div>
@@ -86,20 +82,20 @@ export default function Home() {
       </section>
 
       {/* Quick Stats */}
-      <section className="px-4 py-20 md:py-24 bg-white border-y border-slate-200/50 backdrop-blur-sm">
+      <section className="px-4 py-20 md:py-24 bg-white border-y border-slate-200">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div>
-            <div className="text-4xl md:text-5xl font-black text-emerald-400 mb-4"><AnimatedCounter target={47832} />+</div>
+            <div className="text-4xl md:text-5xl font-black text-emerald-500 mb-4"><AnimatedCounter target={47832} />+</div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">Salaries Analyzed</h3>
             <p className="text-slate-600">From BLS, H-1B, and transparency laws</p>
           </div>
           <div>
-            <div className="text-4xl md:text-5xl font-black text-emerald-400 mb-4">98%</div>
+            <div className="text-4xl md:text-5xl font-black text-emerald-500 mb-4">98%</div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">Accuracy</h3>
             <p className="text-slate-600">Cross-verified data sources</p>
           </div>
           <div>
-            <div className="text-4xl md:text-5xl font-black text-teal-400 mb-4">10K+</div>
+            <div className="text-4xl md:text-5xl font-black text-teal-500 mb-4">10K+</div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">Users</h3>
             <p className="text-slate-600">Negotiating better offers</p>
           </div>
@@ -107,27 +103,27 @@ export default function Home() {
       </section>
 
       {/* Offer Analyzer */}
-      <section id="analyzer" className="px-4 py-20 md:py-24 lg:py-32 bg-white/50">
+      <section id="analyzer" className="px-4 py-20 md:py-24 lg:py-32 bg-slate-50">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium max-w-md mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-sm font-medium max-w-md mx-auto">
               <Award className="w-4 h-4" />Get Your Offer Grade in 30 Seconds
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
               Instant Compensation Analysis
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Enter your offer details. See how you stack up against verified market data. <br className="md:hidden" /><strong className="text-emerald-400">No sign-up required.</strong>
+              Enter your offer details. See how you stack up against verified market data. <br className="md:hidden" /><strong className="text-emerald-600">No sign-up required.</strong>
             </p>
           </div>
           
           <OfferAnalyzer />
           
           <div className="text-center pt-12">
-            <p className="text-slate-500 text-lg mb-6 max-w-2xl mx-auto">
-              Join thousands who've negotiated <span className="font-bold text-emerald-400">10-25% higher</span> offers using AvgPay insights.
+            <p className="text-slate-700 text-lg mb-6 max-w-2xl mx-auto">
+              Join thousands who've negotiated <span className="font-bold text-emerald-600">10-25% higher</span> offers using AvgPay insights.
             </p>
-            <Link href="/salaries" className="inline-flex items-center gap-2 text-lg font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
+            <Link href="/salaries" className="inline-flex items-center gap-2 text-lg font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
               See All Salary Data <TrendingUp className="w-5 h-5" />
             </Link>
           </div>
@@ -135,25 +131,25 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="px-4 py-20 md:py-24 bg-slate-900/30 border-y border-slate-200/50 backdrop-blur-sm">
+      <section className="px-4 py-20 md:py-24 bg-white border-y border-slate-200">
         <div className="max-w-5xl mx-auto space-y-12 text-center">
           <div className="space-y-4">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900">What Users Are Saying</h2>
             <p className="text-xl text-slate-600 max-w-xl mx-auto">Real results from tech professionals just like you</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            <div className="bg-white backdrop-blur-sm border border-slate-200/50 p-8 rounded-3xl hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-500/30 transition-all duration-500 group space-y-6">
-              <div className="flex gap-3 text-emerald-400 text-xl">
+            <div className="bg-white border border-slate-200 p-8 rounded-3xl hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-500/30 transition-all duration-500 group space-y-6">
+              <div className="flex gap-3 text-emerald-500 text-xl">
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
               </div>
-              <blockquote className="text-slate-300 font-medium leading-relaxed text-lg group-hover:text-white transition-colors">
+              <blockquote className="text-slate-700 font-medium leading-relaxed text-lg transition-colors">
                 \"Used this for my Google offer negotiation. Data was spot-on and helped me push for 22% more TC. Game changer!\"
               </blockquote>
-              <div className="flex items-center gap-3 pt-4 border-t border-slate-200/50">
+              <div className="flex items-center gap-3 pt-4 border-t border-slate-200">
                 <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center font-bold text-white">JD</div>
                 <div>
                   <p className="font-semibold text-slate-900">John D.</p>
@@ -162,18 +158,18 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-white backdrop-blur-sm border border-slate-200/50 p-8 rounded-3xl hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-500/30 transition-all duration-500 group space-y-6">
-              <div className="flex gap-3 text-emerald-400 text-xl">
+            <div className="bg-white border border-slate-200 p-8 rounded-3xl hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-500/30 transition-all duration-500 group space-y-6">
+              <div className="flex gap-3 text-emerald-500 text-xl">
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
               </div>
-              <blockquote className="text-slate-300 font-medium leading-relaxed text-lg group-hover:text-white transition-colors">
+              <blockquote className="text-slate-700 font-medium leading-relaxed text-lg transition-colors">
                 \"Finally, reliable data that's not self-reported. Negotiated Big Tech-level comp at startup thanks to AvgPay.\"
               </blockquote>
-              <div className="flex items-center gap-3 pt-4 border-t border-slate-200/50">
+              <div className="flex items-center gap-3 pt-4 border-t border-slate-200">
                 <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center font-bold text-white">SM</div>
                 <div>
                   <p className="font-semibold text-slate-900">Sarah M.</p>
@@ -182,18 +178,18 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-white backdrop-blur-sm border border-slate-200/50 p-8 rounded-3xl hover:shadow-2xl hover:shadow-teal-500/10 hover:border-teal-500/30 transition-all duration-500 group space-y-6 md:col-span-2 lg:col-span-1">
-              <div className="flex gap-3 text-emerald-400 text-xl">
+            <div className="bg-white border border-slate-200 p-8 rounded-3xl hover:shadow-2xl hover:shadow-teal-500/10 hover:border-teal-500/30 transition-all duration-500 group space-y-6 md:col-span-2 lg:col-span-1">
+              <div className="flex gap-3 text-emerald-500 text-xl">
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
                 <Star className="w-6 h-6 fill-current" />
               </div>
-              <blockquote className="text-slate-300 font-medium leading-relaxed text-lg group-hover:text-white transition-colors">
+              <blockquote className="text-slate-700 font-medium leading-relaxed text-lg transition-colors">
                 \"BLS + H1B data combo is gold. Went from underpaid to top percentile in one negotiation.\"
               </blockquote>
-              <div className="flex items-center gap-3 pt-4 border-t border-slate-200/50">
+              <div className="flex items-center gap-3 pt-4 border-t border-slate-200">
                 <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-pink-500 rounded-2xl flex items-center justify-center font-bold text-white">AM</div>
                 <div>
                   <p className="font-semibold text-slate-900">Alex M.</p>
@@ -206,7 +202,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Accordion */}
-      <section className="px-4 py-20 md:py-24 lg:py-32 bg-white/50">
+      <section className="px-4 py-20 md:py-24 lg:py-32 bg-slate-50">
         <div className="max-w-4xl mx-auto space-y-8 text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -214,9 +210,9 @@ export default function Home() {
           </p>
         </div>
         <div className="max-w-3xl mx-auto space-y-4">
-          <div className="border border-slate-200/50 rounded-2xl overflow-hidden backdrop-blur-sm bg-slate-900/30 hover:border-emerald-500/50 transition-all duration-300">
-            <details className="p-6 hover:bg-white">
-              <summary className="font-semibold text-slate-200 cursor-pointer list-none focus:outline-none after:hidden pb-2">
+          <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white hover:border-emerald-500/50 transition-all duration-300">
+            <details className="p-6">
+              <summary className="font-semibold text-slate-800 cursor-pointer list-none focus:outline-none after:hidden pb-2">
                 How accurate is the data?
               </summary>
               <p className="text-slate-600 pt-4 text-base leading-relaxed">
@@ -224,9 +220,9 @@ export default function Home() {
               </p>
             </details>
           </div>
-          <div className="border border-slate-200/50 rounded-2xl overflow-hidden backdrop-blur-sm bg-slate-900/30 hover:border-emerald-500/50 transition-all duration-300">
-            <details className="p-6 hover:bg-white">
-              <summary className="font-semibold text-slate-200 cursor-pointer list-none focus:outline-none after:hidden pb-2">
+          <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white hover:border-emerald-500/50 transition-all duration-300">
+            <details className="p-6">
+              <summary className="font-semibold text-slate-800 cursor-pointer list-none focus:outline-none after:hidden pb-2">
                 Is my data private?
               </summary>
               <p className="text-slate-600 pt-4 text-base leading-relaxed">
@@ -234,9 +230,9 @@ export default function Home() {
               </p>
             </details>
           </div>
-          <div className="border border-slate-200/50 rounded-2xl overflow-hidden backdrop-blur-sm bg-slate-900/30 hover:border-emerald-500/50 transition-all duration-300">
-            <details className="p-6 hover:bg-white">
-              <summary className="font-semibold text-slate-200 cursor-pointer list-none focus:outline-none after:hidden pb-2">
+          <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white hover:border-emerald-500/50 transition-all duration-300">
+            <details className="p-6">
+              <summary className="font-semibold text-slate-800 cursor-pointer list-none focus:outline-none after:hidden pb-2">
                 What roles and locations are covered?
               </summary>
               <p className="text-slate-600 pt-4 text-base leading-relaxed">
@@ -244,9 +240,9 @@ export default function Home() {
               </p>
             </details>
           </div>
-          <div className="border border-slate-200/50 rounded-2xl overflow-hidden backdrop-blur-sm bg-slate-900/30 hover:border-emerald-500/50 transition-all duration-300">
-            <details className="p-6 hover:bg-white">
-              <summary className="font-semibold text-slate-200 cursor-pointer list-none focus:outline-none after:hidden pb-2">
+          <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white hover:border-emerald-500/50 transition-all duration-300">
+            <details className="p-6">
+              <summary className="font-semibold text-slate-800 cursor-pointer list-none focus:outline-none after:hidden pb-2">
                 How is total comp calculated?
               </summary>
               <p className="text-slate-600 pt-4 text-base leading-relaxed">
@@ -254,13 +250,13 @@ export default function Home() {
               </p>
             </details>
           </div>
-          <div className="border border-slate-200/50 rounded-2xl overflow-hidden backdrop-blur-sm bg-slate-900/30 hover:border-emerald-500/50 transition-all duration-300">
-            <details className="p-6 hover:bg-white">
-              <summary className="font-semibold text-slate-200 cursor-pointer list-none focus:outline-none after:hidden pb-2">
+          <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white hover:border-emerald-500/50 transition-all duration-300">
+            <details className="p-6">
+              <summary className="font-semibold text-slate-800 cursor-pointer list-none focus:outline-none after:hidden pb-2">
                 Can I contribute data?
               </summary>
               <p className="text-slate-600 pt-4 text-base leading-relaxed">
-                Yes! <Link href="/contribute" className="text-emerald-400 hover:text-emerald-300 font-semibold">Submit anonymized offers</Link> to help improve benchmarks for everyone.
+                Yes! <Link href="/contribute" className="text-emerald-600 hover:text-emerald-700 font-semibold">Submit anonymized offers</Link> to help improve benchmarks for everyone.
               </p>
             </details>
           </div>
@@ -268,7 +264,7 @@ export default function Home() {
       </section>
 
       {/* Comparison Table */}
-      <section className="px-4 py-20 md:py-24 lg:py-32 bg-white border-y border-slate-200/50 backdrop-blur-sm">
+      <section className="px-4 py-20 md:py-24 lg:py-32 bg-slate-50 border-y border-slate-200">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="text-center space-y-6">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Why AvgPay Beats The Rest</h2>
@@ -277,47 +273,47 @@ export default function Home() {
             </p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm md:text-base border-collapse bg-white backdrop-blur-sm rounded-3xl border border-slate-200/50 overflow-hidden shadow-2xl">
+            <table className="w-full text-sm md:text-base border-collapse bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-lg">
               <thead>
-                <tr className="bg-gradient-to-r from-slate-800/70 to-slate-900/70 backdrop-blur-sm">
-                  <th className="p-6 text-left font-black text-slate-900 text-lg border-b border-slate-700/50">Feature</th>
-                  <th className="p-6 text-center font-black text-emerald-400 text-lg border-b border-slate-700/50"><span className="block">AvgPay</span><span className="text-xs text-emerald-300 font-normal">(You are here)</span></th>
-                  <th className="p-6 text-center font-semibold text-emerald-400 border-b border-slate-700/50">Levels.fyi</th>
-                  <th className="p-6 text-center font-semibold text-orange-400 border-b border-slate-700/50">Glassdoor</th>
-                  <th className="p-6 text-center font-semibold text-yellow-400 border-b border-slate-700/50">Blind</th>
+                <tr className="bg-slate-100">
+                  <th className="p-6 text-left font-bold text-slate-800 text-lg border-b border-slate-200">Feature</th>
+                  <th className="p-6 text-center font-bold text-emerald-600 text-lg border-b border-slate-200"><span className="block">AvgPay</span><span className="text-xs text-emerald-500 font-normal">(You are here)</span></th>
+                  <th className="p-6 text-center font-semibold text-slate-700 border-b border-slate-200">Levels.fyi</th>
+                  <th className="p-6 text-center font-semibold text-slate-700 border-b border-slate-200">Glassdoor</th>
+                  <th className="p-6 text-center font-semibold text-slate-700 border-b border-slate-200">Blind</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
-                <tr className="hover:bg-slate-800/30 transition-colors">
-                  <td className="p-6 font-semibold text-slate-200"><Shield className="w-5 h-5 inline mr-2 text-emerald-400" />Data Source</td>
-                  <td className="p-6 text-center font-bold text-emerald-400">BLS + H-1B + Laws</td>
-                  <td className="p-6 text-center text-emerald-300">Self-Reported</td>
-                  <td className="p-6 text-center text-orange-300">Self-Reported</td>
-                  <td className="p-6 text-center text-yellow-300">Anonymous Posts</td>
+              <tbody className="divide-y divide-slate-200">
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-6 font-semibold text-slate-800"><Shield className="w-5 h-5 inline mr-2 text-emerald-500" />Data Source</td>
+                  <td className="p-6 text-center font-bold text-emerald-600">BLS + H-1B + Laws</td>
+                  <td className="p-6 text-center text-slate-600">Self-Reported</td>
+                  <td className="p-6 text-center text-slate-600">Self-Reported</td>
+                  <td className="p-6 text-center text-slate-600">Anonymous Posts</td>
                 </tr>
-                <tr className="hover:bg-slate-800/30 transition-colors">
-                  <td className="p-6 font-semibold text-slate-200"><TrendingUp className="w-5 h-5 inline mr-2 text-emerald-400" />Update Frequency</td>
-                  <td className="p-6 text-center font-bold text-emerald-400">Real-Time</td>
-                  <td className="p-6 text-center text-emerald-300">Monthly</td>
-                  <td className="p-6 text-center text-orange-300">Quarterly</td>
-                  <td className="p-6 text-center text-yellow-300">Daily (Unverified)</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-6 font-semibold text-slate-800"><TrendingUp className="w-5 h-5 inline mr-2 text-emerald-500" />Update Frequency</td>
+                  <td className="p-6 text-center font-bold text-emerald-600">Real-Time</td>
+                  <td className="p-6 text-center text-slate-600">Monthly</td>
+                  <td className="p-6 text-center text-slate-600">Quarterly</td>
+                  <td className="p-6 text-center text-slate-600">Daily (Unverified)</td>
                 </tr>
-                <tr className="hover:bg-slate-800/30 transition-colors">
-                  <td className="p-6 font-semibold text-slate-200"><Award className="w-5 h-5 inline mr-2 text-emerald-400" />Accuracy</td>
-                  <td className="p-6 text-center font-bold text-emerald-400">98% Verified</td>
-                  <td className="p-6 text-center text-emerald-300">~80%</td>
-                  <td className="p-6 text-center text-orange-300">~70%</td>
-                  <td className="p-6 text-center text-yellow-300">Variable</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-6 font-semibold text-slate-800"><Award className="w-5 h-5 inline mr-2 text-emerald-500" />Accuracy</td>
+                  <td className="p-6 text-center font-bold text-emerald-600">98% Verified</td>
+                  <td className="p-6 text-center text-slate-600">~80%</td>
+                  <td className="p-6 text-center text-slate-600">~70%</td>
+                  <td className="p-6 text-center text-slate-600">Variable</td>
                 </tr>
-                <tr className="hover:bg-slate-800/30 transition-colors">
-                  <td className="p-6 font-semibold text-slate-200"><Users className="w-5 h-5 inline mr-2 text-emerald-400" />Free Analysis</td>
-                  <td className="p-6 text-center font-bold text-emerald-400">✅ Unlimited</td>
-                  <td className="p-6 text-center text-emerald-300">✅ Basic</td>
-                  <td className="p-6 text-center text-orange-300">Limited</td>
-                  <td className="p-6 text-center text-yellow-300">Forum Only</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-6 font-semibold text-slate-800"><Users className="w-5 h-5 inline mr-2 text-emerald-500" />Free Analysis</td>
+                  <td className="p-6 text-center font-bold text-emerald-600">✅ Unlimited</td>
+                  <td className="p-6 text-center text-slate-600">✅ Basic</td>
+                  <td className="p-6 text-center text-slate-600">Limited</td>
+                  <td className="p-6 text-center text-slate-600">Forum Only</td>
                 </tr>
-                <tr className="bg-gradient-to-r from-emerald-500/5 to-emerald-600/5 hover:from-emerald-500/10 border-t border-emerald-400/30 transition-all duration-300">
-                  <td className="p-6 font-black text-emerald-400 text-lg"><Zap className="w-6 h-6 inline mr-2" />Get Started Now</td>
+                <tr className="bg-emerald-500/5 border-t border-emerald-500/30">
+                  <td className="p-6 font-bold text-emerald-700 text-lg"><Zap className="w-6 h-6 inline mr-2" />Get Started Now</td>
                   <td className="p-6">
                     <Link href="#analyzer" className="inline-block bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:shadow-emerald-500/25 transition-all duration-300">
                       Analyze Free
@@ -332,21 +328,21 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="px-4 py-20 md:py-24 text-center bg-gradient-to-b from-emerald-900/40 to-slate-950/80 border-y border-slate-200/50">
+      <section className="px-4 py-20 md:py-24 text-center bg-slate-100 border-y border-slate-200">
         <div className="max-w-3xl mx-auto space-y-8">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent tracking-tight">
             Ready to Negotiate Your Best Offer Yet?
           </h2>
-          <p className="text-xl text-slate-300 max-w-xl mx-auto leading-relaxed mb-12">
+          <p className="text-xl text-slate-600 max-w-xl mx-auto leading-relaxed mb-12">
             Don't leave money on the table. Get your personalized analysis in under 60 seconds.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="#analyzer">
-              <Button size="lg" className="text-xl px-12 py-8 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-2xl hover:shadow-emerald/25 font-bold tracking-wide rounded-3xl w-full sm:w-auto">
+              <Button size="lg" className="text-xl px-12 py-8 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-2xl hover:shadow-emerald-500/25 font-bold tracking-wide rounded-3xl w-full sm:w-auto">
                 Start Free Analysis Now
               </Button>
             </Link>
-            <Link href="/guides" className="text-lg font-semibold text-slate-600 hover:text-slate-200 transition-colors flex items-center gap-2">
+            <Link href="/guides" className="text-lg font-semibold text-slate-600 hover:text-slate-800 transition-colors flex items-center gap-2">
               Explore Guides First <TrendingUp className="w-5 h-5" />
             </Link>
           </div>
@@ -357,18 +353,18 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="px-4 py-12 md:py-16 border-t border-slate-200/50 bg-white/50 backdrop-blur-sm">
+      <footer className="px-4 py-12 md:py-16 border-t border-slate-200 bg-white">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
           <div className="text-slate-600 text-base font-medium">
-            © 2026 <span className="text-gradient font-black">AvgPay</span>. Built for tech workers who negotiate.
+            © 2026 <span className="text-emerald-600 font-black">AvgPay</span>. Built for tech workers who negotiate.
           </div>
           <div className="flex flex-wrap gap-6 justify-center md:justify-end text-sm text-slate-600 font-medium">
-            <Link href="/guides" className="hover:text-slate-200 transition-colors">Guides</Link>
-            <Link href="/methodology" className="hover:text-slate-200 transition-colors">Methodology</Link>
-            <Link href="/salaries" className="hover:text-slate-200 transition-colors">Salaries</Link>
-            <Link href="/pricing" className="hover:text-slate-200 transition-colors">Pricing</Link>
-            <Link href="/about" className="hover:text-slate-200 transition-colors">About</Link>
-            <Link href="/privacy" className="hover:text-slate-200 transition-colors">Privacy</Link>
+            <Link href="/guides" className="hover:text-slate-900 transition-colors">Guides</Link>
+            <Link href="/methodology" className="hover:text-slate-900 transition-colors">Methodology</Link>
+            <Link href="/salaries" className="hover:text-slate-900 transition-colors">Salaries</Link>
+            <Link href="/pricing" className="hover:text-slate-900 transition-colors">Pricing</Link>
+            <Link href="/about" className="hover:text-slate-900 transition-colors">About</Link>
+            <Link href="/privacy" className="hover:text-slate-900 transition-colors">Privacy</Link>
           </div>
         </div>
       </footer>
