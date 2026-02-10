@@ -192,7 +192,7 @@ export default function SubmitSalaryPage() {
     <main className="min-h-screen bg-slate-50 pt-24 pb-12">
       <div className="max-w-3xl mx-auto px-6">
         <div className="text-center space-y-4 mb-10">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900">Share Your Salary</h1>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900">Share Your Salary (v2.1)</h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
             Help us build a more transparent compensation landscape.
           </p>
