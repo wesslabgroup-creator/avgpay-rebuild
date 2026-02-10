@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 
-type CompanySalaryRow = { totalComp: number; Company: { name: string } | null };
-type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string } | null };
+type CompanySalaryRow = { totalComp: number; Company: { name: string }[] | null };
+type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string }[] | null };
 type DistributionRow = { totalComp: number };
 
 export async function GET(request: Request) {
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     if (topSalariesError) throw new Error(`Error fetching top companies: ${topSalariesError.message}`);
 
     const topCompanies = (topSalaries as CompanySalaryRow[] | null)?.map((s) => ({
-      company_name: s.Company?.name,
+      company_name: s.Company?.[0]?.name,
       total_comp: s.totalComp
     }));
 
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
     if (locSalariesError) throw new Error(`Error fetching top locations: ${locSalariesError.message}`);
 
     const topLocations = (locSalaries as LocationSalaryRow[] | null)?.map((s) => ({
-      location: `${s.Location?.city}, ${s.Location?.state}`,
+      location: `${s.Location?.[0]?.city}, ${s.Location?.[0]?.state}`,
       total_comp: s.totalComp
     }));
 
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
     if (bottomLocSalariesError) throw new Error(`Error fetching bottom locations: ${bottomLocSalariesError.message}`);
 
     const bottomLocations = (bottomLocSalaries as LocationSalaryRow[] | null)?.map((s) => ({
-      location: `${s.Location?.city}, ${s.Location?.state}`,
+      location: `${s.Location?.[0]?.city}, ${s.Location?.[0]?.state}`,
       total_comp: s.totalComp
     }));
 
