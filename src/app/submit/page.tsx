@@ -1,15 +1,13 @@
 "use client";
-// Deploy: Force rebuild 2026-02-10
 
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { CheckCircle2, Loader2, ChevronDown } from 'lucide-react';
+import { CheckCircle2, Loader2 } from 'lucide-react';
 
 const EXPERIENCE_LEVELS = [
+  "Select level...",
   "Entry Level (0-2 years)",
   "Junior (2-4 years)",
   "Mid-Level (4-7 years)",
@@ -18,6 +16,7 @@ const EXPERIENCE_LEVELS = [
 ];
 
 const US_STATES = [
+  "Select state...",
   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
   "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
   "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
@@ -28,119 +27,85 @@ const US_STATES = [
 
 export default function SubmitSalaryPage() {
   const router = useRouter();
-
-  const [formData, setFormData] = useState({
-    jobTitle: '',
-    companyName: '',
-    city: '',
-    state: '',
-    baseSalary: '',
-    stockOptions: '',
-    bonus: '',
-    otherComp: '',
-    experienceLevel: '',
-    yearsAtCompany: '',
-    userNotes: '',
-  });
-
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDebug, setShowDebug] = useState(false);
 
-  // Log form data changes for debugging
-  useEffect(() => {
-    console.log('Form data updated:', formData);
-  }, [formData]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    console.log(`Field ${name} changed to:`, value);
-    setFormData(prev => ({ ...prev, [name]: value }));
-    setError(null);
-  };
-
-  // Explicit handlers for debugging dropdowns
-  const handleExperienceLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    console.log('Experience Level selected:', value);
-    setFormData(prev => ({ ...prev, experienceLevel: value }));
-    setError(null);
-  };
-
-  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    console.log('State selected:', value);
-    setFormData(prev => ({ ...prev, state: value }));
-    setError(null);
-  };
+  // Uncontrolled refs for all fields
+  const jobTitleRef = useRef<HTMLInputElement>(null);
+  const companyNameRef = useRef<HTMLInputElement>(null);
+  const cityRef = useRef<HTMLInputElement>(null);
+  const experienceLevelRef = useRef<HTMLSelectElement>(null);
+  const stateRef = useRef<HTMLSelectElement>(null);
+  const baseSalaryRef = useRef<HTMLInputElement>(null);
+  const stockOptionsRef = useRef<HTMLInputElement>(null);
+  const bonusRef = useRef<HTMLInputElement>(null);
+  const otherCompRef = useRef<HTMLInputElement>(null);
+  const yearsAtCompanyRef = useRef<HTMLInputElement>(null);
+  const userNotesRef = useRef<HTMLTextAreaElement>(null);
 
   const calculateTotalComp = () => {
-    const base = parseInt(formData.baseSalary || "0");
-    const stock = parseInt(formData.stockOptions || "0") / 4;
-    const bonus = parseInt(formData.bonus || "0");
-    const other = parseInt(formData.otherComp || "0");
-    return base + stock + bonus + other;
-  };
-
-  // Check if field is empty (for styling)
-  const isEmpty = (field: keyof typeof formData) => {
-    const value = formData[field];
-    return !value || value.toString().trim() === '' || value === '';
-  };
-
-  const validateForm = (): boolean => {
-    const missing: string[] = [];
-    
-    if (!formData.jobTitle?.trim()) missing.push('Job Title');
-    if (!formData.companyName?.trim()) missing.push('Company Name');
-    if (!formData.experienceLevel || formData.experienceLevel === '') {
-      missing.push('Experience Level');
-    }
-    if (!formData.city?.trim()) missing.push('City');
-    if (!formData.state || formData.state === '') {
-      missing.push('State');
-    }
-    if (!formData.baseSalary || parseInt(formData.baseSalary) <= 0) missing.push('Base Salary');
-
-    if (missing.length > 0) {
-      setError(`⚠️ Missing required fields: ${missing.join(', ')}`);
-      console.log('Validation failed, missing:', missing);
-      return false;
-    }
-
-    return true;
+    const base = parseInt(baseSalaryRef.current?.value || "0");
+    const stock = parseInt(stockOptionsRef.current?.value || "0") / 4;
+    const bonusVal = parseInt(bonusRef.current?.value || "0");
+    const other = parseInt(otherCompRef.current?.value || "0");
+    return base + stock + bonusVal + other;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submit clicked, formData:', formData);
-    
-    if (!validateForm()) return;
-
-    setIsLoading(true);
     setError(null);
 
+    // Read values directly from DOM refs
+    const jobTitle = jobTitleRef.current?.value?.trim() || '';
+    const companyName = companyNameRef.current?.value?.trim() || '';
+    const city = cityRef.current?.value?.trim() || '';
+    const experienceLevel = experienceLevelRef.current?.value || '';
+    const state = stateRef.current?.value || '';
+    const baseSalary = baseSalaryRef.current?.value || '';
+
+    console.log('Form values from refs:', {
+      jobTitle, companyName, city, experienceLevel, state, baseSalary
+    });
+
+    // Validation
+    const missing: string[] = [];
+    if (!jobTitle) missing.push('Job Title');
+    if (!companyName) missing.push('Company Name');
+    if (!experienceLevel || experienceLevel === 'Select level...') missing.push('Experience Level');
+    if (!city) missing.push('City');
+    if (!state || state === 'Select state...') missing.push('State');
+    if (!baseSalary || parseInt(baseSalary) <= 0) missing.push('Base Salary');
+
+    if (missing.length > 0) {
+      setError(`Missing required fields: ${missing.join(', ')}`);
+      console.log('Validation failed:', missing);
+      return;
+    }
+
+    setIsLoading(true);
+
     const totalComp = calculateTotalComp();
-    const location = `${formData.city.trim()}, ${formData.state}`;
+    const location = `${city}, ${state}`;
 
     const payload = {
-      jobTitle: formData.jobTitle.trim(),
-      companyName: formData.companyName.trim(),
+      jobTitle,
+      companyName,
       location,
-      baseSalary: formData.baseSalary,
-      stockOptions: formData.stockOptions || '0',
-      bonus: formData.bonus || '0',
-      otherComp: formData.otherComp || '0',
+      baseSalary,
+      stockOptions: stockOptionsRef.current?.value || '0',
+      bonus: bonusRef.current?.value || '0',
+      otherComp: otherCompRef.current?.value || '0',
       totalComp: totalComp.toString(),
-      experienceLevel: formData.experienceLevel,
-      yearsAtCompany: formData.yearsAtCompany || '0',
-      userNotes: formData.userNotes?.trim() || '',
+      experienceLevel,
+      yearsAtCompany: yearsAtCompanyRef.current?.value || '0',
+      userNotes: userNotesRef.current?.value?.trim() || '',
       submittedAt: new Date().toISOString(),
       status: 'pending_review',
     };
 
-    console.log('Submitting payload:', payload);
+    console.log('Submitting:', payload);
 
     try {
       const response = await fetch('/api/submit-salary', {
@@ -149,11 +114,9 @@ export default function SubmitSalaryPage() {
         body: JSON.stringify(payload),
       });
 
-      console.log('Response status:', response.status);
-
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Server error: ${response.status}`);
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || `Server error: ${response.status}`);
       }
 
       setIsSuccess(true);
@@ -182,18 +145,15 @@ export default function SubmitSalaryPage() {
     );
   }
 
-  const inputClass = "text-base py-3 px-4 bg-white border-slate-300 text-slate-900";
-  const selectClass = (isInvalid: boolean) => 
-    `w-full px-4 py-3 bg-white border rounded-xl text-slate-900 appearance-none cursor-pointer focus:outline-none focus:ring-2 ${
-      isInvalid ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-emerald-500 focus:ring-emerald-500'
-    }`;
+  const inputClass = "w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20";
+  const selectClass = "w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 appearance-none cursor-pointer";
 
   return (
     <main className="min-h-screen bg-slate-50 pt-24 pb-12">
-      <div className="max-w-3xl mx-auto px-6">
-        <div className="text-center space-y-4 mb-10">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900">Share Your Salary (v2.1)</h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="text-center space-y-4 mb-8">
+          <h1 className="text-4xl font-bold text-slate-900">Share Your Salary</h1>
+          <p className="text-xl text-slate-600">
             Help us build a more transparent compensation landscape.
           </p>
         </div>
@@ -217,10 +177,9 @@ export default function SubmitSalaryPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       Job Title <span className="text-red-500">*</span>
                     </label>
-                    <Input
-                      name="jobTitle"
-                      value={formData.jobTitle}
-                      onChange={handleInputChange}
+                    <input
+                      ref={jobTitleRef}
+                      type="text"
                       placeholder="e.g., Software Engineer"
                       className={inputClass}
                     />
@@ -230,37 +189,25 @@ export default function SubmitSalaryPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       Company Name <span className="text-red-500">*</span>
                     </label>
-                    <Input
-                      name="companyName"
-                      value={formData.companyName}
-                      onChange={handleInputChange}
+                    <input
+                      ref={companyNameRef}
+                      type="text"
                       placeholder="e.g., Google"
                       className={inputClass}
                     />
                   </div>
                 </div>
 
+                {/* Experience Level */}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
                     Experience Level <span className="text-red-500">*</span>
                   </label>
-                  <div className="relative">
-                    <select
-                      name="experienceLevel"
-                      value={formData.experienceLevel}
-                      onChange={handleExperienceLevelChange}
-                      className={selectClass(isEmpty('experienceLevel') && !!error)}
-                    >
-                      <option value="">Select experience level...</option>
-                      {EXPERIENCE_LEVELS.map(level => (
-                        <option key={level} value={level}>{level}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
-                  </div>
-                  {isEmpty('experienceLevel') && error && (
-                    <p className="text-red-500 text-xs mt-1">Select an experience level</p>
-                  )}
+                  <select ref={experienceLevelRef} className={selectClass}>
+                    {EXPERIENCE_LEVELS.map(level => (
+                      <option key={level} value={level}>{level}</option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Location */}
@@ -269,10 +216,9 @@ export default function SubmitSalaryPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       City <span className="text-red-500">*</span>
                     </label>
-                    <Input
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
+                    <input
+                      ref={cityRef}
+                      type="text"
                       placeholder="e.g., San Francisco"
                       className={inputClass}
                     />
@@ -282,23 +228,11 @@ export default function SubmitSalaryPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       State <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <select
-                        name="state"
-                        value={formData.state}
-                        onChange={handleStateChange}
-                        className={selectClass(isEmpty('state') && !!error)}
-                      >
-                        <option value="">Select state...</option>
-                        {US_STATES.map(state => (
-                          <option key={state} value={state}>{state}</option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
-                    </div>
-                    {isEmpty('state') && error && (
-                      <p className="text-red-500 text-xs mt-1">Select a state</p>
-                    )}
+                    <select ref={stateRef} className={selectClass}>
+                      {US_STATES.map(state => (
+                        <option key={state} value={state}>{state}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -306,13 +240,11 @@ export default function SubmitSalaryPage() {
                   <label className="block text-sm font-medium text-slate-700 mb-1">
                     Years at Company
                   </label>
-                  <Input
-                    name="yearsAtCompany"
+                  <input
+                    ref={yearsAtCompanyRef}
                     type="number"
-                    value={formData.yearsAtCompany}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 2"
                     min="0"
+                    placeholder="e.g., 2"
                     className={inputClass}
                   />
                 </div>
@@ -327,13 +259,11 @@ export default function SubmitSalaryPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       Base Salary (Annual) <span className="text-red-500">*</span>
                     </label>
-                    <Input
-                      name="baseSalary"
+                    <input
+                      ref={baseSalaryRef}
                       type="number"
-                      value={formData.baseSalary}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 150000"
                       min="1"
+                      placeholder="e.g., 150000"
                       className={inputClass}
                     />
                   </div>
@@ -342,13 +272,11 @@ export default function SubmitSalaryPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       Stock/Equity (4-year grant)
                     </label>
-                    <Input
-                      name="stockOptions"
+                    <input
+                      ref={stockOptionsRef}
                       type="number"
-                      value={formData.stockOptions}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 400000"
                       min="0"
+                      placeholder="e.g., 400000"
                       className={inputClass}
                     />
                   </div>
@@ -357,13 +285,11 @@ export default function SubmitSalaryPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       Annual Bonus
                     </label>
-                    <Input
-                      name="bonus"
+                    <input
+                      ref={bonusRef}
                       type="number"
-                      value={formData.bonus}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 25000"
                       min="0"
+                      placeholder="e.g., 25000"
                       className={inputClass}
                     />
                   </div>
@@ -372,13 +298,11 @@ export default function SubmitSalaryPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       Other Compensation
                     </label>
-                    <Input
-                      name="otherComp"
+                    <input
+                      ref={otherCompRef}
                       type="number"
-                      value={formData.otherComp}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 5000"
                       min="0"
+                      placeholder="e.g., 5000"
                       className={inputClass}
                     />
                   </div>
@@ -401,13 +325,11 @@ export default function SubmitSalaryPage() {
                   <label className="block text-sm font-medium text-slate-700 mb-1">
                     Additional Notes
                   </label>
-                  <Textarea
-                    name="userNotes"
-                    value={formData.userNotes}
-                    onChange={handleInputChange}
+                  <textarea
+                    ref={userNotesRef}
                     placeholder="Any additional context..."
                     rows={4}
-                    className="text-base py-3 px-4 bg-white border-slate-300 text-slate-900"
+                    className={`${inputClass} resize-none`}
                   />
                 </div>
               </div>
@@ -444,15 +366,11 @@ export default function SubmitSalaryPage() {
 
               {showDebug && (
                 <div className="p-4 bg-slate-100 rounded-lg text-xs font-mono">
-                  <p className="font-semibold mb-2">Current Form Data:</p>
-                  <pre>{JSON.stringify(formData, null, 2)}</pre>
-                  <p className="font-semibold mt-2 mb-1">Validation:</p>
-                  <p>jobTitle: {formData.jobTitle ? '✓' : '✗'}</p>
-                  <p>companyName: {formData.companyName ? '✓' : '✗'}</p>
-                  <p>experienceLevel: {formData.experienceLevel ? '✓' : '✗'}</p>
-                  <p>city: {formData.city ? '✓' : '✗'}</p>
-                  <p>state: {formData.state ? '✓' : '✗'}</p>
-                  <p>baseSalary: {formData.baseSalary ? '✓' : '✗'}</p>
+                  <p className="font-semibold mb-2">Form Refs (current values):</p>
+                  <p>jobTitle: {jobTitleRef.current?.value || '(empty)'}</p>
+                  <p>experienceLevel: {experienceLevelRef.current?.value || '(empty)'}</p>
+                  <p>state: {stateRef.current?.value || '(empty)'}</p>
+                  <p>city: {cityRef.current?.value || '(empty)'}</p>
                 </div>
               )}
             </form>
