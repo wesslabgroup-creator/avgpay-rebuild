@@ -20,55 +20,55 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="prose prose-invert max-w-none">
-            <p className="text-lg text-slate-300">
-              We believe everyone deserves to know their market value. The salary negotiation 
+          <div className="prose max-w-none">
+            <p className="text-lg text-slate-700 leading-relaxed">
+              We believe everyone deserves to know their market value. The salary negotiation
               process is broken—opaque, stressful, and unfair. We&apos;re fixing it with data.
             </p>
 
             <h2 className="text-2xl font-bold mt-8 mb-4 text-slate-900">Our Mission</h2>
-            <p className="text-slate-600">
-              Democratize access to compensation data so every tech worker can negotiate 
+            <p className="text-slate-600 leading-relaxed">
+              Democratize access to compensation data so every tech worker can negotiate
               with confidence. No more guessing. No more leaving money on the table.
             </p>
 
             <h2 className="text-2xl font-bold mt-8 mb-4 text-slate-900">Privacy First</h2>
-            <p className="text-slate-600">
-              We don&apos;t store personal information. All salary data is anonymized. 
-              We don&apos;t sell your data to recruiters or employers. This is a tool 
+            <p className="text-slate-600 leading-relaxed">
+              We don&apos;t store personal information. All salary data is anonymized.
+              We don&apos;t sell your data to recruiters or employers. This is a tool
               built for workers, not corporations.
             </p>
 
             <h2 className="text-2xl font-bold mt-8 mb-4 text-slate-900">Open Data</h2>
-            <p className="text-slate-600">
-              We aggregate publicly available data from BLS, H-1B filings, and pay 
-              transparency laws. We believe compensation information should be as 
+            <p className="text-slate-600 leading-relaxed">
+              We aggregate publicly available data from BLS, H-1B filings, and pay
+              transparency laws. We believe compensation information should be as
               accessible as stock prices.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <Card className="bg-slate-900 border-slate-200">
+            <Card className="bg-white border-slate-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-4xl font-bold text-emerald-400">50K+</CardTitle>
+                <CardTitle className="text-4xl font-bold text-emerald-600">47K+</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-slate-600">Salary data points</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-900 border-slate-200">
+            <Card className="bg-white border-slate-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-4xl font-bold text-emerald-400">100+</CardTitle>
+                <CardTitle className="text-4xl font-bold text-emerald-600">100+</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-slate-600">Tech companies tracked</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-900 border-slate-200">
+            <Card className="bg-white border-slate-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-4xl font-bold text-emerald-400">25+</CardTitle>
+                <CardTitle className="text-4xl font-bold text-emerald-600">25+</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-slate-600">Metro areas covered</p>
@@ -77,7 +77,7 @@ export default function AboutPage() {
           </div>
 
           <div className="text-center">
-            <Link href="/contribute" className="text-emerald-400 hover:text-emerald-300">
+            <Link href="/contribute" className="text-emerald-600 hover:text-emerald-700 font-semibold">
               Help us grow the database →
             </Link>
           </div>

@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SalaryChart } from "@/components/salary-chart";
 import { Button } from "@/components/ui/button";
-import { getMarketData, COMPANIES, ROLES, LOCATIONS } from "@/lib/data"; // Import necessary constants
+import { getMarketData, COMPANIES, ROLES, LOCATIONS } from "@/lib/data";
 import { BreadcrumbSchema } from "@/components/schema-markup";
+import { getBaseUrl, getFullUrl } from "@/lib/utils";
 import Link from "next/link";
 
 interface PageProps {
@@ -74,21 +75,21 @@ export default function SalaryPage({ params }: PageProps) {
         <div className="max-w-4xl mx-auto space-y-8">
            {/* Schema Markup for Breadcrumbs */}
           <BreadcrumbSchema items={[
-            { name: "Home", item: `${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "http://localhost:3000"}` },
-            { name: company, item: `${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "http://localhost:3000"}/${encodeURIComponent(company)}` },
-            { name: role, item: `${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "http://localhost:3000"}/${encodeURIComponent(company)}/${encodeURIComponent(role)}` },
-            { name: location, item: `${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "http://localhost:3000"}/${encodeURIComponent(company)}/${encodeURIComponent(role)}/${encodeURIComponent(location.replace(", ", "-"))}` },
+            { name: "Home", item: getBaseUrl() },
+            { name: company, item: getFullUrl(`/${encodeURIComponent(company)}`) },
+            { name: role, item: getFullUrl(`/${encodeURIComponent(company)}/${encodeURIComponent(role)}`) },
+            { name: location, item: getFullUrl(`/${encodeURIComponent(company)}/${encodeURIComponent(role)}/${encodeURIComponent(location.replace(", ", "-"))}`) },
           ]} />
-          
+
           {/* Visual Breadcrumb */}
           <nav className="text-sm text-slate-600">
-            <Link href="/" className="hover:text-slate-200 transition duration-300">Home</Link>
+            <Link href="/" className="hover:text-slate-900 transition duration-300">Home</Link>
             <span className="mx-2">/</span>
-            <Link href={`/${encodeURIComponent(company)}`} className="hover:text-slate-200 transition duration-300">{company}</Link>
+            <Link href={`/${encodeURIComponent(company)}`} className="hover:text-slate-900 transition duration-300">{company}</Link>
             <span className="mx-2">/</span>
-            <Link href={`/${encodeURIComponent(company)}/${encodeURIComponent(role)}`} className="hover:text-slate-200 transition duration-300">{role}</Link>
+            <Link href={`/${encodeURIComponent(company)}/${encodeURIComponent(role)}`} className="hover:text-slate-900 transition duration-300">{role}</Link>
             <span className="mx-2">/</span>
-            <span className="text-slate-200">{location}</span>
+            <span className="text-slate-900 font-medium">{location}</span>
           </nav>
 
           {/* Header */}
@@ -164,9 +165,9 @@ export default function SalaryPage({ params }: PageProps) {
           </div>
 
           {/* Data Provenance */}
-          <div className="p-6 rounded-lg bg-slate-800/30 border border-slate-700 text-sm text-slate-600">
-            <h3 className="font-semibold text-slate-200 mb-2">Data Sources</h3>
-            <ul className="space-y-1">
+          <div className="p-6 rounded-lg bg-slate-50 border border-slate-200 text-sm">
+            <h3 className="font-semibold text-slate-900 mb-2">Data Sources</h3>
+            <ul className="space-y-1 text-slate-700">
               <li>• Bureau of Labor Statistics (BLS) Occupational Employment Data</li>
               <li>• H-1B Labor Condition Applications (public filings)</li>
               <li>• Pay transparency law postings (verified ranges)</li>
