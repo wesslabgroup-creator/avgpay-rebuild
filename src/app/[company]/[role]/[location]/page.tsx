@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SalaryChart } from "@/components/salary-chart";
 import { Button } from "@/components/ui/button";
 import { getMarketData, COMPANIES, ROLES, LOCATIONS } from "@/lib/data";
-import { BreadcrumbSchema } from "@/components/schema-markup";
+import { BreadcrumbSchema, JobPostingSchema } from "@/components/schema-markup";
 import { getBaseUrl, getFullUrl } from "@/lib/utils";
+import { generateSalaryPageMeta } from "@/lib/meta";
 import Link from "next/link";
 
 interface PageProps {
@@ -20,18 +21,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const company = decodeURIComponent(params.company);
   const role = decodeURIComponent(params.role);
   const location = decodeURIComponent(params.location).replace(/-/g, ", ");
-  
+
   // Updated to include company, role, location, and level for accurate data retrieval
   const data = getMarketData(company, role, location, "L3-L4");
-  
-  return {
-    title: `${role} Salary at ${company} in ${location} | AvgPay`,
-    description: `See ${role} compensation data at ${company} in ${location}. Median: $${data.median.toLocaleString()}. Compare against BLS and market benchmarks.`,
-    openGraph: {
-      title: `${role} Salary at ${company} in ${location}`,
-      description: `Verified compensation data for ${role} positions at ${company}`,
-    },
-  };
+
+  return generateSalaryPageMeta(company, role, location, data.median);
 }
 
 export async function generateStaticParams() {
@@ -80,6 +74,18 @@ export default function SalaryPage({ params }: PageProps) {
             { name: role, item: getFullUrl(`/${encodeURIComponent(company)}/${encodeURIComponent(role)}`) },
             { name: location, item: getFullUrl(`/${encodeURIComponent(company)}/${encodeURIComponent(role)}/${encodeURIComponent(location.replace(", ", "-"))}`) },
           ]} />
+
+          {/* Schema Markup for JobPosting */}
+          <JobPostingSchema
+            jobTitle={role}
+            company={company}
+            location={location}
+            baseSalary={{
+              min: data.min,
+              max: data.max,
+              median: data.median
+            }}
+          />
 
           {/* Visual Breadcrumb */}
           <nav className="text-sm text-slate-600">

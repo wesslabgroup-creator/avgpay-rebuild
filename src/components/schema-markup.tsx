@@ -55,3 +55,60 @@ export const ArticleSchema = ({ headline, datePublished, authorName }: ArticleSc
     `}
   </Script>
 );
+
+interface JobPostingSchemaProps {
+  jobTitle: string;
+  company: string;
+  location: string;
+  baseSalary: {
+    min: number;
+    max: number;
+    median: number;
+  };
+  datePosted?: string;
+  description?: string;
+}
+
+export const JobPostingSchema = ({
+  jobTitle,
+  company,
+  location,
+  baseSalary,
+  datePosted = new Date().toISOString(),
+  description = `Verified salary data for ${jobTitle} positions at ${company} in ${location}.`
+}: JobPostingSchemaProps) => (
+  <Script id="job-posting-schema" type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "JobPosting",
+      "title": jobTitle,
+      "description": description,
+      "datePosted": datePosted,
+      "hiringOrganization": {
+        "@type": "Organization",
+        "name": company
+      },
+      "jobLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": location.split(", ")[0],
+          "addressRegion": location.split(", ")[1] || "",
+          "addressCountry": "US"
+        }
+      },
+      "baseSalary": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": baseSalary.min,
+          "maxValue": baseSalary.max,
+          "median": baseSalary.median,
+          "unitText": "YEAR"
+        }
+      },
+      "employmentType": "FULL_TIME"
+    })}
+  </Script>
+);

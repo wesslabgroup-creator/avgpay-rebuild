@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { OfferAnalyzer } from "@/components/offer-analyzer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { EmailCapture } from "@/components/email-capture";
 import { TrendingUp, Users, Shield, ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
@@ -65,15 +65,7 @@ export default function AnalyzeSalaryPage() {
                 <p className="text-sm text-slate-600 mb-4">
                   Be the first to know when new salary data is available for your role.
                 </p>
-                <div className="space-y-3">
-                  <Input type="email" placeholder="Enter your email" className="w-full" />
-                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
-                    Subscribe Free
-                  </Button>
-                </div>
-                <p className="text-xs text-slate-400 mt-3">
-                  No spam. Unsubscribe anytime.
-                </p>
+                <EmailCapture type="salary-alerts" buttonText="Subscribe Free" />
               </CardContent>
             </Card>
 
