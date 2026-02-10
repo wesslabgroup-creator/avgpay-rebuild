@@ -164,42 +164,78 @@ export default async function SalaryPage({ params }: PageProps) {
           </Card>
 
           {/* Location Financial Context */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg text-slate-900">Financial Context: {location}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {Object.entries(cityContent).map(([key, value]) => (
-                  <div key={key} className="p-4 rounded-lg bg-slate-50 border border-slate-100">
-                    <h4 className="text-sm font-semibold text-emerald-700 uppercase tracking-wide mb-2">
-                      {key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-                    </h4>
-                    <p className="text-sm text-slate-700 leading-relaxed">{value}</p>
+          <section className="space-y-6">
+            <div className="border-l-4 border-emerald-500 pl-4">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                Financial Context: {location}
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">Tax impact, housing costs, and what your salary actually buys in this market</p>
+            </div>
+
+            {(() => {
+              const cityEntries = Object.entries(cityContent);
+              const featuredKey = 'buying_power';
+              const featured = cityEntries.find(([k]) => k === featuredKey);
+              const rest = cityEntries.filter(([k]) => k !== featuredKey);
+              const keyLabel = (k: string) => k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+              return (
+                <div className="space-y-6">
+                  {featured && (
+                    <div className="p-6 md:p-8 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/60">
+                      <h3 className="text-lg font-semibold text-emerald-900">{keyLabel(featured[0])}</h3>
+                      <p className="text-base text-slate-800 leading-relaxed mt-3">{featured[1]}</p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {rest.map(([key, value]) => (
+                      <article key={key} className="p-5 rounded-lg border border-slate-200 bg-white">
+                        <h3 className="text-base font-semibold text-slate-900">{keyLabel(key)}</h3>
+                        <p className="text-sm text-slate-700 leading-relaxed mt-2">{value}</p>
+                      </article>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+              );
+            })()}
+          </section>
 
           {/* Employer Compensation Analysis */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg text-slate-900">Employer Analysis: {company}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {Object.entries(companyContent).map(([key, value]) => (
-                  <div key={key} className="p-4 rounded-lg bg-slate-50 border border-slate-100">
-                    <h4 className="text-sm font-semibold text-emerald-700 uppercase tracking-wide mb-2">
-                      {key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-                    </h4>
-                    <p className="text-sm text-slate-700 leading-relaxed">{value}</p>
+          <section className="space-y-6">
+            <div className="border-l-4 border-emerald-500 pl-4">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                Employer Analysis: {company}
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">Pay structure, negotiation leverage, and career growth at this employer</p>
+            </div>
+
+            {(() => {
+              const compEntries = Object.entries(companyContent);
+              const featuredKey = 'comp_philosophy';
+              const featured = compEntries.find(([k]) => k === featuredKey);
+              const rest = compEntries.filter(([k]) => k !== featuredKey);
+              const keyLabel = (k: string) => k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+              return (
+                <div className="space-y-6">
+                  {featured && (
+                    <div className="p-6 md:p-8 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/60">
+                      <h3 className="text-lg font-semibold text-emerald-900">{keyLabel(featured[0])}</h3>
+                      <p className="text-base text-slate-800 leading-relaxed mt-3">{featured[1]}</p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {rest.map(([key, value]) => (
+                      <article key={key} className="p-5 rounded-lg border border-slate-200 bg-white">
+                        <h3 className="text-base font-semibold text-slate-900">{keyLabel(key)}</h3>
+                        <p className="text-sm text-slate-700 leading-relaxed mt-2">{value}</p>
+                      </article>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+              );
+            })()}
+          </section>
 
           {/* CTA */}
           <div className="flex justify-center gap-4">
