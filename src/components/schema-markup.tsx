@@ -12,22 +12,67 @@ interface ArticleSchemaProps {
   authorName: string;
 }
 
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+interface WebPageSchemaProps {
+  name: string;
+  description: string;
+  url: string;
+}
+
 export const BreadcrumbSchema = ({ items }: { items: BreadcrumbItem[] }) => (
   <Script id="breadcrumb-schema" type="application/ld+json">
-    {`
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          ${items.map((item, index) => `{
-            "@type": "ListItem",
-            "position": ${index + 1},
-            "name": "${item.name}",
-            "item": "${item.item}"
-          }`).join(',')}
-        ]
-      }
-    `}
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: items.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        item: item.item,
+      })),
+    })}
+  </Script>
+);
+
+export const FAQSchema = ({ items }: { items: FAQItem[] }) => (
+  <Script id="faq-schema" type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: items.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    })}
+  </Script>
+);
+
+export const WebPageSchema = ({ name, description, url }: WebPageSchemaProps) => (
+  <Script id="webpage-schema" type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name,
+      description,
+      url,
+      isPartOf: {
+        "@type": "WebSite",
+        name: "AvgPay",
+        url: "https://avgpay-rebuild.vercel.app",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "AvgPay",
+      },
+    })}
   </Script>
 );
 

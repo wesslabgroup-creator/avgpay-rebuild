@@ -6,6 +6,25 @@ const path = require('path');
 const pagesDir = path.resolve(__dirname, '../src/app');
 const siteUrl = 'https://avgpay-rebuild.vercel.app';
 
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .replace(/,/g, '')
+    .replace(/\+/g, ' plus ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function buildComparisonPages(values) {
+  const pages = [];
+  for (let i = 0; i < values.length; i += 1) {
+    for (let j = i + 1; j < values.length; j += 1) {
+      pages.push(`/compare/${slugify(values[i])}-vs-${slugify(values[j])}`);
+    }
+  }
+  return pages;
+}
+
 function getStaticPages(dir) {
   let results = [];
   const list = fs.readdirSync(dir);
@@ -26,19 +45,25 @@ function getStaticPages(dir) {
 
 function generateSitemap() {
   const staticPages = getStaticPages(pagesDir);
-  
-  // Add programmatic pages (mocked for now)
-  const companies = ["Google", "Meta", "Amazon"];
-  const roles = ["Software-Engineer", "Product-Manager"];
-  const locations = ["San-Francisco-CA", "New-York-NY"];
-  
-  const programmaticPages = companies.flatMap(c => 
-    roles.flatMap(r => 
-      locations.map(l => `/${c}/${r}/${l}`)
+
+  // Add programmatic salary pages (mocked for now)
+  const companies = ["Google", "Meta", "Amazon", "Apple", "Microsoft"];
+  const roles = ["Software Engineer", "Product Manager"];
+  const locations = ["San Francisco, CA", "New York, NY", "Seattle, WA", "Redmond, WA", "Cupertino, CA"];
+
+  const programmaticPages = companies.flatMap((c) =>
+    roles.flatMap((r) =>
+      locations.map((l) => `/${encodeURIComponent(c)}/${encodeURIComponent(r)}/${encodeURIComponent(l.replace(', ', '-'))}`)
     )
   );
 
-  const allPages = [...new Set([...staticPages, ...programmaticPages])];
+  const comparisonPages = [
+    ...buildComparisonPages(companies),
+    ...buildComparisonPages(roles),
+    ...buildComparisonPages(locations),
+  ];
+
+  const allPages = [...new Set([...staticPages, ...programmaticPages, ...comparisonPages])];
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

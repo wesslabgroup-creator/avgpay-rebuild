@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePostHog } from "posthog-js/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
@@ -9,9 +10,11 @@ interface EmailCaptureProps {
   type: "salary-alerts" | "negotiation-tips";
   buttonText: string;
   placeholder?: string;
+  source?: string;
 }
 
-export function EmailCapture({ type, buttonText, placeholder = "Enter your email" }: EmailCaptureProps) {
+export function EmailCapture({ type, buttonText, placeholder = "Enter your email", source = "unknown" }: EmailCaptureProps) {
+  const posthog = usePostHog();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -40,6 +43,10 @@ export function EmailCapture({ type, buttonText, placeholder = "Enter your email
       const data = await response.json();
 
       if (response.ok) {
+        posthog?.capture("email_capture_submitted", {
+          capture_type: type,
+          source,
+        });
         setStatus("success");
         setMessage(data.message || "Successfully subscribed!");
         setEmail("");

@@ -3,163 +3,607 @@
   
   <url>
     <loc>https://avgpay-rebuild.vercel.app/about</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/admin</loc>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/analyze-offer</loc>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/analyze-salary</loc>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/auth/verify-request</loc>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/companies</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare</loc>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/contribute</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/dashboard</loc>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/guides/equity</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.360Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/guides/negotiation</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/guides</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/guides/pm-compensation-2026</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/guides/remote-pay</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/guides/startup-vs-bigtech</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/guides/swe-compensation-2026</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/login</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/methodology</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/pricing</loc>
-    <lastmod>2026-02-09T14:29:07.805Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/privacy</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/salaries</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/signup</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://avgpay-rebuild.vercel.app/submit</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Google/Software-Engineer/San-Francisco-CA</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/tools/compare-offers</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Google/Software-Engineer/New-York-NY</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/tools/compensation-breakdown</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Google/Product-Manager/San-Francisco-CA</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/tools/equity-simulator</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Google/Product-Manager/New-York-NY</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/tools/negotiation-email</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Meta/Software-Engineer/San-Francisco-CA</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/tools/percentile-calculator</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Meta/Software-Engineer/New-York-NY</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/tools/stock-calculator</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Meta/Product-Manager/San-Francisco-CA</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Software%20Engineer/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Meta/Product-Manager/New-York-NY</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Software%20Engineer/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Amazon/Software-Engineer/San-Francisco-CA</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Software%20Engineer/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Amazon/Software-Engineer/New-York-NY</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Software%20Engineer/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Amazon/Product-Manager/San-Francisco-CA</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Software%20Engineer/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://avgpay-rebuild.vercel.app/Amazon/Product-Manager/New-York-NY</loc>
-    <lastmod>2026-02-09T14:29:07.806Z</lastmod>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Product%20Manager/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Product%20Manager/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Product%20Manager/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Product%20Manager/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Google/Product%20Manager/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Software%20Engineer/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Software%20Engineer/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Software%20Engineer/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Software%20Engineer/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Software%20Engineer/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Product%20Manager/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Product%20Manager/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Product%20Manager/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Product%20Manager/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Meta/Product%20Manager/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Software%20Engineer/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Software%20Engineer/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Software%20Engineer/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Software%20Engineer/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Software%20Engineer/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Product%20Manager/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Product%20Manager/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Product%20Manager/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Product%20Manager/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Amazon/Product%20Manager/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Software%20Engineer/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Software%20Engineer/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Software%20Engineer/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Software%20Engineer/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Software%20Engineer/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Product%20Manager/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Product%20Manager/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Product%20Manager/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Product%20Manager/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Apple/Product%20Manager/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Software%20Engineer/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Software%20Engineer/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Software%20Engineer/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Software%20Engineer/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Software%20Engineer/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Product%20Manager/San%20Francisco-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Product%20Manager/New%20York-NY</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Product%20Manager/Seattle-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Product%20Manager/Redmond-WA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/Microsoft/Product%20Manager/Cupertino-CA</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/google-vs-meta</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/google-vs-amazon</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/google-vs-apple</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/google-vs-microsoft</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/meta-vs-amazon</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/meta-vs-apple</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/meta-vs-microsoft</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/amazon-vs-apple</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/amazon-vs-microsoft</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/apple-vs-microsoft</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/software-engineer-vs-product-manager</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/san-francisco-ca-vs-new-york-ny</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/san-francisco-ca-vs-seattle-wa</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/san-francisco-ca-vs-redmond-wa</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/san-francisco-ca-vs-cupertino-ca</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/new-york-ny-vs-seattle-wa</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/new-york-ny-vs-redmond-wa</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/new-york-ny-vs-cupertino-ca</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/seattle-wa-vs-redmond-wa</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/seattle-wa-vs-cupertino-ca</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://avgpay-rebuild.vercel.app/compare/redmond-wa-vs-cupertino-ca</loc>
+    <lastmod>2026-02-10T21:35:52.361Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
