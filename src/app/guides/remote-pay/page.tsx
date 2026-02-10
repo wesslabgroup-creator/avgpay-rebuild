@@ -1,87 +1,232 @@
+// avgpay/src/app/guides/remote-pay/page.tsx
 import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/data-table";
 import { ArticleSchema } from "@/components/schema-markup";
+import { Card, CardContent } from "@/components/ui/card";
+import { ExpandableFAQ } from "@/components/ExpandableFAQ";
+import {
+  Lightbulb,
+  ArrowRight,
+  DollarSign,
+  Briefcase,
+  ChartLine,
+  Star,
+  TrendingUp,
+  Gavel,
+  Search,
+  Copy,
+  Users,
+  HeartHandshake,
+  Award,
+  Handshake,
+  GitBranch,
+  Percent,
+  Home,
+  Globe,
+} from "lucide-react";
+
+// Placeholder data for DataTable - factors affecting remote pay
+const remotePayData = [
+  { id: 1, factor: "Cost of Living (COL) Adjustments", impact: "High", explanation: "Companies may adjust pay based on COL in employee's location (e.g., San Francisco vs. rural Midwest)." },
+  { id: 2, factor: "National Pay Bands", impact: "Medium", explanation: "Some companies set pay within broader national bands, regardless of exact location." },
+  { id: 3, factor: "Company Policy", impact: "High", explanation: "Remote-first, hybrid, or traditional models influence pay structures." },
+  { id: 4, factor: "Role & Seniority", impact: "High", explanation: "Core value of the role and experience level still dictate a significant portion of pay." },
+  { id: 5, factor: "Market Rates", impact: "High", explanation: "Local or national market demand for specific skills remains a major factor." },
+];
+
+const remotePayColumns = [
+  { accessorKey: "factor", header: "Factor", className: "text-left" },
+  { accessorKey: "impact", header: "Impact", className: "text-center" },
+  { accessorKey: "explanation", header: "Explanation", className: "text-left" },
+];
+
+const faqs = [
+  { question: "How do companies determine remote pay?", answer: "Companies use various models: geo-adjusted pay (based on COL), national pay bands, or location-agnostic pay. Policy varies significantly by employer." },
+  { question: "Will my salary decrease if I move to a lower COL area?", answer: "Possibly. Many companies adjust salaries based on the employee's location's cost of living. It's crucial to understand your company's specific remote pay policy." },
+  { question: "Is it better to be remote in a high-COL city or a low-COL city?", answer: "This depends on your priorities. High-COL cities might offer higher base pay but also higher living expenses. Low-COL cities may offer lower pay but greater savings potential." },
+  { question: "What about working remotely internationally?", answer: "International remote work adds layers of complexity including tax laws, employment regulations, and payroll differences, often requiring specific company policies or PEOs (Professional Employer Organizations)." },
+];
 
 export const metadata: Metadata = {
-  title: "The Remote Work Pay Cut Myth | AvgPay",
-  description: "Analyzing 10,000+ remote vs in-office salaries. Is location-based pay still justified in 2026?",
+  title: "Remote Work Compensation Guide | AvgPay",
+  description: "Understand how remote work impacts pay. Learn about location-based adjustments, national pay bands, and navigating your remote compensation.",
+  keywords: "remote pay, work from home salary, location based pay, geo-adjusted pay, remote compensation, tech salaries, WFH",
   openGraph: {
+    title: "Remote Work Compensation Guide | AvgPay",
+    description: "Understand how remote work impacts pay. Learn about location-based adjustments, national pay bands, and navigating your remote compensation.",
     type: "article",
-    publishedTime: "2026-02-09",
+    publishedTime: "2026-02-10T09:46:00Z",
+    images: [], // Add image URLs if available
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Remote Work Compensation Guide | AvgPay",
+    description: "Understand how remote work impacts pay. Learn about location-based adjustments, national pay bands, and navigating your remote compensation.",
   },
 };
 
-export default function RemotePayGuidePage() {
+const RemotePayPage = () => {
   return (
-    <main className="min-h-screen bg-white">
-      <ArticleSchema headline="The Remote Work Pay Cut Myth" datePublished="2026-02-09" authorName="AvgPay Team" />
-      
-      <article className="max-w-3xl mx-auto px-6 py-12 prose prose-slate lg:prose-lg">
-        <div className="mb-8 not-prose">
-          <span className="text-emerald-600 text-sm font-medium">February 2026</span>
-          <h1 className="text-4xl font-bold text-slate-900 mt-2">The Remote Work Pay Cut Myth</h1>
-          <p className="text-xl text-slate-600 mt-4">
-            "We pay based on location." But does the data back that up in 2026? 
-            Here's what our analysis of 10,000+ salaries reveals about the "Remote Penalty."
-          </p>
-        </div>
+    <div className="container mx-auto px-4 py-12">
+      <ArticleSchema
+        title="Remote Work Compensation Guide"
+        description="Understand how remote work impacts pay."
+        datePublished="2026-02-10"
+        authorName="AvgPay Team"
+        canonicalUrl="https://avgpay.com/guides/remote-pay" // Replace with actual URL
+      />
 
-        <h2>Key Findings: The Gap is Closing</h2>
-        <p>
-          In 2022, fully remote offers trailed in-office (SF/NYC) offers by ~15-20%. 
-          In 2026, that gap has shrunk to <strong>~6-8%</strong> for Senior+ individual contributors.
-        </p>
-        <ul>
-          <li><strong>Talent Scarcity:</strong> Companies realize top talent won't accept a massive pay cut to work from Denver or Austin.</li>
-          <li><strong>Global Hiring:</strong> US-based remote roles compete with global talent, pushing US rates slightly down, but high-skill roles remain premium.</li>
-          <li><strong>Hybrid Mandates:</strong> Companies forcing Return-to-Office (RTO) are paying a <strong>"Commute Premium"</strong> to retain staff.</li>
-        </ul>
+      <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
+        Navigating Remote Compensation
+      </h1>
+      <p className="mb-8 text-lg text-gray-600">
+        Explore how remote work affects your salary. Understand location adjustments, pay bands, and how to maximize your earnings in a distributed workforce.
+      </p>
 
-        <h2>The "Tiered" Pay Model is Standard</h2>
-        <p>
-          Most tech companies now use 3-4 location tiers:
-        </p>
-        <ol>
-          <li><strong>Tier 1 (100% Pay):</strong> SF Bay Area, NYC.</li>
-          <li><strong>Tier 2 (90-95% Pay):</strong> Seattle, Boston, Los Angeles.</li>
-          <li><strong>Tier 3 (80-85% Pay):</strong> Austin, Denver, Chicago, Washington DC.</li>
-          <li><strong>Tier 4 (70-75% Pay):</strong> Rest of US / Low Cost of Living.</li>
-        </ol>
-        <p>
-          <strong>Crucial Tip:</strong> Always ask which tier your location falls into. 
-          If you're on the border (e.g., living in a Tier 4 suburb near a Tier 3 city), negotiate for the higher tier.
-        </p>
+      <div className="mb-12 grid gap-8 md:grid-cols-2">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center mb-3">
+              <Home className="h-6 w-6 text-blue-600 mr-2" />
+              <h3 className="text-xl font-semibold text-gray-900">What You'll Learn</h3>
+            </div>
+            <ul className="space-y-2 text-gray-700">
+              <li>Different models for setting remote pay (geo-adjusted, national bands).</li>
+              <li>Factors influencing your remote salary.</li>
+              <li>Pros and cons of different remote pay strategies.</li>
+              <li>How to research and negotiate remote compensation.</li>
+              <li>Considerations for international remote work.</li>
+            </ul>
+          </CardContent>
+        </Card>
 
-        <h2>Strategies for Remote Negotiation</h2>
-        <p>
-          Don't accept the "Cost of Living" argument. Companies pay for <strong>Cost of Labor</strong> (supply/demand), not your rent.
-        </p>
-        <h3>Script:</h3>
-        <blockquote>
-          "I understand the location-based policy. However, I'm bringing the same value and experience regardless of where I sit. 
-          Similar remote roles I'm interviewing for are offering Tier 1/2 rates. Can we bridge the gap with equity or a signing bonus?"
-        </blockquote>
+        <Card>
+          <CardContent className="p-6 bg-blue-50 border border-blue-200 shadow-inner">
+            <div className="flex items-center mb-3">
+              <Globe className="h-6 w-6 text-blue-600 mr-2" />
+              <h3 className="text-xl font-semibold text-blue-800">Executive Summary</h3>
+            </div>
+            <p className="text-gray-800">
+              The rise of remote work has fundamentally changed compensation strategies. Companies today employ diverse methods, from geo-adjusting salaries based on local cost of living to establishing national pay bands. Understanding these models and how they apply to your situation is key to ensuring fair compensation and maximizing your financial well-being as a remote employee.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
-        <h2>The "Digital Nomad" Trap</h2>
-        <p>
-          Be careful. Most companies require you to have a permanent tax residency in a specific state or country. 
-          Working from a beach in Bali for 6 months without telling HR can trigger tax nightmares and get you fired. 
-          Always clarify the "work from anywhere" policy vs "work from home" policy.
+      <section className="mb-12">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Factors in Remote Pay</h2>
+        <p className="mb-4 text-gray-700">
+          Understand the primary drivers that shape compensation packages for remote roles.
         </p>
-
-        <div className="not-prose my-12 p-8 bg-slate-50 border border-slate-200 rounded-xl text-center">
-          <h3 className="text-2xl font-bold text-slate-900 mb-2">Are you underpaid for remote work?</h3>
-          <p className="text-slate-600 mb-6">
-            Check your offer against thousands of remote data points.
-          </p>
-          <Link href="/#analyzer">
-            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
-              Check Remote Rates
+        <DataTable columns={remotePayColumns} data={remotePayData} />
+        <div className="mt-4 flex justify-center">
+          <Link href="/analyzer" legacyBehavior>
+            <Button variant="outline" className="group">
+              Get Your Personalized Analyzer <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
         </div>
-      </article>
-    </main>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Takeaways for Remote Compensation</h2>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <DollarSign className="h-6 w-6 text-green-600 mr-2" />
+                <h3 className="text-lg font-semibold text-gray-900">Location Matters (Usually)</h3>
+              </div>
+              <p className="text-gray-700">Most companies adjust pay based on location, influencing both base salary and equity ranges.</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <Home className="h-6 w-6 text-yellow-600 mr-2" />
+                <h3 className="text-lg font-semibold text-gray-900">Company Policy is Crucial</h3>
+              </div>
+              <p className="text-gray-700">Understand your employer's specific pay philosophy for remote workers.</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <Globe className="h-6 w-6 text-purple-600 mr-2" />
+                <h3 className="text-lg font-semibold text-gray-900">Skills Still Command Value</h3>
+              </div>
+              <p className="text-gray-700">In-demand skills and experience continue to be primary drivers of compensation, even remotely.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="flex items-start">
+            <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
+            <p className="text-gray-700">
+              <strong>Ask About the Policy:</strong> Inquire about the company's remote compensation philosophy early in the interview process.
+            </p>
+          </div>
+          <div className="flex items-start">
+            <Copy className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
+            <p className="text-gray-700">
+              <strong>Research Multiple Locations:</strong> Compare salary ranges for your role in various potential remote locations using compensation tools.
+            </p>
+          </div>
+          <div className="flex items-start">
+            <Search className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
+            <p className="text-gray-700">
+              <strong>Factor in Total Compensation:</strong> Consider benefits and cost of living when comparing offers across different locations or companies.
+            </p>
+          </div>
+          <div className="flex items-start">
+            <ArrowRight className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
+            <p className="text-gray-700">
+              <strong>Be Prepared for Adjustments:</strong> If you move, understand how it might impact your pay and ensure clear communication with your employer.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
+        {faqs.map((faq, index) => (
+          <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
+        ))}
+      </section>
+
+      <section className="text-center py-12 bg-gray-50 rounded-lg">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Optimize Your Remote Pay</h2>
+        <p className="mb-8 text-lg text-gray-700">
+          Use our advanced analyzer to benchmark your remote compensation and understand location-based adjustments.
+        </p>
+        <Link href="/analyzer" legacyBehavior>
+          <Button className="px-8 py-3 text-lg group">
+            Go to Analyzer <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+          </Button>
+        </Link>
+      </section>
+
+      <footer className="mt-16 text-center text-sm text-gray-500">
+        <p>© 2026 AvgPay. All rights reserved.</p>
+        <div className="mt-2 flex flex-wrap justify-center gap-2">
+          <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
+          <Link href="/terms" className="hover:underline">Terms of Service</Link>
+          <Link href="/guides/swe-compensation-2026" className="hover:underline">SWE Compensation 2026</Link>
+          <Link href="/guides/pm-compensation-2026" className="hover:underline">PM Compensation 2026</Link>
+          <Link href="/guides/negotiation" className="hover:underline">Negotiation Guide</Link>
+          <Link href="/guides/equity" className="hover:underline">Equity Guide</Link>
+          <Link href="/guides/remote-pay" className="font-semibold text-blue-600">Remote Pay Guide</Link>
+          <Link href="/guides/startup-vs-bigtech" className="hover:underline">Startup vs. Big Tech</Link>
+        </div>
+      </footer>
+    </div>
   );
-}
+};
+
+export default RemotePayPage;
