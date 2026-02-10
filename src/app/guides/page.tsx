@@ -68,7 +68,7 @@ export default function GuidesPage() {
           <div className="grid gap-6">
             {GUIDES.map((guide) => (
               <Link key={guide.slug} href={`/guides/${guide.slug}`}>
-                <Card className="hover:border-emerald-500 transition-colors cursor-pointer bg-slate-900 border-slate-200">
+                <Card className="hover:border-emerald-500 transition-colors cursor-pointer bg-white border-slate-200">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-slate-900">{guide.title}</CardTitle>
