@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 
+type SalarySummaryRow = {
+  totalComp: number;
+  level: string | null;
+  Role: { title: string } | null;
+};
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const companyName = searchParams.get('companyName');
@@ -15,7 +21,7 @@ export async function GET(request: Request) {
       .from('Company')
       .select('*')
       .eq('name', companyName)
-      .single() as any);
+      .single());
 
     if (companyError) throw new Error(`Company not found: ${companyError.message}`);
 
@@ -23,13 +29,13 @@ export async function GET(request: Request) {
     const { data: rawSalaries, error: summaryError } = await (supabaseAdmin
       .from('Salary')
       .select('totalComp, level, Role!inner(title)')
-      .eq('companyId', companyData.id) as any);
+      .eq('companyId', companyData.id));
 
     if (summaryError) throw new Error(`Error fetching salary summary: ${summaryError.message}`);
 
     // Aggregate the salary data by role
     const roleMap: Record<string, { totalComp: number[], levels: Set<string> }> = {};
-    rawSalaries.forEach((row: any) => {
+    (rawSalaries as SalarySummaryRow[]).forEach((row) => {
       const title = row.Role?.title;
       if (title) {
         if (!roleMap[title]) {

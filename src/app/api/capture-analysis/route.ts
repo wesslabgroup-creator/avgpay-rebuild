@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         status: 'pending',
       })
       .select()
-      .single() as any);
+      .single());
 
     if (error) {
       console.error('Error saving analysis:', error);

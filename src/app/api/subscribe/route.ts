@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         active: true,
       })
       .select()
-      .single() as any);
+      .single());
 
     if (error) {
       // Handle duplicate email gracefully
