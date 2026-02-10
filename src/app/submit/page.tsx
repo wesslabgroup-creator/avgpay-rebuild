@@ -67,18 +67,28 @@ export default function SubmitSalaryPage() {
     return base + stock + bonus + other;
   };
 
+  // Check if field is empty (for styling)
+  const isEmpty = (field: keyof typeof formData) => {
+    const value = formData[field];
+    return !value || value.toString().trim() === '' || value === '';
+  };
+
   const validateForm = (): boolean => {
     const missing: string[] = [];
     
     if (!formData.jobTitle?.trim()) missing.push('Job Title');
     if (!formData.companyName?.trim()) missing.push('Company Name');
-    if (!formData.experienceLevel) missing.push('Experience Level');
+    if (!formData.experienceLevel || formData.experienceLevel === '') {
+      missing.push('Experience Level');
+    }
     if (!formData.city?.trim()) missing.push('City');
-    if (!formData.state) missing.push('State');
+    if (!formData.state || formData.state === '') {
+      missing.push('State');
+    }
     if (!formData.baseSalary || parseInt(formData.baseSalary) <= 0) missing.push('Base Salary');
 
     if (missing.length > 0) {
-      setError(`Please fill in: ${missing.join(', ')}`);
+      setError(`⚠️ Missing required fields: ${missing.join(', ')}`);
       console.log('Validation failed, missing:', missing);
       return false;
     }
@@ -157,7 +167,10 @@ export default function SubmitSalaryPage() {
   }
 
   const inputClass = "text-base py-3 px-4 bg-white border-slate-300 text-slate-900";
-  const selectClass = "w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500";
+  const selectClass = (isInvalid: boolean) => 
+    `w-full px-4 py-3 bg-white border rounded-xl text-slate-900 appearance-none cursor-pointer focus:outline-none focus:ring-2 ${
+      isInvalid ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-emerald-500 focus:ring-emerald-500'
+    }`;
 
   return (
     <main className="min-h-screen bg-slate-50 pt-24 pb-12">
@@ -220,7 +233,7 @@ export default function SubmitSalaryPage() {
                       name="experienceLevel"
                       value={formData.experienceLevel}
                       onChange={handleInputChange}
-                      className={selectClass}
+                      className={selectClass(isEmpty('experienceLevel') && !!error)}
                     >
                       <option value="">Select experience level...</option>
                       {EXPERIENCE_LEVELS.map(level => (
@@ -229,6 +242,9 @@ export default function SubmitSalaryPage() {
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
                   </div>
+                  {isEmpty('experienceLevel') && error && (
+                    <p className="text-red-500 text-xs mt-1">Select an experience level</p>
+                  )}
                 </div>
 
                 {/* Location */}
@@ -255,7 +271,7 @@ export default function SubmitSalaryPage() {
                         name="state"
                         value={formData.state}
                         onChange={handleInputChange}
-                        className={selectClass}
+                        className={selectClass(isEmpty('state') && !!error)}
                       >
                         <option value="">Select state...</option>
                         {US_STATES.map(state => (
@@ -264,6 +280,9 @@ export default function SubmitSalaryPage() {
                       </select>
                       <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
                     </div>
+                    {isEmpty('state') && error && (
+                      <p className="text-red-500 text-xs mt-1">Select a state</p>
+                    )}
                   </div>
                 </div>
 
