@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
-import { SalaryDistributionChart } from '@/components/salary-distribution-chart'; // Placeholder for chart
+import { SalaryDistributionChart } from '@/components/salary-distribution-chart';
+import { SEOContentSection } from '@/components/seo-content-section';
 
 interface JobDetails {
   jobData: {
@@ -146,6 +147,18 @@ export default function JobDetailPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* AI-Generated Career & Compensation Analysis */}
+          <SEOContentSection
+            entityType="Job"
+            entityName={jobData.title}
+            contextData={[
+              jobData.description || '',
+              `Data points: ${jobData.global_count || 0}.`,
+              topCompanies.length > 0 ? `Top employers: ${topCompanies.slice(0, 5).map(c => c.company_name).join(', ')}.` : '',
+              topLocations.length > 0 ? `Top locations: ${topLocations.slice(0, 3).map(l => l.location).join(', ')}.` : '',
+            ].filter(Boolean).join(' ')}
+          />
 
           {/* Salary Distribution */}
           <Card className="bg-white border-slate-200">

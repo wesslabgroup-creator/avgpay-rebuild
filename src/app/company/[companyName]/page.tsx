@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { DataTable } from "@/components/data-table";
+import { SEOContentSection } from "@/components/seo-content-section";
 
 interface SalarySummary {
   role: string;
@@ -173,6 +174,19 @@ const CompanyDetailPage = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* AI-Generated Financial Analysis */}
+          <SEOContentSection
+            entityType="Company"
+            entityName={companyData.name}
+            contextData={[
+              companyData.description || '',
+              companyData.salarySummary && companyData.salarySummary.length > 0
+                ? `Roles: ${companyData.salarySummary.map(s => s.role).join(', ')}. Data points: ${companyData.salarySummary.reduce((sum, s) => sum + s.dataPoints, 0)}.`
+                : '',
+              companyData.website ? `Website: ${companyData.website}` : '',
+            ].filter(Boolean).join(' ')}
+          />
 
           {/* Related Links / Action Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

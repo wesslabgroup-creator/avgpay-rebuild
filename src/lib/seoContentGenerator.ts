@@ -46,10 +46,18 @@ CRITICAL CONSTRAINTS (Violating these = Failure):
 3. NO FLUFF: Do NOT write generic introductions (e.g., "Austin is a beautiful city"). Go immediately to financial, tax, and career leverage analysis.
 4. VALUE LENS: Every sentence must answer "How does this affect the user's paycheck, career growth, or purchasing power?"
 
+UNIQUENESS REQUIREMENT:
+Each entity must receive COMPLETELY DISTINCT analysis. Do NOT reuse generic phrases across entities.
+- For Companies: Reference the specific industry vertical, public/private status, company size tier, and known compensation structure.
+- For Cities: Reference the specific state tax code, metro area characteristics, dominant employer base, and geographic cost factors.
+- For Jobs: Reference the specific career ladder, adjacent roles, automation risk, and demand curve for this particular title.
+You MUST add at least one dynamic key that is specific to THIS entity and would not appear on any other entity's page.
+
 DYNAMIC SCHEMA EXPANSION:
 If you identify a highly relevant data point or insight for this specific entity that does not fit into the standard keys, you are authorized to ADD a new key-value pair to the JSON.
 - Example: If a city has a specific tax loophole, add a key: "tax_advantage_alert".
 - Example: If a company has a notorious vesting schedule, add a key: "vesting_warning".
+- Example: If a job has a known certification premium, add a key: "certification_roi".
 
 OUTPUT INSTRUCTION:
 Return ONLY valid JSON matching the structure below based on the Entity Type.
@@ -133,13 +141,19 @@ export async function generateSEOFinancialContent(
     const model = genAI.getGenerativeModel({
       model: 'gemini-1.5-flash',
       generationConfig: {
-        temperature: 0.2,
+        temperature: 0.4,
         responseMimeType: 'application/json',
       },
       systemInstruction: SYSTEM_PROMPT,
     });
 
-    const userPrompt = `Entity Type: ${entityType}\nEntity Name: ${entityName}\nContext: ${contextData}`;
+    const userPrompt = [
+      `Entity Type: ${entityType}`,
+      `Entity Name: ${entityName}`,
+      `Context: ${contextData}`,
+      ``,
+      `IMPORTANT: Write analysis that is specific to "${entityName}" and could NOT be copy-pasted onto any other ${entityType.toLowerCase()} page. Reference unique structural characteristics of this entity.`,
+    ].join('\n');
 
     const result = await model.generateContent(userPrompt);
     const responseText = result.response.text();

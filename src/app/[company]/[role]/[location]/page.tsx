@@ -8,6 +8,7 @@ import { BreadcrumbSchema, JobPostingSchema } from "@/components/schema-markup";
 import { getBaseUrl, getFullUrl } from "@/lib/utils";
 import { generateSalaryPageMeta } from "@/lib/meta";
 import Link from "next/link";
+import { getCachedSEOContent } from "@/lib/seoContentCache";
 
 interface PageProps {
   params: {
@@ -61,6 +62,12 @@ export default async function SalaryPage({ params }: PageProps) {
 
   // Helper to format currency values
   const formatCurrency = (n: number) => `$${(n / 1000).toFixed(0)}k`;
+
+  // Fetch SEO content (cached in DB, generated on first access)
+  const [cityContent, companyContent] = await Promise.all([
+    getCachedSEOContent('City', location, `State and metro area context for ${location}. Role: ${role}, Median comp: ${formatCurrency(data.median)}`),
+    getCachedSEOContent('Company', company, `Employer context for ${company} hiring ${role} in ${location}. Median comp: ${formatCurrency(data.median)}`),
+  ]);
 
   return (
     <main className="min-h-screen bg-white">
@@ -153,6 +160,44 @@ export default async function SalaryPage({ params }: PageProps) {
                 marketMedian={data.median}
                 blsMedian={data.blsMedian}
               />
+            </CardContent>
+          </Card>
+
+          {/* Location Financial Context */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-900">Financial Context: {location}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {Object.entries(cityContent).map(([key, value]) => (
+                  <div key={key} className="p-4 rounded-lg bg-slate-50 border border-slate-100">
+                    <h4 className="text-sm font-semibold text-emerald-700 uppercase tracking-wide mb-2">
+                      {key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                    </h4>
+                    <p className="text-sm text-slate-700 leading-relaxed">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Employer Compensation Analysis */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-900">Employer Analysis: {company}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {Object.entries(companyContent).map(([key, value]) => (
+                  <div key={key} className="p-4 rounded-lg bg-slate-50 border border-slate-100">
+                    <h4 className="text-sm font-semibold text-emerald-700 uppercase tracking-wide mb-2">
+                      {key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                    </h4>
+                    <p className="text-sm text-slate-700 leading-relaxed">{value}</p>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
 

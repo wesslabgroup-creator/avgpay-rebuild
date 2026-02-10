@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import {
-  generateSEOFinancialContent,
-  type EntityType,
-} from '@/lib/seoContentGenerator';
+import { getCachedSEOContent } from '@/lib/seoContentCache';
+import { type EntityType } from '@/lib/seoContentGenerator';
 
 const VALID_ENTITY_TYPES: EntityType[] = ['Company', 'City', 'Job'];
 
@@ -25,7 +23,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const content = await generateSEOFinancialContent(entityType, entityName, contextData);
+    // Use cache layer: serves from DB if available, generates + caches if not
+    const content = await getCachedSEOContent(entityType, entityName, contextData);
 
     return NextResponse.json({
       entityType,

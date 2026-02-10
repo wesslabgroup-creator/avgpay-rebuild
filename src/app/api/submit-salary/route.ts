@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { genAI } from '@/lib/geminiClient';
+import { preGenerateSEOContent } from '@/lib/seoContentCache';
 
 // Levenshtein distance for fuzzy matching
 function levenshteinDistance(a: string, b: string): number {
@@ -367,9 +368,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to save salary data' }, { status: 500 });
     }
 
-    // 3. If the job is new, we skip AI content update for now as the schema doesn't support it
+    // 3. Pre-generate rich SEO financial content for any new entities (non-blocking)
+    const seoPromises: Promise<void>[] = [];
+
     if (jobEntry.isNew) {
-      console.log('New job created, skipping AI content update (schema mismatch)');
+      seoPromises.push(
+        preGenerateSEOContent('Job', jobEntry.title, `Role in the tech industry. Company: ${companyEntry.name}, Location: ${locationEntry.name}`)
+      );
+    }
+    if (companyEntry.isNew) {
+      seoPromises.push(
+        preGenerateSEOContent('Company', companyEntry.name, `Employer hiring ${jobEntry.title} in ${locationEntry.name}`)
+      );
+    }
+    if (locationEntry.isNew) {
+      seoPromises.push(
+        preGenerateSEOContent('City', locationEntry.name, `Tech job market. Company: ${companyEntry.name}, Role: ${jobEntry.title}`)
+      );
+    }
+
+    // Fire and forget — don't block the user response
+    if (seoPromises.length > 0) {
+      Promise.all(seoPromises).catch(err =>
+        console.error('Background SEO content generation failed:', err)
+      );
     }
 
     return NextResponse.json({
