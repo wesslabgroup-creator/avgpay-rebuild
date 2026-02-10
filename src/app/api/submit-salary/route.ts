@@ -83,7 +83,7 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
     .from('Role')
     .select('id, title')
     .eq('title', normalizedTitle)
-    .single() as any);
+    .single());
 
   if (exactError && exactError.code !== 'PGRST116') {
     throw new Error(`Error checking existing job: ${exactError.message}`);
@@ -96,7 +96,7 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
   // No exact match, check for fuzzy match among existing jobs
   const { data: allJobs, error: allJobsError } = await (supabaseAdmin
     .from('Role')
-    .select('id, title') as any);
+    .select('id, title'));
 
   if (allJobsError) {
     throw new Error(`Error fetching jobs for fuzzy matching: ${allJobsError.message}`);
@@ -132,7 +132,7 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
       canonicalTitle: normalizedTitle
     }])
     .select('id, title')
-    .single() as any);
+    .single());
 
   if (insertError) {
     throw new Error(`Error creating new job: ${insertError.message}`);
@@ -140,34 +140,6 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
 
   console.log(`New job created: "${normalizedTitle}"`);
   return { ...newJob!, isNew: true };
-}
-
-// Function to generate AI content (description, seo) using Gemini
-async function generateAIContent(jobTitle: string, companyName?: string, location?: string): Promise<{ description: string; seo_meta_title: string; seo_meta_description: string }> {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-
-    const promptDescription = `Generate a concise and SEO-friendly job description for the role of "${jobTitle}"${companyName ? ` at ${companyName}` : ''}${location ? ` in ${location}` : ''}. Focus on key responsibilities, required skills, and benefits. Keep it under 150 words.`;
-    const resultDescription = await model.generateContent(promptDescription);
-    const description = resultDescription.response.text();
-
-    const promptMetaTitle = `Generate an SEO-optimized meta title (max 60 characters) for a job page about "${jobTitle}"${companyName ? ` at ${companyName}` : ''}${location ? ` in ${location}` : ''}. Include salary information if generally known, or focus on seeking top talent.`;
-    const resultMetaTitle = await model.generateContent(promptMetaTitle);
-    const seo_meta_title = resultMetaTitle.response.text();
-
-    const promptMetaDescription = `Generate an SEO-optimized meta description (max 160 characters) for a job page about "${jobTitle}"${companyName ? ` at ${companyName}` : ''}${location ? ` in ${location}` : ''}. Highlight key aspects like compensation range, location, and career growth opportunities.`;
-    const resultMetaDescription = await model.generateContent(promptMetaDescription);
-    const seo_meta_description = resultMetaDescription.response.text();
-
-    return { description, seo_meta_title, seo_meta_description };
-  } catch (error) {
-    console.error("Error generating AI content:", error);
-    return {
-      description: `Learn more about the ${jobTitle} role.`,
-      seo_meta_title: `${jobTitle} Salary & Job Details`,
-      seo_meta_description: `Find compensation data and career insights for ${jobTitle} roles.`
-    };
-  }
 }
 
 // Function to generate AI content for companies
@@ -234,7 +206,7 @@ async function getOrCreateCompany(companyName: string): Promise<{ id: string; na
     .from('Company')
     .select('id, name')
     .eq('name', normalizedName)
-    .single() as any);
+    .single());
 
   if (fetchError && fetchError.code !== 'PGRST116') {
     throw new Error(`Error checking existing company: ${fetchError.message}`);
@@ -245,7 +217,7 @@ async function getOrCreateCompany(companyName: string): Promise<{ id: string; na
   }
 
   // Create new company with AI content
-  const aiContent = await generateCompanyAIContent(normalizedName);
+  await generateCompanyAIContent(normalizedName);
 
   const { data: newCompany, error: insertError } = await (supabaseAdmin
     .from('Company')
@@ -256,7 +228,7 @@ async function getOrCreateCompany(companyName: string): Promise<{ id: string; na
       updatedAt: new Date().toISOString(),
     }])
     .select('id, name')
-    .single() as any);
+    .single());
 
   if (insertError) {
     throw new Error(`Error creating new company: ${insertError.message}`);
@@ -278,7 +250,7 @@ async function getOrCreateLocation(locationName: string): Promise<{ id: string; 
     .select('id, city, state')
     .ilike('city', city)
     .ilike('state', state)
-    .maybeSingle() as any);
+    .maybeSingle());
 
   if (fetchError) {
     throw new Error(`Error checking existing location: ${fetchError.message}`);
@@ -289,7 +261,7 @@ async function getOrCreateLocation(locationName: string): Promise<{ id: string; 
   }
 
   // Create new location with AI content
-  const aiContent = await generateLocationAIContent(fullName);
+  await generateLocationAIContent(fullName);
 
   const { data: newLocation, error: insertError } = await (supabaseAdmin
     .from('Location')
@@ -301,7 +273,7 @@ async function getOrCreateLocation(locationName: string): Promise<{ id: string; 
       slug: fullName.toLowerCase().replace(/ /g, '-').replace(',', ''),
     }])
     .select('id, city, state')
-    .single() as any);
+    .single());
 
   if (insertError) {
     throw new Error(`Error creating new location: ${insertError.message}`);
@@ -316,7 +288,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Method Not Allowed' }, { status: 405 });
   }
 
-  const { jobTitle, companyName, location, baseSalary, totalComp, level, userNotes } = await request.json();
+  const { jobTitle, companyName, location, baseSalary, totalComp, level } = await request.json();
 
   // Basic Validation
   if (!jobTitle || !companyName || !totalComp || !location || !level) {
@@ -360,7 +332,7 @@ export async function POST(request: Request) {
         },
       ])
       .select('*')
-      .single() as any);
+      .single());
 
     if (salaryError) {
       console.error('Error inserting salary:', salaryError);

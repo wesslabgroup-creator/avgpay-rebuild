@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 
+type CompanySalaryRow = { totalComp: number; Company: { name: string } | null };
+type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string } | null };
+type DistributionRow = { totalComp: number };
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const jobTitle = searchParams.get('jobTitle');
@@ -15,7 +19,7 @@ export async function GET(request: Request) {
       .from('Role')
       .select('*')
       .eq('title', jobTitle)
-      .single() as any);
+      .single());
 
     if (jobError) throw new Error(`Job not found: ${jobError.message}`);
 
@@ -25,11 +29,11 @@ export async function GET(request: Request) {
       .select('totalComp, Company!inner(name)')
       .eq('roleId', jobData.id)
       .order('totalComp', { ascending: false })
-      .limit(5) as any);
+      .limit(5));
 
     if (topSalariesError) throw new Error(`Error fetching top companies: ${topSalariesError.message}`);
 
-    const topCompanies = topSalaries?.map((s: any) => ({
+    const topCompanies = (topSalaries as CompanySalaryRow[] | null)?.map((s) => ({
       company_name: s.Company?.name,
       total_comp: s.totalComp
     }));
@@ -40,11 +44,11 @@ export async function GET(request: Request) {
       .select('totalComp, Location!inner(city, state)')
       .eq('roleId', jobData.id)
       .order('totalComp', { ascending: false })
-      .limit(5) as any);
+      .limit(5));
 
     if (locSalariesError) throw new Error(`Error fetching top locations: ${locSalariesError.message}`);
 
-    const topLocations = locSalaries?.map((s: any) => ({
+    const topLocations = (locSalaries as LocationSalaryRow[] | null)?.map((s) => ({
       location: `${s.Location?.city}, ${s.Location?.state}`,
       total_comp: s.totalComp
     }));
@@ -55,11 +59,11 @@ export async function GET(request: Request) {
       .select('totalComp, Location!inner(city, state)')
       .eq('roleId', jobData.id)
       .order('totalComp', { ascending: true })
-      .limit(5) as any);
+      .limit(5));
 
     if (bottomLocSalariesError) throw new Error(`Error fetching bottom locations: ${bottomLocSalariesError.message}`);
 
-    const bottomLocations = bottomLocSalaries?.map((s: any) => ({
+    const bottomLocations = (bottomLocSalaries as LocationSalaryRow[] | null)?.map((s) => ({
       location: `${s.Location?.city}, ${s.Location?.state}`,
       total_comp: s.totalComp
     }));
@@ -68,11 +72,11 @@ export async function GET(request: Request) {
     const { data: distributionData, error: distributionError } = await (supabaseAdmin
       .from('Salary')
       .select('totalComp')
-      .eq('roleId', jobData.id) as any);
+      .eq('roleId', jobData.id));
 
     if (distributionError) throw new Error(`Error fetching salary distribution: ${distributionError.message}`);
 
-    const salaries = distributionData?.map((s: any) => s.totalComp) || [];
+    const salaries = (distributionData as DistributionRow[] | null)?.map((s) => s.totalComp) || [];
     const sortedSalaries = [...salaries].sort((a, b) => a - b);
 
     const count = salaries.length;
@@ -85,7 +89,7 @@ export async function GET(request: Request) {
       .from('Role')
       .select('title')
       .neq('title', jobTitle)
-      .limit(5) as any);
+      .limit(5));
 
     if (relatedJobsError) throw new Error(`Error fetching related jobs: ${relatedJobsError.message}`);
 
