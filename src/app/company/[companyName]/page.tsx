@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,7 @@ interface CompanyInfo {
 
 const CompanyDetailPage = () => {
   const params = useParams();
+  const router = useRouter();
   const companyName = decodeURIComponent(params?.companyName as string || '');
 
   const [companyData, setCompanyData] = useState<CompanyInfo | null>(null);
@@ -93,7 +94,7 @@ const CompanyDetailPage = () => {
             </CardHeader>
             <CardContent>
               <CardDescription className="text-slate-500 mb-4">{error}</CardDescription>
-              <Button variant="outline" onClick={() => window.history.back()}>
+              <Button variant="outline" onClick={() => router.back()}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
               </Button>
             </CardContent>
@@ -143,9 +144,11 @@ const CompanyDetailPage = () => {
                     <CardTitle className="text-4xl font-bold tracking-tight text-slate-900">{companyData.name}</CardTitle>
                     <CardDescription className="text-lg text-slate-600 mt-2 max-w-3xl">{companyData.description}</CardDescription>
                   </div>
-                  <Button variant="outline" className="shrink-0 border-slate-300 text-slate-700 hover:bg-slate-50" onClick={() => window.open(companyData.website, '_blank')}>
-                    Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                  </Button>
+                  <Link href={companyData.website} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" className="shrink-0 border-slate-300 text-slate-700 hover:bg-slate-50">
+                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </CardContent>
@@ -170,12 +173,16 @@ const CompanyDetailPage = () => {
           
           {/* Related Links / Action Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700" onClick={() => window.location.href='/salaries'}>
-                <span className="flex items-center"><ArrowLeft className="mr-3 h-5 w-5 text-slate-400" /> Back to Salaries</span>
-             </Button>
-             <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700" onClick={() => window.location.href='/companies'}>
-                <span className="flex items-center">View All Companies <ArrowRight className="ml-3 h-5 w-5 text-slate-400" /></span>
-             </Button>
+             <Link href="/salaries">
+               <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700 w-full">
+                 <span className="flex items-center"><ArrowLeft className="mr-3 h-5 w-5 text-slate-400" /> Back to Salaries</span>
+               </Button>
+             </Link>
+             <Link href="/companies">
+               <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700 w-full">
+                 <span className="flex items-center">View All Companies <ArrowRight className="ml-3 h-5 w-5 text-slate-400" /></span>
+               </Button>
+             </Link>
           </div>
         </div>
       </div>
