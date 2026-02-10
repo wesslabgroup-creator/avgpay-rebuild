@@ -24,18 +24,18 @@ import {
 } from "lucide-react";
 
 // Placeholder data for DataTable - illustrating negotiation leverage points
-const negotiationData = [
-  { id: 1, factor: "Experience Level", impact: "High", notes: "Seniority often commands higher salary bands." },
-  { id: 2, factor: "Market Demand", impact: "High", notes: "Roles with high demand offer more negotiation power." },
-  { id: 3, factor: "Skills & Certifications", impact: "Medium", notes: "Specialized skills can justify higher compensation." },
-  { id: 4, factor: "Company Type", impact: "Medium", notes: "Startups vs. Big Tech compensation structures differ significantly." },
-  { id: 5, factor: "Location", impact: "Medium", notes: "Cost of living and local market rates play a role." },
+const negotiationHeaders = [
+  { key: "factor", label: "Negotiation Factor" },
+  { key: "impact", label: "Impact Level" },
+  { key: "notes", label: "Notes" },
 ];
 
-const negotiationColumns = [
-  { accessorKey: "factor", header: "Negotiation Factor", className: "text-left" },
-  { accessorKey: "impact", header: "Impact Level", className: "text-center" },
-  { accessorKey: "notes", header: "Notes", className: "text-left" },
+const negotiationRows = [
+  ["Experience Level", "High", "Seniority often commands higher salary bands."],
+  ["Market Demand", "High", "Roles with high demand offer more negotiation power."],
+  ["Skills & Certifications", "Medium", "Specialized skills can justify higher compensation."],
+  ["Company Type", "Medium", "Startups vs. Big Tech compensation structures differ significantly."],
+  ["Location", "Medium", "Cost of living and local market rates play a role."],
 ];
 
 const faqs = [
@@ -67,11 +67,9 @@ const NegotiationPage = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <ArticleSchema
-        title="Salary Negotiation Guide"
-        description="Master the art of salary negotiation to secure the compensation you deserve."
+        headline="Salary Negotiation Guide"
         datePublished="2026-02-10"
         authorName="AvgPay Team"
-        canonicalUrl="https://avgpay.com/guides/negotiation" // Replace with actual URL
       />
 
       <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
@@ -116,7 +114,7 @@ const NegotiationPage = () => {
         <p className="mb-4 text-gray-700">
           Understanding the elements that impact your leverage is key to successful negotiation.
         </p>
-        <DataTable columns={negotiationColumns} data={negotiationData} />
+        <DataTable headers={negotiationHeaders} rows={negotiationRows} />
         <div className="mt-4 flex justify-center">
           <Link href="/analyzer" legacyBehavior>
             <Button variant="outline" className="group">

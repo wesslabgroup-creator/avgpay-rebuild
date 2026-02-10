@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 
@@ -126,17 +125,17 @@ export default function ContributePage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-300">Level</label>
-                    <Select
+                    <select
                       value={formData.level}
                       onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                      className="bg-slate-800 border-slate-700"
+                      className="bg-slate-800 border-slate-700 w-full h-10 px-3 rounded-md text-white"
                     >
                       <option value="">Select level...</option>
                       <option value="L1-L2">Junior (L1-L2)</option>
                       <option value="L3-L4">Mid (L3-L4)</option>
                       <option value="L5-L6">Senior (L5-L6)</option>
                       <option value="L7+">Staff+ (L7+)</option>
-                    </Select>
+                    </select>
                   </div>
                 </div>
 

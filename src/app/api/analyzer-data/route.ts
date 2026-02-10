@@ -2,6 +2,15 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 
 export async function GET(request: Request) {
+  // Return mock data during build or if Supabase is not configured
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return NextResponse.json({
+      roles: ["Software Engineer", "Product Manager", "Data Scientist", "UX Designer"],
+      locations: ["San Francisco, CA", "New York, NY", "Seattle, WA", "Austin, TX"],
+      companies: ["Google", "Meta", "Amazon", "Apple", "Microsoft"],
+    });
+  }
+
   try {
     const { data: jobs, error: jobsError } = await supabaseAdmin
       .from('jobs')

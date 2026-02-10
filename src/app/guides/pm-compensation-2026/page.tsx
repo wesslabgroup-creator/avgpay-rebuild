@@ -23,19 +23,19 @@ import {
 } from "lucide-react";
 
 // Placeholder data for DataTable
-const compensationData = [
-  { id: 1, role: "Associate Product Manager", level: "APM", salary: "$100,000", bonus: "$5,000", equity: "$30,000" },
-  { id: 2, role: "Product Manager", level: "P2", salary: "$130,000", bonus: "$10,000", equity: "$70,000" },
-  { id: 3, role: "Senior Product Manager", level: "P3", salary: "$160,000", bonus: "$15,000", equity: "$150,000" },
-  { id: 4, role: "Director of Product Management", level: "P4", salary: "$200,000", bonus: "$20,000", equity: "$300,000" },
+const compensationHeaders = [
+  { key: "role", label: "Role" },
+  { key: "level", label: "Level" },
+  { key: "salary", label: "Base Salary" },
+  { key: "bonus", label: "Annual Bonus" },
+  { key: "equity", label: "Annual Equity" },
 ];
 
-const compensationColumns = [
-  { accessorKey: "role", header: "Role", className: "text-left" },
-  { accessorKey: "level", header: "Level", className: "text-left" },
-  { accessorKey: "salary", header: "Base Salary", className: "text-right" },
-  { accessorKey: "bonus", header: "Annual Bonus", className: "text-right" },
-  { accessorKey: "equity", header: "Annual Equity", className: "text-right" },
+const compensationRows = [
+  ["Associate Product Manager", "APM", "$100,000", "$5,000", "$30,000"],
+  ["Product Manager", "P2", "$130,000", "$10,000", "$70,000"],
+  ["Senior Product Manager", "P3", "$160,000", "$15,000", "$150,000"],
+  ["Director of Product Management", "P4", "$200,000", "$20,000", "$300,000"],
 ];
 
 const faqs = [
@@ -67,11 +67,9 @@ const PMCompensationPage = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <ArticleSchema
-        title="Product Manager Compensation Guide 2026"
-        description="A comprehensive guide to Product Manager compensation in 2026."
+        headline="Product Manager Compensation Guide 2026"
         datePublished="2026-02-10"
         authorName="AvgPay Team"
-        canonicalUrl="https://avgpay.com/guides/pm-compensation-2026" // Replace with actual URL
       />
 
       <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
@@ -116,7 +114,7 @@ const PMCompensationPage = () => {
         <p className="mb-4 text-gray-700">
           Delve into the typical compensation structure for Product Managers in 2026, including base salary, annual bonuses, and equity.
         </p>
-        <DataTable columns={compensationColumns} data={compensationData} />
+        <DataTable headers={compensationHeaders} rows={compensationRows} />
         <div className="mt-4 flex justify-center">
           <Link href="/analyzer" legacyBehavior>
             <Button variant="outline" className="group">

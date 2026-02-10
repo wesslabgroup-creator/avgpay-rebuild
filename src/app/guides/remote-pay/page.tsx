@@ -28,18 +28,18 @@ import {
 } from "lucide-react";
 
 // Placeholder data for DataTable - factors affecting remote pay
-const remotePayData = [
-  { id: 1, factor: "Cost of Living (COL) Adjustments", impact: "High", explanation: "Companies may adjust pay based on COL in employee's location (e.g., San Francisco vs. rural Midwest)." },
-  { id: 2, factor: "National Pay Bands", impact: "Medium", explanation: "Some companies set pay within broader national bands, regardless of exact location." },
-  { id: 3, factor: "Company Policy", impact: "High", explanation: "Remote-first, hybrid, or traditional models influence pay structures." },
-  { id: 4, factor: "Role & Seniority", impact: "High", explanation: "Core value of the role and experience level still dictate a significant portion of pay." },
-  { id: 5, factor: "Market Rates", impact: "High", explanation: "Local or national market demand for specific skills remains a major factor." },
+const remotePayHeaders = [
+  { key: "factor", label: "Factor" },
+  { key: "impact", label: "Impact" },
+  { key: "explanation", label: "Explanation" },
 ];
 
-const remotePayColumns = [
-  { accessorKey: "factor", header: "Factor", className: "text-left" },
-  { accessorKey: "impact", header: "Impact", className: "text-center" },
-  { accessorKey: "explanation", header: "Explanation", className: "text-left" },
+const remotePayRows = [
+  ["Cost of Living (COL) Adjustments", "High", "Companies may adjust pay based on COL in employee's location (e.g., San Francisco vs. rural Midwest)."],
+  ["National Pay Bands", "Medium", "Some companies set pay within broader national bands, regardless of exact location."],
+  ["Company Policy", "High", "Remote-first, hybrid, or traditional models influence pay structures."],
+  ["Role & Seniority", "High", "Core value of the role and experience level still dictate a significant portion of pay."],
+  ["Market Rates", "High", "Local or national market demand for specific skills remains a major factor."],
 ];
 
 const faqs = [
@@ -71,11 +71,9 @@ const RemotePayPage = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <ArticleSchema
-        title="Remote Work Compensation Guide"
-        description="Understand how remote work impacts pay."
+        headline="Remote Work Compensation Guide"
         datePublished="2026-02-10"
         authorName="AvgPay Team"
-        canonicalUrl="https://avgpay.com/guides/remote-pay" // Replace with actual URL
       />
 
       <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
@@ -120,7 +118,7 @@ const RemotePayPage = () => {
         <p className="mb-4 text-gray-700">
           Understand the primary drivers that shape compensation packages for remote roles.
         </p>
-        <DataTable columns={remotePayColumns} data={remotePayData} />
+        <DataTable headers={remotePayHeaders} rows={remotePayRows} />
         <div className="mt-4 flex justify-center">
           <Link href="/analyzer" legacyBehavior>
             <Button variant="outline" className="group">

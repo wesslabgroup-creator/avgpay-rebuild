@@ -26,18 +26,18 @@ import {
 } from "lucide-react";
 
 // Placeholder data for DataTable - comparing equity types
-const equityData = [
-  { id: 1, type: "Stock Options", value: "Potential for high growth, high risk.", commonIn: "Startups, early-stage companies", requires: "Strike price, vesting schedule" },
-  { id: 2, type: "ISOs (Incentive Stock Options)", value: "Tax advantages if held long-term.", commonIn: "Startups", requires: "Specific IRS rules" },
-  { id: 3, type: "NSOs (Non-qualified Stock Options)", value: "More flexibility, taxed as ordinary income.", commonIn: "Startups, sometimes public companies", requires: "No specific IRS limitations" },
-  { id: 4, type: "RSUs (Restricted Stock Units)", value: "Value tied to stock price, generally lower risk.", commonIn: "Public Tech Companies, growing private companies", requires: "Vesting schedule, taxed upon vesting" },
+const equityHeaders = [
+  { key: "type", label: "Equity Type" },
+  { key: "value", label: "Description" },
+  { key: "commonIn", label: "Commonly Found In" },
+  { key: "requires", label: "Key Considerations" },
 ];
 
-const equityColumns = [
-  { accessorKey: "type", header: "Equity Type", className: "text-left" },
-  { accessorKey: "value", header: "Description", className: "text-left" },
-  { accessorKey: "commonIn", header: "Commonly Found In", className: "text-left" },
-  { accessorKey: "requires", header: "Key Considerations", className: "text-left" },
+const equityRows = [
+  ["Stock Options", "Potential for high growth, high risk.", "Startups, early-stage companies", "Strike price, vesting schedule"],
+  ["ISOs (Incentive Stock Options)", "Tax advantages if held long-term.", "Startups", "Specific IRS rules"],
+  ["NSOs (Non-qualified Stock Options)", "More flexibility, taxed as ordinary income.", "Startups, sometimes public companies", "No specific IRS limitations"],
+  ["RSUs (Restricted Stock Units)", "Value tied to stock price, generally lower risk.", "Public Tech Companies, growing private companies", "Vesting schedule, taxed upon vesting"],
 ];
 
 const faqs = [
@@ -69,11 +69,9 @@ const EquityPage = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <ArticleSchema
-        title="Equity Compensation Guide"
-        description="Understand stock options, RSUs, and other equity compensation."
+        headline="Equity Compensation Guide"
         datePublished="2026-02-10"
         authorName="AvgPay Team"
-        canonicalUrl="https://avgpay.com/guides/equity" // Replace with actual URL
       />
 
       <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
@@ -118,7 +116,7 @@ const EquityPage = () => {
         <p className="mb-4 text-gray-700">
           Compare the distinct features and benefits of common equity compensation types.
         </p>
-        <DataTable columns={equityColumns} data={equityData} />
+        <DataTable headers={equityHeaders} rows={equityRows} />
         <div className="mt-4 flex justify-center">
           <Link href="/analyzer" legacyBehavior>
             <Button variant="outline" className="group">

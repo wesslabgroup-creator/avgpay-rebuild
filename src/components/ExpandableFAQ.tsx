@@ -1,3 +1,5 @@
+"use client";
+
 // avgpay/src/components/ExpandableFAQ.tsx
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';

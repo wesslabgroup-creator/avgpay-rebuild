@@ -30,20 +30,20 @@ import {
 } from "lucide-react";
 
 // Placeholder data for DataTable - comparing compensation aspects
-const startupBigTechData = [
-  { id: 1, aspect: "Base Salary", startup: "Moderate to High", bigTech: "High to Very High", notes: "Big Tech typically offers higher base salaries." },
-  { id: 2, aspect: "Annual Bonus", startup: "Lower (if any)", bigTech: "Significant (performance-based)", notes: "Bonuses are standard and often substantial in Big Tech." },
-  { id: 3, aspect: "Equity", startup: "High potential, high risk (options)", bigTech: "High value (RSUs)", notes: "Startups offer potential for massive upside but with higher risk of zero value. Big Tech RSUs are more predictable." },
-  { id: 4, aspect: "Role Scope", startup: "Broad, hands-on", bigTech: "Specialized, focused", notes: "Startups require versatility; Big Tech allows deep specialization." },
-  { id: 5, aspect: "Work-Life Balance", startup: "Challenging", bigTech: "Varies, can be challenging", notes: "Startups often demand longer hours; Big Tech balance is improving but can be demanding." },
-  { id: 6, aspect: "Career Growth/Learning", startup: "Rapid, broad", bigTech: "Structured, deep", notes: "Startups offer fast learning across many areas; Big Tech offers deep expertise." },
+const startupBigTechHeaders = [
+  { key: "aspect", label: "Aspect" },
+  { key: "startup", label: "Startup" },
+  { key: "bigTech", label: "Big Tech" },
+  { key: "notes", label: "Notes" },
 ];
 
-const startupBigTechColumns = [
-  { accessorKey: "aspect", header: "Aspect", className: "text-left" },
-  { accessorKey: "startup", header: "Startup", className: "text-left" },
-  { accessorKey: "bigTech", header: "Big Tech", className: "text-left" },
-  { accessorKey: "notes", header: "Notes", className: "text-left" },
+const startupBigTechRows = [
+  ["Base Salary", "Moderate to High", "High to Very High", "Big Tech typically offers higher base salaries."],
+  ["Annual Bonus", "Lower (if any)", "Significant (performance-based)", "Bonuses are standard and often substantial in Big Tech."],
+  ["Equity", "High potential, high risk (options)", "High value (RSUs)", "Startups offer potential for massive upside but with higher risk of zero value. Big Tech RSUs are more predictable."],
+  ["Role Scope", "Broad, hands-on", "Specialized, focused", "Startups require versatility; Big Tech allows deep specialization."],
+  ["Work-Life Balance", "Challenging", "Varies, can be challenging", "Startups often demand longer hours; Big Tech balance is improving but can be demanding."],
+  ["Career Growth/Learning", "Rapid, broad", "Structured, deep", "Startups offer fast learning across many areas; Big Tech offers deep expertise."],
 ];
 
 const faqs = [
@@ -75,11 +75,9 @@ const StartupVsBigTechPage = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <ArticleSchema
-        title="Startup vs. Big Tech Compensation Guide"
-        description="Compare compensation, culture, and career growth opportunities between startups and established tech giants."
+        headline="Startup vs. Big Tech Compensation Guide"
         datePublished="2026-02-10"
         authorName="AvgPay Team"
-        canonicalUrl="https://avgpay.com/guides/startup-vs-bigtech" // Replace with actual URL
       />
 
       <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
@@ -124,7 +122,7 @@ const StartupVsBigTechPage = () => {
         <p className="mb-4 text-gray-700">
           See how compensation components typically stack up between startups and established tech giants.
         </p>
-        <DataTable columns={startupBigTechColumns} data={startupBigTechData} />
+        <DataTable headers={startupBigTechHeaders} rows={startupBigTechRows} />
         <div className="mt-4 flex justify-center">
           <Link href="/analyzer" legacyBehavior>
             <Button variant="outline" className="group">

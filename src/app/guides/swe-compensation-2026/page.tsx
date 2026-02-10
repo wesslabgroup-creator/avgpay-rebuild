@@ -22,19 +22,19 @@ import {
 } from "lucide-react";
 
 // Placeholder data for DataTable
-const compensationData = [
-  { id: 1, role: "Software Engineer I", level: "L3", salary: "$120,000", bonus: "$10,000", equity: "$50,000" },
-  { id: 2, role: "Software Engineer II", level: "L4", salary: "$150,000", bonus: "$15,000", equity: "$100,000" },
-  { id: 3, role: "Senior Software Engineer", level: "L5", salary: "$180,000", bonus: "$20,000", equity: "$200,000" },
-  { id: 4, role: "Staff Software Engineer", level: "L6", salary: "$220,000", bonus: "$25,000", equity: "$400,000" },
+const compensationHeaders = [
+  { key: "role", label: "Role" },
+  { key: "level", label: "Level" },
+  { key: "salary", label: "Base Salary" },
+  { key: "bonus", label: "Annual Bonus" },
+  { key: "equity", label: "Annual Equity" },
 ];
 
-const compensationColumns = [
-  { accessorKey: "role", header: "Role", className: "text-left" },
-  { accessorKey: "level", header: "Level", className: "text-left" },
-  { accessorKey: "salary", header: "Base Salary", className: "text-right" },
-  { accessorKey: "bonus", header: "Annual Bonus", className: "text-right" },
-  { accessorKey: "equity", header: "Annual Equity", className: "text-right" },
+const compensationRows = [
+  ["Software Engineer I", "L3", "$120,000", "$10,000", "$50,000"],
+  ["Software Engineer II", "L4", "$150,000", "$15,000", "$100,000"],
+  ["Senior Software Engineer", "L5", "$180,000", "$20,000", "$200,000"],
+  ["Staff Software Engineer", "L6", "$220,000", "$25,000", "$400,000"],
 ];
 
 const faqs = [
@@ -66,11 +66,9 @@ const SWCompensationPage = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <ArticleSchema
-        title="Software Engineer Compensation Guide 2026"
-        description="A comprehensive guide to Software Engineer compensation in 2026."
+        headline="Software Engineer Compensation Guide 2026"
         datePublished="2026-02-10"
         authorName="AvgPay Team"
-        canonicalUrl="https://avgpay.com/guides/swe-compensation-2026" // Replace with actual URL
       />
 
       <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
@@ -117,7 +115,7 @@ const SWCompensationPage = () => {
         <p className="mb-4 text-gray-700">
           Explore the typical compensation structure for Software Engineers in 2026. This includes base salary, annual bonuses, and equity grants (RSUs and stock options).
         </p>
-        <DataTable columns={compensationColumns} data={compensationData} />
+        <DataTable headers={compensationHeaders} rows={compensationRows} />
         <div className="mt-4 flex justify-center">
           <Link href="/analyzer" legacyBehavior>
             <Button variant="outline" className="group">

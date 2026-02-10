@@ -1,13 +1,23 @@
 // Initialize Supabase Client
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Check if we have valid credentials (not placeholders)
+const hasValidCredentials = (
+  supabaseUrl && 
+  !supabaseUrl.includes('placeholder') && 
+  supabaseAnonKey && 
+  !supabaseAnonKey.includes('placeholder')
+);
 
-// Service Role Key (for server-side operations) - Keep this secure and server-only
-const supabaseServiceUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!; // Assumes SUPABASE_SERVICE_ROLE_KEY is set in env
+// Create clients only if we have valid credentials, otherwise create dummy clients
+export const supabase = hasValidCredentials 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createClient('https://placeholder.supabase.co', 'placeholder');
 
-export const supabaseAdmin = createClient(supabaseServiceUrl, supabaseServiceRoleKey);
+export const supabaseAdmin = hasValidCredentials
+  ? createClient(supabaseUrl, supabaseServiceRoleKey || supabaseAnonKey)
+  : createClient('https://placeholder.supabase.co', 'placeholder');
