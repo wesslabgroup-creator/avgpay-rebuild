@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Database, Shield, TrendingUp, Users, Award, Zap, Star, Search } from "lucide-react";
 import Link from "next/link";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
+import { calculateTotalDataPoints } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "AvgPay - Salary Insights & Negotiation Tool | Know Your Worth",
@@ -64,7 +65,7 @@ export default function Home() {
 
           {/* Animated Social Proof */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-12 pb-8 text-slate-600 text-sm sm:text-base font-medium">
-            <AnimatedCounter target={47832} />
+            <AnimatedCounter target={calculateTotalDataPoints()} />
             <span className="hidden sm:inline"> salaries analyzed •</span>
             <span>Trusted by top tech talent</span>
           </div>
@@ -91,7 +92,7 @@ export default function Home() {
       <section className="px-4 py-20 md:py-24 bg-white border-y border-slate-200">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div>
-            <div className="text-4xl md:text-5xl font-black text-emerald-500 mb-4"><AnimatedCounter target={47832} />+</div>
+            <div className="text-4xl md:text-5xl font-black text-emerald-500 mb-4"><AnimatedCounter target={calculateTotalDataPoints()} />+</div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">Salaries Analyzed</h3>
             <p className="text-slate-600">From BLS, H-1B, and transparency laws</p>
           </div>
