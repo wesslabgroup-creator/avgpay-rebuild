@@ -59,6 +59,21 @@ export default function SubmitSalaryPage() {
     setError(null);
   };
 
+  // Explicit handlers for debugging dropdowns
+  const handleExperienceLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    console.log('Experience Level selected:', value);
+    setFormData(prev => ({ ...prev, experienceLevel: value }));
+    setError(null);
+  };
+
+  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    console.log('State selected:', value);
+    setFormData(prev => ({ ...prev, state: value }));
+    setError(null);
+  };
+
   const calculateTotalComp = () => {
     const base = parseInt(formData.baseSalary || "0");
     const stock = parseInt(formData.stockOptions || "0") / 4;
@@ -232,7 +247,7 @@ export default function SubmitSalaryPage() {
                     <select
                       name="experienceLevel"
                       value={formData.experienceLevel}
-                      onChange={handleInputChange}
+                      onChange={handleExperienceLevelChange}
                       className={selectClass(isEmpty('experienceLevel') && !!error)}
                     >
                       <option value="">Select experience level...</option>
@@ -270,7 +285,7 @@ export default function SubmitSalaryPage() {
                       <select
                         name="state"
                         value={formData.state}
-                        onChange={handleInputChange}
+                        onChange={handleStateChange}
                         className={selectClass(isEmpty('state') && !!error)}
                       >
                         <option value="">Select state...</option>
