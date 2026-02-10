@@ -280,7 +280,7 @@ async function getOrCreateLocation(locationName: string): Promise<{ id: string; 
   }
 
   console.log(`New location created with AI content: "${fullName}"`);
-  return { ...newLocation!, isNew: true };
+  return { id: newLocation!.id, name: `${newLocation!.city}, ${newLocation!.state}`, isNew: true };
 }
 
 export async function POST(request: Request) {

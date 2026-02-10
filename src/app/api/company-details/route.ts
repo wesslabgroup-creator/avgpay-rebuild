@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabaseClient';
 type SalarySummaryRow = {
   totalComp: number;
   level: string | null;
-  Role: { title: string } | null;
+  Role: { title: string }[] | null;
 };
 
 export async function GET(request: Request) {
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     // Aggregate the salary data by role
     const roleMap: Record<string, { totalComp: number[], levels: Set<string> }> = {};
     (rawSalaries as SalarySummaryRow[]).forEach((row) => {
-      const title = row.Role?.title;
+      const title = row.Role?.[0]?.title;
       if (title) {
         if (!roleMap[title]) {
           roleMap[title] = { totalComp: [], levels: new Set() };
