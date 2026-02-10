@@ -1,105 +1,124 @@
 import { Metadata } from "next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Database, Shield, TrendingUp, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { Database, Shield, CheckCircle2, TrendingUp, Users } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Our Methodology | AvgPay",
-  description: "How AvgPay collects, verifies, and presents salary data. Transparent data sources and confidence scoring.",
+  title: "Our Methodology - AvgPay",
+  description: "How AvgPay collects, verifies, and presents salary data. BLS, H-1B, and pay transparency laws.",
 };
 
 export default function MethodologyPage() {
   return (
-    <main className="min-h-screen bg-white">
-      
-      <div className="px-6 py-12">
-        <div className="max-w-4xl mx-auto space-y-12">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-slate-900">Our Methodology</h1>
-            <p className="text-xl text-slate-600">
-              Transparent data sources and confidence scoring
-            </p>
-          </div>
+    <main className="min-h-screen bg-slate-50 pt-24 pb-12">
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="text-center space-y-4 mb-12">
+          <h1 className="text-4xl font-bold text-slate-900">Our Methodology</h1>
+          <p className="text-xl text-slate-600">
+            How we collect, verify, and present salary data you can trust.
+          </p>
+        </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="bg-slate-900 border-slate-200">
-              <CardHeader>
-                <Database className="w-8 h-8 text-emerald-400 mb-4" />
-                <CardTitle className="text-slate-900">BLS Data</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-600">
-                  Official Bureau of Labor Statistics occupational employment statistics. 
-                  Updated annually with comprehensive salary data across all U.S. metros.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-slate-900 border-slate-200">
-              <CardHeader>
-                <Shield className="w-8 h-8 text-emerald-400 mb-4" />
-                <CardTitle className="text-slate-900">H-1B Filings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-600">
-                  Publicly disclosed salary data from visa applications. Legally required 
-                  to be accurate and updated quarterly from DOL databases.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-slate-900 border-slate-200">
-              <CardHeader>
-                <TrendingUp className="w-8 h-8 text-teal-400 mb-4" />
-                <CardTitle className="text-slate-900">Pay Transparency</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-600">
-                  Live data from pay transparency law job postings in CA, NY, CO, and WA. 
-                  Real-time market rates from actual job openings.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="bg-slate-900 border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-slate-900">Confidence Scoring</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-slate-600">
-                We assign confidence scores based on data volume and source quality:
+        <div className="space-y-8">
+          {/* Data Sources */}
+          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Database className="w-8 h-8 text-emerald-600" />
+              <h2 className="text-2xl font-bold text-slate-900">Data Sources</h2>
+            </div>
+            <div className="space-y-4 text-slate-700">
+              <p>
+                <strong>U.S. Bureau of Labor Statistics (BLS):</strong> Official government wage data 
+                by occupation and geographic area. Updated annually.
               </p>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
-                  <span className="text-slate-300"><strong>High (N&gt;50):</strong> Statistically significant sample size across multiple sources</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5" />
-                  <span className="text-slate-300"><strong>Medium (N&gt;10):</strong> Sufficient data for directional guidance</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-red-400 mt-0.5" />
-                  <span className="text-slate-300"><strong>Low (N&lt;10):</strong> Limited data - use as rough estimate only</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
+              <p>
+                <strong>H-1B Visa Data:</strong> Publicly available wage data from H-1B visa 
+                applications, showing actual salaries employers pay for specific roles.
+              </p>
+              <p>
+                <strong>State Pay Transparency Laws:</strong> Salary ranges voluntarily disclosed 
+                by employers in compliance with state transparency requirements.
+              </p>
+            </div>
+          </section>
 
-          <Card className="bg-slate-900 border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-slate-900">Data Processing Pipeline</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-slate-600">
-              <ol className="space-y-2 list-decimal list-inside">
-                <li><strong className="text-slate-300">Ingest:</strong> Daily automated scrapers pull from 100+ company career pages</li>
-                <li><strong className="text-slate-300">Normalize:</strong> Job titles mapped to canonical roles, locations to metro areas</li>
-                <li><strong className="text-slate-300">Validate:</strong> Outlier detection against BLS benchmarks (3-sigma rule)</li>
-                <li><strong className="text-slate-300">Merge:</strong> Deduplication across sources, weighted by confidence</li>
-                <li><strong className="text-slate-300">Publish:</strong> Only data meeting quality thresholds goes live</li>
-              </ol>
-            </CardContent>
-          </Card>
+          {/* Verification Process */}
+          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Shield className="w-8 h-8 text-emerald-600" />
+              <h2 className="text-2xl font-bold text-slate-900">Verification Process</h2>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="font-bold text-emerald-600">1</span>
+                </div>
+                <h3 className="font-semibold mb-2">Cross-Reference</h3>
+                <p className="text-sm text-slate-600">We compare multiple sources to identify discrepancies and outliers.</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="font-bold text-emerald-600">2</span>
+                </div>
+                <h3 className="font-semibold mb-2">Normalize</h3>
+                <p className="text-sm text-slate-600">Job titles and locations standardized for accurate comparisons.</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="font-bold text-emerald-600">3</span>
+                </div>
+                <h3 className="font-semibold mb-2">Validate</h3>
+                <p className="text-sm text-slate-600">Minimum sample thresholds ensure statistical significance.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Update Frequency */}
+          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <TrendingUp className="w-8 h-8 text-emerald-600" />
+              <h2 className="text-2xl font-bold text-slate-900">Update Frequency</h2>
+            </div>
+            <ul className="space-y-3 text-slate-700">
+              <li className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5" />
+                <span><strong>BLS Data:</strong> Updated annually (latest release)</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5" />
+                <span><strong>H-1B Data:</strong> Quarterly updates from USCIS releases</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5" />
+                <span><strong>User Contributions:</strong> Reviewed within 48 hours</span>
+              </li>
+            </ul>
+          </section>
+
+          {/* Transparency */}
+          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Users className="w-8 h-8 text-emerald-600" />
+              <h2 className="text-2xl font-bold text-slate-900">Transparency</h2>
+            </div>
+            <div className="space-y-4 text-slate-700">
+              <p>
+                We show our work. Every salary estimate includes the number of data points 
+                used and confidence level. We never hide sample sizes or inflate accuracy.
+              </p>
+              <p>
+                <strong>Our commitment:</strong> If data quality is insufficient for a 
+                role/location, we say so explicitly rather than showing unreliable estimates.
+              </p>
+              <div className="bg-slate-50 p-4 rounded-lg mt-4">
+                <p className="text-sm text-slate-600">
+                  Have questions about our methodology?{' '}
+                  <Link href="/about" className="text-emerald-600 hover:underline">
+                    Contact us
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </main>
