@@ -1,0 +1,11 @@
+job_title,company_name,location,base_salary,total_comp,level,user_notes
+Software Engineer,Google,"San Francisco, CA",185000,265000,L5,Includes signing bonus
+Software Engineer,Google,"San Francisco, CA",220000,320000,L6,Senior level
+Product Manager,Meta,"New York, NY",175000,240000,L5,Consumer team
+Data Scientist,Amazon,"Seattle, WA",160000,210000,L5,AWS division
+UX Designer,Apple,"Cupertino, CA",155000,195000,IC4,Design systems team
+Engineering Manager,Netflix,"Los Gatos, CA",280000,450000,E6,High performer
+Software Engineer,Microsoft,"Redmond, WA",145000,185000,L63,Azure team
+Product Manager,Stripe,"San Francisco, CA",195000,275000,L3,Fintech experience
+Data Scientist,Airbnb,"San Francisco, CA",170000,230000,L5,ML focus
+DevOps Engineer,Google,"Austin, TX",140000,175000,L4,Remote hybrid
