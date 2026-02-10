@@ -24,17 +24,16 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Insert into email_subscriptions table
-    const { data, error } = await supabase
-      .from('email_subscriptions')
+    // Insert into EmailSubscription table
+    const { data, error } = await (supabase
+      .from('EmailSubscription')
       .insert({
         email,
         type,
-        subscribed_at: new Date().toISOString(),
         active: true,
       })
       .select()
-      .single();
+      .single() as any);
 
     if (error) {
       // Handle duplicate email gracefully

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function PricingPage() {
   return (
     <main className="min-h-screen bg-white">
-      
+
       <div className="px-6 py-20">
         <div className="max-w-5xl mx-auto space-y-16">
           <div className="text-center space-y-6 max-w-2xl mx-auto">
@@ -19,7 +19,7 @@ export default function PricingPage() {
               Negotiate Like a Pro
             </h1>
             <p className="text-xl text-slate-600">
-              Most candidates leave <span className="font-semibold text-emerald-600">$20k - $50k</span> on the table because they don't know the real market rate. 
+              Most candidates leave <span className="font-semibold text-emerald-600">$20k - $50k</span> on the table because they don&apos;t know the real market rate.
               Small investment, massive ROI.
             </p>
           </div>
@@ -40,7 +40,7 @@ export default function PricingPage() {
                   </li>
                   <li className="flex items-start gap-3 text-slate-600">
                     <Check className="w-5 h-5 text-green-500 shrink-0" />
-                    <span>Basic "Grade My Offer" check</span>
+                    <span>Basic &quot;Grade My Offer&quot; check</span>
                   </li>
                   <li className="flex items-start gap-3 text-slate-400">
                     <X className="w-5 h-5 shrink-0" />
@@ -52,7 +52,7 @@ export default function PricingPage() {
                   </li>
                   <li className="flex items-start gap-3 text-slate-400">
                     <X className="w-5 h-5 shrink-0" />
-                    <span>Verified "Real Offer" database</span>
+                    <span>Verified &quot;Real Offer&quot; database</span>
                   </li>
                 </ul>
                 <Button variant="outline" className="w-full">Continue Free</Button>
@@ -80,7 +80,7 @@ export default function PricingPage() {
                   </li>
                   <li className="flex items-start gap-3 text-emerald-800">
                     <Check className="w-5 h-5 text-emerald-600 shrink-0" />
-                    <span>Verified "Real Offer" database</span>
+                    <span>Verified &quot;Real Offer&quot; database</span>
                   </li>
                   <li className="flex items-start gap-3 text-emerald-800">
                     <Check className="w-5 h-5 text-emerald-600 shrink-0" />
@@ -143,8 +143,8 @@ export default function PricingPage() {
           <div className="bg-slate-50 rounded-2xl p-8 md:p-12 text-center border border-slate-100">
             <h3 className="text-2xl font-bold text-slate-900 mb-4">Why charge for this?</h3>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              We charge a small fee so we don't have to sell your data to recruiters. 
-              Most salary sites are actually lead-gen for recruiting agencies. 
+              We charge a small fee so we don&apos;t have to sell your data to recruiters.
+              Most salary sites are actually lead-gen for recruiting agencies.
               <strong> We work for you, not them.</strong>
             </p>
           </div>

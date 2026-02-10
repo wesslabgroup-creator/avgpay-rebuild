@@ -27,10 +27,11 @@ export default function AnalyzeSalaryPage() {
             Know Your Worth
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
-            What's Your <span className="text-emerald-600">Market Value</span>?
+            What&apos;s Your <span className="text-emerald-600">Market Value</span>?
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Get an instant salary estimate based on your role, experience, and location. 
+            See how your compensation compares to market rates.
+            We&apos;ll help you understand your worth.
             No offer required—just data-driven insights.
           </p>
         </div>

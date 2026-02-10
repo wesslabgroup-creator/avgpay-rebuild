@@ -154,7 +154,7 @@ export function SalarySearch({ onResultsChange }: SalarySearchProps) {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-slate-500">No job titles found matching "{query}"</p>
+          <p className="text-slate-500">No job titles found matching &quot;{query}&quot;</p>
         </div>
       )}
     </div>

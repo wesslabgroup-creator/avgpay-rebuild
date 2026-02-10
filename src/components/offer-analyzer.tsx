@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { SearchableSelect } from "@/components/searchable-select";
 import { calculateGrade } from "@/lib/data";
-import { CheckCircle2, AlertCircle, TrendingUp, TrendingDown, Minus, Loader2 } from "lucide-react";
+import { CheckCircle2, TrendingUp, TrendingDown, Minus, Loader2 } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
 
 const LEVELS = [
   { value: "Junior (L1-L2)", label: "Junior (L1-L2)" },
@@ -38,6 +39,7 @@ interface OfferAnalyzerProps {
 }
 
 export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
+  const posthog = usePostHog();
   const [step, setStep] = useState<"form" | "analyzing" | "results" | "error">("form");
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -50,7 +52,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
     bonus: "",
   });
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  
+
   const [companies, setCompanies] = useState<string[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
@@ -90,14 +92,24 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
       });
 
       const response = await fetch(`/api/salaries?${params}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch market data');
       }
 
       const marketData: MarketData = await response.json();
-      
-      const grade = calculateGrade(total, marketData.median); 
+
+      const grade = calculateGrade(total, marketData.median);
+
+      posthog?.capture('offer_analyzed', {
+        company: formData.company,
+        role: formData.role,
+        location: formData.location,
+        level: formData.level,
+        total_comp: total,
+        grade: grade,
+        market_median: marketData.median
+      });
       const percentile = Math.min(Math.round((total / marketData.median) * 50), 99);
 
       const analysisResult = {
@@ -138,13 +150,13 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
       const fallbackMedian = 150000;
       const grade = calculateGrade(total, fallbackMedian);
       const percentile = Math.min(Math.round((total / fallbackMedian) * 50), 99);
-      setResult({ 
-        grade, 
-        percentile, 
-        marketMedian: fallbackMedian, 
-        blsMedian: fallbackMedian * 0.9, 
-        yourTotal: total, 
-        count: 0 
+      setResult({
+        grade,
+        percentile,
+        marketMedian: fallbackMedian,
+        blsMedian: fallbackMedian * 0.9,
+        yourTotal: total,
+        count: 0
       });
       setStep("results");
     } finally {
@@ -154,33 +166,33 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
 
   const getFeedback = (grade: string) => {
     switch (grade) {
-      case "A": return { 
-        title: "Excellent Offer!", 
-        text: "You are well above market rate. Strong position to negotiate from.", 
-        color: "text-green-600", 
+      case "A": return {
+        title: "Excellent Offer!",
+        text: "You are well above market rate. Strong position to negotiate from.",
+        color: "text-green-600",
         bgColor: "bg-green-50",
-        icon: <TrendingUp className="w-8 h-8 text-green-600" /> 
+        icon: <TrendingUp className="w-8 h-8 text-green-600" />
       };
-      case "B": return { 
-        title: "Solid Market Rate", 
-        text: "This is a fair offer, with some room to push for more.", 
-        color: "text-emerald-600", 
+      case "B": return {
+        title: "Solid Market Rate",
+        text: "This is a fair offer, with some room to push for more.",
+        color: "text-emerald-600",
         bgColor: "bg-emerald-50",
-        icon: <CheckCircle2 className="w-8 h-8 text-emerald-600" /> 
+        icon: <CheckCircle2 className="w-8 h-8 text-emerald-600" />
       };
-      case "C": return { 
-        title: "Below Average", 
-        text: "Consider negotiating – you deserve more based on market data.", 
-        color: "text-yellow-600", 
+      case "C": return {
+        title: "Below Average",
+        text: "Consider negotiating – you deserve more based on market data.",
+        color: "text-yellow-600",
         bgColor: "bg-yellow-50",
-        icon: <Minus className="w-8 h-8 text-yellow-600" /> 
+        icon: <Minus className="w-8 h-8 text-yellow-600" />
       };
-      default: return { 
-        title: "Lowball Offer", 
-        text: "This offer is significantly below market rate. Strong grounds to negotiate.", 
-        color: "text-red-600", 
+      default: return {
+        title: "Lowball Offer",
+        text: "This offer is significantly below market rate. Strong grounds to negotiate.",
+        color: "text-red-600",
         bgColor: "bg-red-50",
-        icon: <TrendingDown className="w-8 h-8 text-red-600" /> 
+        icon: <TrendingDown className="w-8 h-8 text-red-600" />
       };
     }
   };
@@ -233,8 +245,8 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
             <p>Based on <span className="font-semibold text-slate-700">{result.count.toLocaleString()}</span> verified salaries</p>
           </div>
 
-          <Button 
-            onClick={() => setStep("form")} 
+          <Button
+            onClick={() => setStep("form")}
             className="w-full bg-emerald-600 hover:bg-emerald-700"
           >
             Analyze Another
@@ -251,8 +263,8 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
           {mode === "offer" ? "Compare Your Offer" : "Check Your Market Value"}
         </CardTitle>
         <CardDescription className="text-slate-500">
-          {mode === "offer" 
-            ? "Enter your compensation details to see how you stack up" 
+          {mode === "offer"
+            ? "Enter your compensation details to see how you stack up"
             : "Enter your details to discover your market worth"}
         </CardDescription>
       </CardHeader>
@@ -275,7 +287,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
               required
             />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SearchableSelect
               label="Location"

@@ -27,7 +27,7 @@ export default function PrivacyPage() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold text-slate-900">Overview</h2>
               <p className="text-slate-700 leading-relaxed">
-                AvgPay ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy
+                AvgPay (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy
                 explains how we collect, use, disclose, and safeguard your information when you use our
                 website and services.
               </p>
@@ -76,7 +76,7 @@ export default function PrivacyPage() {
               <ul className="list-disc pl-6 space-y-2 text-slate-700">
                 <li>To provide and maintain our salary analysis tools and services</li>
                 <li>To improve and optimize our website and user experience</li>
-                <li>To send you email communications (if you've opted in)</li>
+                <li>To send you email communications (if you&apos;ve opted in)</li>
                 <li>To aggregate and anonymize data for market research and benchmarking</li>
                 <li>To detect and prevent fraud, abuse, and security incidents</li>
                 <li>To comply with legal obligations and enforce our terms of service</li>
@@ -192,7 +192,7 @@ export default function PrivacyPage() {
             </section>
 
             <section className="space-y-4 mt-8">
-              <h2 className="text-2xl font-bold text-slate-900">Children's Privacy</h2>
+              <h2 className="text-2xl font-bold text-slate-900">Children&apos;s Privacy</h2>
               <p className="text-slate-700 leading-relaxed">
                 Our services are not directed to individuals under the age of 18. We do not knowingly collect
                 personal information from children. If you believe we have inadvertently collected information
@@ -204,7 +204,7 @@ export default function PrivacyPage() {
               <h2 className="text-2xl font-bold text-slate-900">Changes to This Policy</h2>
               <p className="text-slate-700 leading-relaxed">
                 We may update this Privacy Policy from time to time. We will notify you of any material changes
-                by posting the new policy on this page and updating the "Last updated" date. We encourage you
+                by posting the new policy on this page and updating the &quot;Last updated&quot; date. We encourage you
                 to review this policy periodically.
               </p>
             </section>

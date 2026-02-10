@@ -26,7 +26,7 @@ export default function JobError({
           </div>
           <CardTitle className="text-2xl text-slate-900">Failed to Load Job Data</CardTitle>
           <CardDescription className="text-slate-600">
-            We couldn't load the salary information for this role. Please try again.
+            We couldn&apos;t load the salary information for this role. Please try again.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

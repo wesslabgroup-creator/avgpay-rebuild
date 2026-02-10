@@ -10,17 +10,9 @@ import {
   Lightbulb,
   ArrowRight,
   DollarSign,
-  Briefcase,
-  ChartLine,
   Star,
-  TrendingUp,
-  Gavel,
   Search,
   Copy,
-  Users,
-  HeartHandshake,
-  Award,
-  Handshake,
   GitBranch,
   Percent,
 } from "lucide-react";
@@ -86,7 +78,7 @@ const EquityPage = () => {
           <CardContent className="p-6">
             <div className="flex items-center mb-3">
               <GitBranch className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900">What You'll Learn</h3>
+              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
             </div>
             <ul className="space-y-2 text-gray-700">
               <li>Key differences between stock options and RSUs.</li>
@@ -105,7 +97,7 @@ const EquityPage = () => {
               <h3 className="text-xl font-semibold text-blue-800">Executive Summary</h3>
             </div>
             <p className="text-gray-800">
-              Equity compensation can be a significant wealth-building tool, offering employees a stake in their company's success. Whether through stock options in startups or RSUs in public companies, understanding the terms, value, and tax implications is crucial. This guide breaks down the core concepts of equity compensation to empower your financial decisions.
+              Equity compensation can be a significant wealth-building tool, offering employees a stake in their company&apos;s success. Whether through stock options in startups or RSUs in public companies, understanding the terms, value, and tax implications is crucial. This guide breaks down the core concepts of equity compensation to empower your financial decisions.
             </p>
           </CardContent>
         </Card>
@@ -135,7 +127,7 @@ const EquityPage = () => {
                 <DollarSign className="h-6 w-6 text-green-600 mr-2" />
                 <h3 className="text-lg font-semibold text-gray-900">Value & Risk</h3>
               </div>
-              <p className="text-gray-700">Equity's value tied to company performance; RSUs offer more predictable value than options.</p>
+              <p className="text-gray-700">Equity&apos;s value tied to company performance; RSUs offer more predictable value than options.</p>
             </CardContent>
           </Card>
           <Card>
@@ -177,7 +169,7 @@ const EquityPage = () => {
           <div className="flex items-start">
             <Search className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
             <p className="text-gray-700">
-              <strong>Research Company Valuation:</strong> For options, understanding the company's current valuation and growth potential is crucial for decision-making.
+              <strong>Research Company Valuation:</strong> For options, understanding the company&apos;s current valuation and growth potential is crucial for decision-making.
             </p>
           </div>
           <div className="flex items-start">
@@ -197,7 +189,7 @@ const EquityPage = () => {
       </section>
 
       <section className="text-center py-12 bg-gray-50 rounded-lg">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Unlock Your Equity's Potential</h2>
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Unlock Your Equity&apos;s Potential</h2>
         <p className="mb-8 text-lg text-gray-700">
           Use our advanced analyzer to understand your equity grants, potential value, and tax implications.
         </p>

@@ -106,7 +106,7 @@ export default function CompensationBreakdownPage() {
                 <h3 className="font-bold text-slate-900 mb-2">Pro Tips</h3>
                 <ul className="space-y-2 text-sm text-slate-600">
                   <li>• Equity vests over 4 years typically</li>
-                  <li>• Bonuses aren't guaranteed</li>
+                  <li>• Bonuses aren&apos;t guaranteed</li>
                   <li>• Compare total comp, not just base</li>
                   <li>• Factor in cost of living differences</li>
                 </ul>

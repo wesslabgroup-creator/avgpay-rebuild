@@ -47,7 +47,7 @@ export function EmailCapture({ type, buttonText, placeholder = "Enter your email
         setStatus("error");
         setMessage(data.error || "Failed to subscribe. Please try again.");
       }
-    } catch (error) {
+    } catch {
       setStatus("error");
       setMessage("An unexpected error occurred. Please try again.");
     }
@@ -76,9 +76,8 @@ export function EmailCapture({ type, buttonText, placeholder = "Enter your email
       </div>
 
       {message && (
-        <div className={`flex items-center gap-2 text-sm ${
-          status === "success" ? "text-emerald-600" : "text-red-600"
-        }`}>
+        <div className={`flex items-center gap-2 text-sm ${status === "success" ? "text-emerald-600" : "text-red-600"
+          }`}>
           {status === "success" ? (
             <CheckCircle2 className="h-4 w-4" />
           ) : (

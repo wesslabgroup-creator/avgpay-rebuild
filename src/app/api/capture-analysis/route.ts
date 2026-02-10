@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabaseClient';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
+
     const {
       company,
       role,
@@ -21,28 +21,27 @@ export async function POST(request: Request) {
       userAgent,
     } = body;
 
-    // Insert into analysis_submissions table
-    const { data, error } = await supabaseAdmin
-      .from('analysis_submissions')
+    // Insert into AnalysisSubmission table
+    const { data, error } = await (supabaseAdmin
+      .from('AnalysisSubmission')
       .insert({
         company: company || null,
         role,
         location,
         level: level || null,
-        base_salary: baseSalary,
+        baseSalary,
         equity: equity || 0,
         bonus: bonus || 0,
-        total_comp: totalComp,
-        market_median: marketMedian,
+        totalComp,
+        marketMedian,
         grade,
         percentile,
         mode, // 'offer' or 'salary'
-        user_agent: userAgent,
-        status: 'pending_review', // For quality checks
-        created_at: new Date().toISOString(),
+        userAgent,
+        status: 'pending',
       })
       .select()
-      .single();
+      .single() as any);
 
     if (error) {
       console.error('Error saving analysis:', error);
@@ -53,10 +52,11 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true, id: data.id });
-  } catch (error: any) {
-    console.error('API Error:', error);
+  } catch (error: unknown) {
+    console.error('Error capturing lead:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

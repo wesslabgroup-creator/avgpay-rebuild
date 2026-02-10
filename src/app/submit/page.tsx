@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Loader2 } from 'lucide-react';
+import { FileUploader } from '@/components/upload/file-uploader';
 
 const EXPERIENCE_LEVELS = [
   "Entry Level (0-2 years)",
@@ -25,7 +26,7 @@ const US_STATES = [
 
 export default function SubmitSalaryPage() {
   const router = useRouter();
-  
+
   // Controlled form state - guaranteed to sync with UI
   const [formData, setFormData] = useState({
     jobTitle: '',
@@ -40,7 +41,7 @@ export default function SubmitSalaryPage() {
     yearsAtCompany: '',
     userNotes: '',
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +73,7 @@ export default function SubmitSalaryPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const missing = validate();
     if (missing.length > 0) {
       setError(`Missing required fields: ${missing.join(', ')}`);
@@ -80,7 +81,7 @@ export default function SubmitSalaryPage() {
     }
 
     setIsLoading(true);
-    
+
     const payload = {
       jobTitle: formData.jobTitle.trim(),
       companyName: formData.companyName.trim(),
@@ -111,8 +112,8 @@ export default function SubmitSalaryPage() {
 
       setIsSuccess(true);
       setTimeout(() => router.push('/salaries'), 3000);
-    } catch (err: any) {
-      setError(err.message || "Failed to submit. Please try again.");
+    } catch (err: unknown) {
+      setError((err as Error).message || "Failed to submit. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -155,11 +156,11 @@ export default function SubmitSalaryPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              
+
               {/* Job Details */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Job Details</h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className={labelClass}>Job Title <span className="text-red-500">*</span></label>
@@ -239,7 +240,7 @@ export default function SubmitSalaryPage() {
               {/* Compensation */}
               <div className="space-y-4 pt-4">
                 <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Compensation Details</h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className={labelClass}>Base Salary (Annual) <span className="text-red-500">*</span></label>
@@ -307,6 +308,19 @@ export default function SubmitSalaryPage() {
                     rows={4}
                     className={`${inputClass} resize-none`}
                   />
+                </div>
+              </div>
+
+              {/* Verification */}
+              <div className="space-y-4 pt-4">
+                <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Verification (Optional)</h3>
+                <p className="text-sm text-slate-600">
+                  Upload your offer letter to get a &quot;Verified&quot; badge and unlock premium insights.
+                </p>
+                <div className="mt-4">
+                  {/* We need to import FileUploader dynamically or at top */}
+                  {/* Since this is a client component, we can import it. I will add import at top later */}
+                  <FileUploader />
                 </div>
               </div>
 

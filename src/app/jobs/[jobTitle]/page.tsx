@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, MapPin, Building2, Briefcase, TrendingUp, TrendingDown, Users } from 'lucide-react';
+import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { SalaryDistributionChart } from '@/components/salary-distribution-chart'; // Placeholder for chart
 
@@ -39,7 +39,7 @@ export default function JobDetailPage() {
 
   useEffect(() => {
     if (!jobTitleSlug) return;
-    
+
     const jobTitle = decodeURIComponent(jobTitleSlug);
 
     const fetchData = async () => {
@@ -52,7 +52,7 @@ export default function JobDetailPage() {
         }
         const fetchedData: JobDetails = await response.json();
         setData(fetchedData);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to fetch job data:", err);
         setError("Could not load job details. Please try again later.");
       } finally {
@@ -63,11 +63,14 @@ export default function JobDetailPage() {
     fetchData();
   }, [jobTitleSlug]);
 
-  const formatCurrency = (n: number) => `$${(n / 1000).toFixed(0)}k`;
+  const formatCurrency = (n: number | undefined | null) => {
+    if (n === undefined || n === null) return '$0k';
+    return `$${(n / 1000).toFixed(0)}k`;
+  };
 
   if (isLoading) return <div className="flex justify-center items-center min-h-screen">Loading job details...</div>;
   if (error || !data) return <div className="flex justify-center items-center min-h-screen text-red-500">{error || "No data available."}</div>;
-  
+
   const { jobData, topCompanies, topLocations, bottomLocations, salaryDistribution, relatedJobs } = data;
 
   const jsonLd = {
@@ -125,25 +128,25 @@ export default function JobDetailPage() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-emerald-600">{formatCurrency(jobData.global_median_comp)}</p>
+                  <p className="text-4xl font-bold text-emerald-600">{formatCurrency(jobData?.global_median_comp)}</p>
                   <p className="text-sm font-medium text-slate-500 uppercase mt-1">Median Total Comp</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-800">{formatCurrency(jobData.global_min_comp)}</p>
+                  <p className="text-3xl font-semibold text-slate-800">{formatCurrency(jobData?.global_min_comp)}</p>
                   <p className="text-sm font-medium text-slate-500 uppercase mt-1">Min Comp</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-800">{formatCurrency(jobData.global_max_comp)}</p>
+                  <p className="text-3xl font-semibold text-slate-800">{formatCurrency(jobData?.global_max_comp)}</p>
                   <p className="text-sm font-medium text-slate-500 uppercase mt-1">Max Comp</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-800">{jobData.global_count.toLocaleString()}</p>
+                  <p className="text-3xl font-semibold text-slate-800">{(jobData?.global_count || 0).toLocaleString()}</p>
                   <p className="text-sm font-medium text-slate-500 uppercase mt-1">Data Points</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           {/* Salary Distribution */}
           <Card className="bg-white border-slate-200">
             <CardHeader>
@@ -163,12 +166,12 @@ export default function JobDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable 
-                headers={[{ label: "Company", key: "company" }, { label: "Median Comp", key: "median" }]} 
+              <DataTable
+                headers={[{ label: "Company", key: "company" }, { label: "Median Comp", key: "median" }]}
                 rows={topCompanies.map(r => [
-                  <Link key={r.company_name} href={`/company/${r.company_name}`} className="text-emerald-600 hover:underline">{r.company_name}</Link>, 
+                  <Link key={r.company_name} href={`/company/${r.company_name}`} className="text-emerald-600 hover:underline">{r.company_name}</Link>,
                   formatCurrency(r.total_comp)
-                ])} 
+                ])}
               />
             </CardContent>
           </Card>
@@ -183,9 +186,9 @@ export default function JobDetailPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <DataTable 
-                  headers={[{ label: "Location", key: "location" }, { label: "Median Comp", key: "median" }]} 
-                  rows={topLocations.map(r => [r.location, formatCurrency(r.total_comp)])} 
+                <DataTable
+                  headers={[{ label: "Location", key: "location" }, { label: "Median Comp", key: "median" }]}
+                  rows={topLocations.map(r => [r.location, formatCurrency(r.total_comp)])}
                 />
               </CardContent>
             </Card>
@@ -197,9 +200,9 @@ export default function JobDetailPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <DataTable 
-                  headers={[{ label: "Location", key: "location" }, { label: "Median Comp", key: "median" }]} 
-                  rows={bottomLocations.map(r => [r.location, formatCurrency(r.total_comp)])} 
+                <DataTable
+                  headers={[{ label: "Location", key: "location" }, { label: "Median Comp", key: "median" }]}
+                  rows={bottomLocations.map(r => [r.location, formatCurrency(r.total_comp)])}
                 />
               </CardContent>
             </Card>

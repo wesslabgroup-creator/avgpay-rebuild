@@ -46,7 +46,7 @@ const CompanyDetailPage = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const { companyData: fetchedData, salarySummary } = await response.json();
-        
+
         setCompanyData({
           name: fetchedData.name,
           website: fetchedData.website || '#',
@@ -54,7 +54,7 @@ const CompanyDetailPage = () => {
           logoUrl: fetchedData.logoUrl, // Assuming logoUrl is in DB
           salarySummary,
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
         setError(`Failed to load data for "${companyName}".`);
         console.error(err);
       } finally {
@@ -133,7 +133,10 @@ const CompanyDetailPage = () => {
             <CardContent className="px-8 pb-8 -mt-12 flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0 h-24 w-24 md:h-32 md:w-32 rounded-xl overflow-hidden border-4 border-white bg-white shadow-md flex items-center justify-center">
                 {companyData.logoUrl ? (
-                  <img src={companyData.logoUrl} alt={`${companyData.name} Logo`} className="w-full h-full object-contain p-2"/>
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={companyData.logoUrl} alt={`${companyData.name} Logo`} className="w-full h-full object-contain p-2" />
+                  </>
                 ) : (
                   <span className="text-3xl font-bold text-slate-300">{companyData.name.substring(0, 1)}</span>
                 )}
@@ -153,7 +156,7 @@ const CompanyDetailPage = () => {
               </div>
             </CardContent>
           </Card>
-          
+
           {/* Consolidated Salary Overview */}
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
@@ -170,19 +173,19 @@ const CompanyDetailPage = () => {
               )}
             </CardContent>
           </Card>
-          
+
           {/* Related Links / Action Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <Link href="/salaries">
-               <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700 w-full">
-                 <span className="flex items-center"><ArrowLeft className="mr-3 h-5 w-5 text-slate-400" /> Back to Salaries</span>
-               </Button>
-             </Link>
-             <Link href="/companies">
-               <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700 w-full">
-                 <span className="flex items-center">View All Companies <ArrowRight className="ml-3 h-5 w-5 text-slate-400" /></span>
-               </Button>
-             </Link>
+            <Link href="/salaries">
+              <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700 w-full">
+                <span className="flex items-center"><ArrowLeft className="mr-3 h-5 w-5 text-slate-400" /> Back to Salaries</span>
+              </Button>
+            </Link>
+            <Link href="/companies">
+              <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700 w-full">
+                <span className="flex items-center">View All Companies <ArrowRight className="ml-3 h-5 w-5 text-slate-400" /></span>
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

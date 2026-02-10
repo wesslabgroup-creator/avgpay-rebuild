@@ -10,74 +10,103 @@ export async function GET(request: Request) {
   }
 
   try {
-    // 1. Get Job Details (Global Aggregates)
-    const { data: jobData, error: jobError } = await supabaseAdmin
-      .from('jobs')
-      .select('*, description, seo_meta_title, seo_meta_description')
+    // 1. Get Job Details (Role)
+    const { data: jobData, error: jobError } = await (supabaseAdmin
+      .from('Role')
+      .select('*')
       .eq('title', jobTitle)
-      .single();
+      .single() as any);
 
     if (jobError) throw new Error(`Job not found: ${jobError.message}`);
 
     // 2. Get Top 5 Companies
-    const { data: topCompanies, error: topCompaniesError } = await supabaseAdmin
-      .from('salaries')
-      .select('company_name, total_comp')
-      .eq('job_title', jobTitle)
-      .order('total_comp', { ascending: false })
-      .limit(5);
+    const { data: topSalaries, error: topSalariesError } = await (supabaseAdmin
+      .from('Salary')
+      .select('totalComp, Company!inner(name)')
+      .eq('roleId', jobData.id)
+      .order('totalComp', { ascending: false })
+      .limit(5) as any);
 
-    if (topCompaniesError) throw new Error(`Error fetching top companies: ${topCompaniesError.message}`);
+    if (topSalariesError) throw new Error(`Error fetching top companies: ${topSalariesError.message}`);
+
+    const topCompanies = topSalaries?.map((s: any) => ({
+      company_name: s.Company?.name,
+      total_comp: s.totalComp
+    }));
 
     // 3. Get Top 5 Locations
-    const { data: topLocations, error: topLocationsError } = await supabaseAdmin
-      .from('salaries')
-      .select('location, total_comp')
-      .eq('job_title', jobTitle)
-      .order('total_comp', { ascending: false })
-      .limit(5);
-      
-    if (topLocationsError) throw new Error(`Error fetching top locations: ${topLocationsError.message}`);
-      
+    const { data: locSalaries, error: locSalariesError } = await (supabaseAdmin
+      .from('Salary')
+      .select('totalComp, Location!inner(city, state)')
+      .eq('roleId', jobData.id)
+      .order('totalComp', { ascending: false })
+      .limit(5) as any);
+
+    if (locSalariesError) throw new Error(`Error fetching top locations: ${locSalariesError.message}`);
+
+    const topLocations = locSalaries?.map((s: any) => ({
+      location: `${s.Location?.city}, ${s.Location?.state}`,
+      total_comp: s.totalComp
+    }));
+
     // 4. Get Bottom 5 Locations
-    const { data: bottomLocations, error: bottomLocationsError } = await supabaseAdmin
-      .from('salaries')
-      .select('location, total_comp')
-      .eq('job_title', jobTitle)
-      .order('total_comp', { ascending: true })
-      .limit(5);
+    const { data: bottomLocSalaries, error: bottomLocSalariesError } = await (supabaseAdmin
+      .from('Salary')
+      .select('totalComp, Location!inner(city, state)')
+      .eq('roleId', jobData.id)
+      .order('totalComp', { ascending: true })
+      .limit(5) as any);
 
-    if (bottomLocationsError) throw new Error(`Error fetching bottom locations: ${bottomLocationsError.message}`);
+    if (bottomLocSalariesError) throw new Error(`Error fetching bottom locations: ${bottomLocSalariesError.message}`);
 
-    // 5. Get Salary Distribution Data (simplified for now)
-    const { data: salaryDistribution, error: distributionError } = await supabaseAdmin
-      .from('salaries')
-      .select('total_comp')
-      .eq('job_title', jobTitle);
-      
+    const bottomLocations = bottomLocSalaries?.map((s: any) => ({
+      location: `${s.Location?.city}, ${s.Location?.state}`,
+      total_comp: s.totalComp
+    }));
+
+    // 5. Get Salary Distribution Data
+    const { data: distributionData, error: distributionError } = await (supabaseAdmin
+      .from('Salary')
+      .select('totalComp')
+      .eq('roleId', jobData.id) as any);
+
     if (distributionError) throw new Error(`Error fetching salary distribution: ${distributionError.message}`);
 
-    // 6. Get Related Jobs (simplified logic for now)
-    const { data: relatedJobs, error: relatedJobsError } = await supabaseAdmin
-      .from('jobs')
+    const salaries = distributionData?.map((s: any) => s.totalComp) || [];
+    const sortedSalaries = [...salaries].sort((a, b) => a - b);
+
+    const count = salaries.length;
+    const median = count > 0 ? sortedSalaries[Math.floor(count / 2)] : 0;
+    const min = count > 0 ? sortedSalaries[0] : 0;
+    const max = count > 0 ? sortedSalaries[count - 1] : 0;
+
+    // 6. Get Related Jobs
+    const { data: relatedJobs, error: relatedJobsError } = await (supabaseAdmin
+      .from('Role')
       .select('title')
       .neq('title', jobTitle)
-      .limit(5);
+      .limit(5) as any);
 
     if (relatedJobsError) throw new Error(`Error fetching related jobs: ${relatedJobsError.message}`);
 
-
     return NextResponse.json({
-      jobData,
+      jobData: {
+        ...jobData,
+        global_count: count,
+        global_median_comp: median,
+        global_min_comp: min,
+        global_max_comp: max,
+      },
       topCompanies,
       topLocations,
       bottomLocations,
-      salaryDistribution,
+      salaryDistribution: salaries.map((s: number) => ({ total_comp: s })),
       relatedJobs,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('API Error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

@@ -10,16 +10,10 @@ import {
   Lightbulb,
   ArrowRight,
   DollarSign,
-  Briefcase,
-  ChartLine,
-  Star,
-  TrendingUp,
   Gavel,
   Search,
   Copy,
-  Users,
   HeartHandshake,
-  Award,
   Handshake,
 } from "lucide-react";
 
@@ -84,7 +78,7 @@ const NegotiationPage = () => {
           <CardContent className="p-6">
             <div className="flex items-center mb-3">
               <Handshake className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900">What You'll Learn</h3>
+              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
             </div>
             <ul className="space-y-2 text-gray-700">
               <li>Key negotiation principles and strategies.</li>
@@ -169,7 +163,7 @@ const NegotiationPage = () => {
           <div className="flex items-start">
             <Copy className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
             <p className="text-gray-700">
-              <strong>Ask for Time to Consider:</strong> It's okay to ask for 24-48 hours to review an offer carefully.
+              <strong>Ask for Time to Consider:</strong> It&apos;s okay to ask for 24-48 hours to review an offer carefully.
             </p>
           </div>
           <div className="flex items-start">

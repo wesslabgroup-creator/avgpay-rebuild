@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, X, Building2, MapPin } from "lucide-react";
+import { Search, X, Building2 } from "lucide-react";
 import Link from "next/link";
 
 interface Company {
@@ -15,7 +15,6 @@ export function CompanySearch() {
   const [query, setQuery] = useState("");
   const [companies, setCompanies] = useState<Company[]>([]);
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -23,7 +22,7 @@ export function CompanySearch() {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await fetch("/api/analyzer-data");
+        const response = await fetch("/api/analyzer-data", { cache: 'no-store' });
         const data = await response.json();
         const companyList = (data.companies || []).map((name: string, index: number) => ({
           id: index.toString(),
@@ -71,7 +70,6 @@ export function CompanySearch() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setIsOpen(true)}
           placeholder="Search companies..."
           className="w-full pl-12 pr-12 py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all"
         />
@@ -115,7 +113,7 @@ export function CompanySearch() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-slate-500">No companies found matching "{query}"</p>
+          <p className="text-slate-500">No companies found matching &quot;{query}&quot;</p>
         </div>
       )}
 

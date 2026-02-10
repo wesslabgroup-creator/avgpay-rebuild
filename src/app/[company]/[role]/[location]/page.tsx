@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const location = decodeURIComponent(params.location).replace(/-/g, ", ");
 
   // Updated to include company, role, location, and level for accurate data retrieval
-  const data = getMarketData(company, role, location, "L3-L4");
+  const data = await getMarketData(company, role, location, "L3-L4");
 
   return generateSalaryPageMeta(company, role, location, data.median);
 }
@@ -33,7 +33,7 @@ export async function generateStaticParams() {
   const companies = COMPANIES;
   const roles = ROLES;
   const locations = LOCATIONS;
-  
+
   // Ensure all combinations are generated for SEO
   return companies.flatMap(company =>
     roles.flatMap(role =>
@@ -46,14 +46,14 @@ export async function generateStaticParams() {
   );
 }
 
-export default function SalaryPage({ params }: PageProps) {
+export default async function SalaryPage({ params }: PageProps) {
   const company = decodeURIComponent(params.company);
   const role = decodeURIComponent(params.role);
   const location = decodeURIComponent(params.location).replace(/-/g, ", ");
-  
+
   // Updated to include company in the data retrieval
-  const data = getMarketData(company, role, location, "L3-L4");
-  
+  const data = await getMarketData(company, role, location, "L3-L4");
+
   // Handle cases where data might not be found (though mock data is extensive now)
   if (!data) {
     notFound();
@@ -64,10 +64,10 @@ export default function SalaryPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-white">
-      
+
       <div className="px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-8">
-           {/* Schema Markup for Breadcrumbs */}
+          {/* Schema Markup for Breadcrumbs */}
           <BreadcrumbSchema items={[
             { name: "Home", item: getBaseUrl() },
             { name: company, item: getFullUrl(`/${encodeURIComponent(company)}`) },
@@ -148,8 +148,8 @@ export default function SalaryPage({ params }: PageProps) {
               <CardTitle className="text-slate-900">Salary Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <SalaryChart 
-                yourSalary={data.median} 
+              <SalaryChart
+                yourSalary={data.median}
                 marketMedian={data.median}
                 blsMedian={data.blsMedian}
               />

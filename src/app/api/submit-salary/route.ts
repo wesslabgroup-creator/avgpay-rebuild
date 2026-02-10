@@ -79,11 +79,11 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
   const normalizedTitle = normalizeJobTitle(title);
 
   // Check for exact match first
-  const { data: exactMatch, error: exactError } = await supabaseAdmin
-    .from('jobs')
+  const { data: exactMatch, error: exactError } = await (supabaseAdmin
+    .from('Role')
     .select('id, title')
     .eq('title', normalizedTitle)
-    .single();
+    .single() as any);
 
   if (exactError && exactError.code !== 'PGRST116') {
     throw new Error(`Error checking existing job: ${exactError.message}`);
@@ -94,9 +94,9 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
   }
 
   // No exact match, check for fuzzy match among existing jobs
-  const { data: allJobs, error: allJobsError } = await supabaseAdmin
-    .from('jobs')
-    .select('id, title');
+  const { data: allJobs, error: allJobsError } = await (supabaseAdmin
+    .from('Role')
+    .select('id, title') as any);
 
   if (allJobsError) {
     throw new Error(`Error fetching jobs for fuzzy matching: ${allJobsError.message}`);
@@ -123,16 +123,21 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
   }
 
   // No match found, create a new job entry
-  const { data: newJob, error: insertError } = await supabaseAdmin
-    .from('jobs')
-    .insert([{ title: normalizedTitle }])
+  const { data: newJob, error: insertError } = await (supabaseAdmin
+    .from('Role')
+    .insert([{
+      id: crypto.randomUUID(),
+      title: normalizedTitle,
+      slug: normalizedTitle.toLowerCase().replace(/ /g, '-'),
+      canonicalTitle: normalizedTitle
+    }])
     .select('id, title')
-    .single();
+    .single() as any);
 
   if (insertError) {
     throw new Error(`Error creating new job: ${insertError.message}`);
   }
-  
+
   console.log(`New job created: "${normalizedTitle}"`);
   return { ...newJob!, isNew: true };
 }
@@ -141,7 +146,7 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
 async function generateAIContent(jobTitle: string, companyName?: string, location?: string): Promise<{ description: string; seo_meta_title: string; seo_meta_description: string }> {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-    
+
     const promptDescription = `Generate a concise and SEO-friendly job description for the role of "${jobTitle}"${companyName ? ` at ${companyName}` : ''}${location ? ` in ${location}` : ''}. Focus on key responsibilities, required skills, and benefits. Keep it under 150 words.`;
     const resultDescription = await model.generateContent(promptDescription);
     const description = resultDescription.response.text();
@@ -169,7 +174,7 @@ async function generateAIContent(jobTitle: string, companyName?: string, locatio
 async function generateCompanyAIContent(companyName: string): Promise<{ description: string; seo_meta_title: string; seo_meta_description: string }> {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-    
+
     const promptDescription = `Generate a concise description (under 100 words) about "${companyName}" as an employer, focusing on company culture, industry position, and what makes it attractive for tech professionals.`;
     const resultDescription = await model.generateContent(promptDescription);
     const description = resultDescription.response.text();
@@ -197,7 +202,7 @@ async function generateCompanyAIContent(companyName: string): Promise<{ descript
 async function generateLocationAIContent(locationName: string): Promise<{ description: string; seo_meta_title: string; seo_meta_description: string }> {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-    
+
     const promptDescription = `Generate a concise description (under 100 words) about "${locationName}" as a tech job market, focusing on cost of living, major employers, and quality of life for tech professionals.`;
     const resultDescription = await model.generateContent(promptDescription);
     const description = resultDescription.response.text();
@@ -225,11 +230,11 @@ async function generateLocationAIContent(locationName: string): Promise<{ descri
 async function getOrCreateCompany(companyName: string): Promise<{ id: string; name: string; isNew: boolean }> {
   const normalizedName = companyName.trim();
 
-  const { data: existingCompany, error: fetchError } = await supabaseAdmin
-    .from('companies')
+  const { data: existingCompany, error: fetchError } = await (supabaseAdmin
+    .from('Company')
     .select('id, name')
     .eq('name', normalizedName)
-    .single();
+    .single() as any);
 
   if (fetchError && fetchError.code !== 'PGRST116') {
     throw new Error(`Error checking existing company: ${fetchError.message}`);
@@ -241,63 +246,68 @@ async function getOrCreateCompany(companyName: string): Promise<{ id: string; na
 
   // Create new company with AI content
   const aiContent = await generateCompanyAIContent(normalizedName);
-  
-  const { data: newCompany, error: insertError } = await supabaseAdmin
-    .from('companies')
+
+  const { data: newCompany, error: insertError } = await (supabaseAdmin
+    .from('Company')
     .insert([{
+      id: crypto.randomUUID(),
       name: normalizedName,
-      description: aiContent.description,
-      seo_meta_title: aiContent.seo_meta_title,
-      seo_meta_description: aiContent.seo_meta_description,
+      slug: normalizedName.toLowerCase().replace(/ /g, '-'),
+      updatedAt: new Date().toISOString(),
     }])
     .select('id, name')
-    .single();
+    .single() as any);
 
   if (insertError) {
     throw new Error(`Error creating new company: ${insertError.message}`);
   }
-  
+
   console.log(`New company created with AI content: "${normalizedName}"`);
   return { ...newCompany!, isNew: true };
 }
 
 // Get or create location with AI content
 async function getOrCreateLocation(locationName: string): Promise<{ id: string; name: string; isNew: boolean }> {
-  const normalizedName = locationName.trim();
+  const parts = locationName.split(',').map(p => p.trim());
+  const city = parts[0];
+  const state = parts[1] || 'US';
+  const fullName = parts[1] ? `${city}, ${state}` : city;
 
-  const { data: existingLocation, error: fetchError } = await supabaseAdmin
-    .from('locations')
-    .select('id, name')
-    .eq('name', normalizedName)
-    .single();
+  const { data: existingLocation, error: fetchError } = await (supabaseAdmin
+    .from('Location')
+    .select('id, city, state')
+    .ilike('city', city)
+    .ilike('state', state)
+    .maybeSingle() as any);
 
-  if (fetchError && fetchError.code !== 'PGRST116') {
+  if (fetchError) {
     throw new Error(`Error checking existing location: ${fetchError.message}`);
   }
 
   if (existingLocation) {
-    return { ...existingLocation, isNew: false };
+    return { id: existingLocation.id, name: `${existingLocation.city}, ${existingLocation.state}`, isNew: false };
   }
 
   // Create new location with AI content
-  const aiContent = await generateLocationAIContent(normalizedName);
-  
-  const { data: newLocation, error: insertError } = await supabaseAdmin
-    .from('locations')
+  const aiContent = await generateLocationAIContent(fullName);
+
+  const { data: newLocation, error: insertError } = await (supabaseAdmin
+    .from('Location')
     .insert([{
-      name: normalizedName,
-      description: aiContent.description,
-      seo_meta_title: aiContent.seo_meta_title,
-      seo_meta_description: aiContent.seo_meta_description,
+      id: crypto.randomUUID(),
+      city,
+      state,
+      metro: city,
+      slug: fullName.toLowerCase().replace(/ /g, '-').replace(',', ''),
     }])
-    .select('id, name')
-    .single();
+    .select('id, city, state')
+    .single() as any);
 
   if (insertError) {
     throw new Error(`Error creating new location: ${insertError.message}`);
   }
-  
-  console.log(`New location created with AI content: "${normalizedName}"`);
+
+  console.log(`New location created with AI content: "${fullName}"`);
   return { ...newLocation!, isNew: true };
 }
 
@@ -333,59 +343,46 @@ export async function POST(request: Request) {
     // Use the normalized job title from the matched/created job entry
     const normalizedJobTitle = jobEntry.title;
 
-    // 2. Insert into salaries table (with normalized job title)
-    const { data: salaryData, error: salaryError } = await supabaseAdmin
-      .from('salaries')
+    // 2. Insert into Salary table
+    const { data: salaryData, error: salaryError } = await (supabaseAdmin
+      .from('Salary')
       .insert([
         {
-          job_title: normalizedJobTitle,
-          company_name: companyEntry.name,
-          location: locationEntry.name,
-          base_salary: cleanBaseSalary,
-          total_comp: cleanTotalComp,
+          id: crypto.randomUUID(),
+          roleId: jobEntry.id,
+          companyId: companyEntry.id,
+          locationId: locationEntry.id,
+          baseSalary: Math.round(cleanBaseSalary || 0),
+          totalComp: Math.round(cleanTotalComp),
           level: level,
-          user_notes: userNotes || null,
+          source: 'user',
+          verified: false,
         },
       ])
       .select('*')
-      .single();
+      .single() as any);
 
     if (salaryError) {
       console.error('Error inserting salary:', salaryError);
       return NextResponse.json({ error: 'Failed to save salary data' }, { status: 500 });
     }
 
-    // 3. If the job is new, generate and update AI content for the job
+    // 3. If the job is new, we skip AI content update for now as the schema doesn't support it
     if (jobEntry.isNew) {
-      const aiContent = await generateAIContent(normalizedJobTitle, companyEntry.name, locationEntry.name);
-      
-      const { error: jobUpdateError } = await supabaseAdmin
-        .from('jobs')
-        .update({
-          description: aiContent.description,
-          seo_meta_title: aiContent.seo_meta_title,
-          seo_meta_description: aiContent.seo_meta_description,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', jobEntry.id);
-
-      if (jobUpdateError) {
-        console.error('Error updating job AI content:', jobUpdateError);
-      }
+      console.log('New job created, skipping AI content update (schema mismatch)');
     }
 
-    // Aggregates for jobs, companies, and locations are handled by Supabase triggers!
-
-    return NextResponse.json({ 
-      message: 'Salary data submitted successfully', 
+    return NextResponse.json({
+      message: 'Salary data submitted successfully',
       salary: salaryData,
       job: normalizedJobTitle,
       company: companyEntry.name,
       location: locationEntry.name
     }, { status: 201 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('API Error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

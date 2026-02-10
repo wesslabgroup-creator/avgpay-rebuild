@@ -11,14 +11,11 @@ import {
   ArrowRight,
   DollarSign,
   Briefcase,
-  ChartLine,
   Star,
   TrendingUp,
   Gavel,
   Search,
   Copy,
-  Users,
-  HeartHandshake,
 } from "lucide-react";
 
 // Placeholder data for DataTable
@@ -83,7 +80,7 @@ const SWCompensationPage = () => {
           <CardContent className="p-6">
             <div className="flex items-center mb-3">
               <Briefcase className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900">What You'll Learn</h3>
+              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
             </div>
             <ul className="space-y-2 text-gray-700">
               <li>Understanding salary, bonus, and equity components.</li>
@@ -141,7 +138,7 @@ const SWCompensationPage = () => {
             <CardContent className="p-6">
               <div className="flex items-center mb-3">
                 <Star className="h-6 w-6 text-yellow-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Equity's Enduring Value</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Equity&apos;s Enduring Value</h3>
               </div>
               <p className="text-gray-700">Equity (RSUs and stock options) remains a significant component of total compensation, particularly in public tech companies.</p>
             </CardContent>
@@ -164,7 +161,7 @@ const SWCompensationPage = () => {
           <div className="flex items-start">
             <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
             <p className="text-gray-700">
-              <strong>Negotiate Total Compensation:</strong> Don't just focus on base salary; consider bonuses, equity, and benefits holistically.
+              <strong>Negotiate Total Compensation:</strong> Don&apos;t just focus on base salary; consider bonuses, equity, and benefits holistically.
             </p>
           </div>
           <div className="flex items-start">

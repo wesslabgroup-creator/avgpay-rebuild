@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white">
-      
+
       <div className="px-6 py-12">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="text-center space-y-4">
@@ -50,10 +50,10 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="bg-white border-slate-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-4xl font-bold text-emerald-600">47K+</CardTitle>
+                <CardTitle className="text-4xl font-bold text-emerald-600">47K+ (Beta)</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600">Salary data points</p>
+                <p className="text-slate-600">Aggregated data points</p>
               </CardContent>
             </Card>
 

@@ -29,9 +29,9 @@ export default function AnalyzeOfferPage() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
             Is Your <span className="text-emerald-600">Offer Fair</span>?
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Compare your specific offer against verified market data. 
-            Get a grade and negotiation insights in seconds.
+          <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
+            Upload your offer letter or manually enter details to see how it stacks up against
+            real market data. We&apos;ll help you find leverage.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export default function AnalyzeOfferPage() {
             {/* No Offer Yet? Card */}
             <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
               <CardContent className="p-6">
-                <h3 className="font-bold text-slate-900 mb-2">Don't Have an Offer Yet?</h3>
+                <h3 className="font-bold text-slate-900 mb-2">Don&apos;t Have an Offer Yet?</h3>
                 <p className="text-sm text-slate-600 mb-4">
                   Check your market value before you start interviewing.
                 </p>

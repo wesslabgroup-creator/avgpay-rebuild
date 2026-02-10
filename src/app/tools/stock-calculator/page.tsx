@@ -271,7 +271,7 @@ export default function StockCalculatorPage() {
                       <li className="flex items-start gap-2">
                         <span className="text-emerald-600 mt-1">✓</span>
                         <span>
-                          <strong>No upfront cost:</strong> Unlike options, you don't pay anything to receive
+                          <strong>No upfront cost:</strong> Unlike options, you don&apos;t pay anything to receive
                           vested RSUs.
                         </span>
                       </li>
@@ -377,13 +377,13 @@ export default function StockCalculatorPage() {
                         <span className="text-blue-600 mt-1">✓</span>
                         <span>
                           <strong>What they are:</strong> The right (but not obligation) to buy company stock
-                          at a fixed "strike price" in the future.
+                          at a fixed &quot;strike price&quot; in the future.
                         </span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-blue-600 mt-1">✓</span>
                         <span>
-                          <strong>Upfront cost:</strong> You must pay the strike price to "exercise" your
+                          <strong>Upfront cost:</strong> You must pay the strike price to &quot;exercise&quot; your
                           options and buy the stock.
                         </span>
                       </li>
@@ -403,7 +403,7 @@ export default function StockCalculatorPage() {
                       <li className="flex items-start gap-2">
                         <span className="text-amber-600 mt-1">⚠</span>
                         <span>
-                          <strong>Risk:</strong> Options can expire worthless if company value doesn't increase
+                          <strong>Risk:</strong> Options can expire worthless if company value doesn&apos;t increase
                           above strike price.
                         </span>
                       </li>

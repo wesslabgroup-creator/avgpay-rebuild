@@ -27,7 +27,7 @@ export default function PercentileCalculatorPage() {
             Salary <span className="text-emerald-600">Percentile</span> Calculator
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Enter your salary and see exactly where you rank. Find out if you're in the top 10%,
+            Enter your salary and see exactly where you rank. Find out if you&apos;re in the top 10%,
             50%, or falling behind in your field.
           </p>
         </div>
@@ -82,7 +82,7 @@ export default function PercentileCalculatorPage() {
                 <h3 className="font-bold text-slate-900 mb-3">How to Interpret</h3>
                 <div className="space-y-3 text-sm text-slate-700">
                   <div>
-                    <strong className="text-emerald-700">90th+</strong> - You're highly paid
+                    <strong className="text-emerald-700">90th+</strong> - You&apos;re highly paid
                   </div>
                   <div>
                     <strong className="text-emerald-600">75th-90th</strong> - Above market

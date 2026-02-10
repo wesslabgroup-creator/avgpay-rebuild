@@ -21,6 +21,8 @@ export const metadata: Metadata = {
 
 import { Navigation } from "@/components/navigation";
 
+import { CSPostHogProvider } from "./providers";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,8 +31,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased bg-white text-slate-900 pt-20`}>
-        <Navigation />
-        {children}
+        <CSPostHogProvider>
+          <Navigation />
+          {children}
+        </CSPostHogProvider>
       </body>
     </html>
   );

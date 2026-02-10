@@ -12,22 +12,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TrendingUp, TrendingDown, Minus, Award } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Award, LucideIcon } from "lucide-react";
+
+interface EvaluationResult {
+  percentile: number;
+  rating: string;
+  color: string;
+  icon: LucideIcon;
+  belowYou: number;
+  aboveYou: number;
+  median: number;
+  message: string;
+}
+
+interface RoleStats {
+  min: number;
+  max: number;
+  median: number;
+}
 
 export function PercentileCalculator() {
   const [salary, setSalary] = useState("");
   const [role, setRole] = useState("");
   const [location, setLocation] = useState("");
-  const [result, setResult] = useState<{
-    percentile: number;
-    rating: string;
-    color: string;
-    icon: any;
-    belowYou: number;
-    aboveYou: number;
-    median: number;
-    message: string;
-  } | null>(null);
+  const [result, setResult] = useState<EvaluationResult | null>(null);
 
   const calculatePercentile = async () => {
     if (!salary || !role || !location) return;
@@ -36,7 +44,7 @@ export function PercentileCalculator() {
     const salaryNum = parseInt(salary.replace(/,/g, ""));
 
     // Mock data ranges for different roles
-    const roleData: any = {
+    const roleData: Record<string, RoleStats> = {
       "Software Engineer": { min: 80000, max: 400000, median: 150000 },
       "Product Manager": { min: 100000, max: 350000, median: 140000 },
       "Data Scientist": { min: 90000, max: 380000, median: 135000 },

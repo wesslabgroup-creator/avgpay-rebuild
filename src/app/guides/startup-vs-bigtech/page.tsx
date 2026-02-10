@@ -12,19 +12,9 @@ import {
   DollarSign,
   Briefcase,
   ChartLine,
-  Star,
-  TrendingUp,
   Gavel,
   Search,
   Copy,
-  Users,
-  HeartHandshake,
-  Award,
-  Handshake,
-  GitBranch,
-  Percent,
-  Home,
-  Globe,
   Building,
   Asterisk, // Placeholder for startup icon
 } from "lucide-react";
@@ -92,7 +82,7 @@ const StartupVsBigTechPage = () => {
           <CardContent className="p-6">
             <div className="flex items-center mb-3">
               <Building className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900">What You'll Learn</h3>
+              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
             </div>
             <ul className="space-y-2 text-gray-700">
               <li>Compensation differences: salary, bonus, equity.</li>
@@ -189,7 +179,7 @@ const StartupVsBigTechPage = () => {
           <div className="flex items-start">
             <Gavel className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
             <p className="text-gray-700">
-              <strong>Negotiate Wisely:</strong> Tailor your negotiation strategy based on whether you're joining a startup or a Big Tech firm.
+              <strong>Negotiate Wisely:</strong> Tailor your negotiation strategy based on whether you&apos;re joining a startup or a Big Tech firm.
             </p>
           </div>
         </div>

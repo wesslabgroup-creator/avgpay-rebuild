@@ -11,31 +11,34 @@ export async function GET(request: Request) {
 
   try {
     // 1. Get Company Details
-    const { data: companyData, error: companyError } = await supabaseAdmin
-      .from('companies')
-      .select('*, description, seo_meta_title, seo_meta_description')
+    const { data: companyData, error: companyError } = await (supabaseAdmin
+      .from('Company')
+      .select('*')
       .eq('name', companyName)
-      .single();
+      .single() as any);
 
     if (companyError) throw new Error(`Company not found: ${companyError.message}`);
 
     // 2. Get Salary Summary by Role for this Company
-    const { data: salarySummary, error: summaryError } = await supabaseAdmin
-      .from('salaries')
-      .select('job_title, total_comp, level')
-      .eq('company_name', companyName);
+    const { data: rawSalaries, error: summaryError } = await (supabaseAdmin
+      .from('Salary')
+      .select('totalComp, level, Role!inner(title)')
+      .eq('companyId', companyData.id) as any);
 
     if (summaryError) throw new Error(`Error fetching salary summary: ${summaryError.message}`);
 
     // Aggregate the salary data by role
     const roleMap: Record<string, { totalComp: number[], levels: Set<string> }> = {};
-    salarySummary.forEach(row => {
-      if (!roleMap[row.job_title]) {
-        roleMap[row.job_title] = { totalComp: [], levels: new Set() };
-      }
-      roleMap[row.job_title].totalComp.push(row.total_comp);
-      if (row.level) {
-        roleMap[row.job_title].levels.add(row.level);
+    rawSalaries.forEach((row: any) => {
+      const title = row.Role?.title;
+      if (title) {
+        if (!roleMap[title]) {
+          roleMap[title] = { totalComp: [], levels: new Set() };
+        }
+        roleMap[title].totalComp.push(row.totalComp);
+        if (row.level) {
+          roleMap[title].levels.add(row.level);
+        }
       }
     });
 
@@ -57,8 +60,12 @@ export async function GET(request: Request) {
       salarySummary: aggregatedSummary,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('API Error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
   }
 }

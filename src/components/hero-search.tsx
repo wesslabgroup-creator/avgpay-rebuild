@@ -14,7 +14,7 @@ export function HeroSearch() {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [allData, setAllData] = useState<{ roles: string[]; companies: string[] }>({ roles: [], companies: [] });
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -22,7 +22,7 @@ export function HeroSearch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/analyzer-data");
+        const response = await fetch("/api/analyzer-data", { cache: 'no-store' });
         const data = await response.json();
         setAllData({
           roles: data.roles || [],

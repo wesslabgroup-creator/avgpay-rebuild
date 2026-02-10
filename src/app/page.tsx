@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 /* eslint-disable react/no-unescaped-entities */
-export default function Home() {
+export default async function Home() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -33,9 +33,9 @@ export default function Home() {
         <div className="relative max-w-6xl mx-auto text-center space-y-8 lg:space-y-12">
           <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-emerald-500/10 border-2 border-emerald-500/20 text-emerald-700 text-sm font-medium max-w-md mx-auto">
             <Database className="w-5 h-5 flex-shrink-0" />
-            Powered by BLS + H-1B + Pay Transparency Laws • Trusted by 10K+ Tech Workers
+            Powered by BLS + H-1B + Pay Transparency Laws • Public Beta
           </div>
-          
+
           <div className="space-y-6">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 leading-tight">
               Know Your<br className="sm:hidden" /><span className="bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 bg-clip-text text-transparent"> Market Worth</span>
@@ -65,7 +65,7 @@ export default function Home() {
 
           {/* Animated Social Proof */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-12 pb-8 text-slate-600 text-sm sm:text-base font-medium">
-            <AnimatedCounter target={calculateTotalDataPoints()} />
+            <AnimatedCounter target={await calculateTotalDataPoints()} />
             <span className="hidden sm:inline"> salaries analyzed •</span>
             <span>Trusted by top tech talent</span>
           </div>
@@ -92,14 +92,14 @@ export default function Home() {
       <section className="px-4 py-20 md:py-24 bg-white border-y border-slate-200">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div>
-            <div className="text-4xl md:text-5xl font-black text-emerald-500 mb-4"><AnimatedCounter target={calculateTotalDataPoints()} />+</div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">Salaries Analyzed</h3>
+            <div className="text-4xl md:text-5xl font-black text-emerald-500 mb-4"><AnimatedCounter target={await calculateTotalDataPoints()} />+</div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Aggregated Data Points (Beta)</h3>
             <p className="text-slate-600">From BLS, H-1B, and transparency laws</p>
           </div>
           <div>
             <div className="text-4xl md:text-5xl font-black text-emerald-500 mb-4">98%</div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">Accuracy</h3>
-            <p className="text-slate-600">Cross-verified data sources</p>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Verified Sources</h3>
+            <p className="text-slate-600">Cross-referenced against official filings</p>
           </div>
           <div>
             <div className="text-4xl md:text-5xl font-black text-teal-500 mb-4">10K+</div>
@@ -123,9 +123,9 @@ export default function Home() {
               Enter your offer details. See how you stack up against verified market data. <br className="md:hidden" /><strong className="text-emerald-600">No sign-up required.</strong>
             </p>
           </div>
-          
+
           <OfferAnalyzer />
-          
+
           <div className="text-center pt-12">
             <p className="text-slate-700 text-lg mb-6 max-w-2xl mx-auto">
               Join thousands who've negotiated <span className="font-bold text-emerald-600">10-25% higher</span> offers using AvgPay insights.

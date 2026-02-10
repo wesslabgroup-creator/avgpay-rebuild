@@ -112,3 +112,32 @@ model UserSubmission {
   submittedAt DateTime @default(now())
   reviewedAt  DateTime?
 }
+
+model AnalysisSubmission {
+  id           String   @id @default(cuid())
+  company      String?
+  role         String
+  location     String
+  level        String?
+  baseSalary   Int?
+  equity       Int?
+  bonus        Int?
+  totalComp    Int
+  marketMedian Int
+  grade        String
+  percentile   Int?
+  mode         String   // offer or salary
+  userAgent    String?
+  status       String   @default("pending")
+  createdAt    DateTime @default(now())
+
+  @@index([company, role])
+}
+
+model EmailSubscription {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  type        String   // salary-alerts, negotiation-tips
+  active      Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+}

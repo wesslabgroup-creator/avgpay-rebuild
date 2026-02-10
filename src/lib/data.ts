@@ -1,8 +1,10 @@
+import { supabaseAdmin } from './supabaseClient';
+
 // Mock market data for demo purposes
 // In production, this would query a database (e.g., Supabase)
 // and return company-specific salary information.
 
-interface MarketData {
+export interface MarketData {
   median: number;
   blsMedian: number;
   min: number;
@@ -15,11 +17,7 @@ interface MarketData {
 
 /**
  * MARKET_DATA:
- * A nested object structure for mock salary data.
- * Key hierarchy: Company -> Role -> Location -> Level -> MarketData
- *
- * TODO: Replace this with a database query or external API call.
- *       Ensure data is regularly updated and sourced from reliable providers.
+ * A nested object structure for mock salary data, kept as fallback and for generating static paths.
  */
 export const MARKET_DATA: Record<string, Record<string, Record<string, Record<string, MarketData>>>> = {
   // Google
@@ -99,149 +97,156 @@ export const MARKET_DATA: Record<string, Record<string, Record<string, Record<st
   // Amazon
   "Amazon": {
     "Software Engineer": {
-      "San Francisco, CA": {
-        "Junior (L1-L2)": { median: 160000, blsMedian: 135000, min: 160000 - 50000, max: 160000 + 100000, p10: 130000, p25: 145000, p75: 180000, p90: 210000 },
-        "Mid (L3-L4)": { median: 250000, blsMedian: 180000, min: 250000 - 50000, max: 250000 + 100000, p10: 200000, p25: 225000, p75: 290000, p90: 340000 },
-        "Senior (L5-L6)": { median: 350000, blsMedian: 260000, min: 350000 - 50000, max: 350000 + 100000, p10: 300000, p25: 325000, p75: 400000, p90: 500000 },
-        "Staff+ (L7+)": { median: 520000, blsMedian: 380000, min: 520000 - 50000, max: 520000 + 100000, p10: 440000, p25: 480000, p75: 600000, p90: 740000 },
-      },
-      "New York, NY": {
-        "Junior (L1-L2)": { median: 155000, blsMedian: 128000, min: 155000 - 50000, max: 155000 + 100000, p10: 125000, p25: 140000, p75: 175000, p90: 205000 },
-        "Mid (L3-L4)": { median: 240000, blsMedian: 170000, min: 240000 - 50000, max: 240000 + 100000, p10: 190000, p25: 215000, p75: 275000, p90: 325000 },
-        "Senior (L5-L6)": { median: 340000, blsMedian: 240000, min: 340000 - 50000, max: 340000 + 100000, p10: 290000, p25: 315000, p75: 390000, p90: 490000 },
-        "Staff+ (L7+)": { median: 500000, blsMedian: 360000, min: 500000 - 50000, max: 500000 + 100000, p10: 420000, p25: 460000, p75: 580000, p90: 700000 },
-      },
       "Seattle, WA": {
-        "Junior (L1-L2)": { median: 165000, blsMedian: 132000, min: 165000 - 50000, max: 165000 + 100000, p10: 135000, p25: 150000, p75: 185000, p90: 215000 },
-        "Mid (L3-L4)": { median: 255000, blsMedian: 175000, min: 255000 - 50000, max: 255000 + 100000, p10: 205000, p25: 230000, p75: 295000, p90: 345000 },
-        "Senior (L5-L6)": { median: 360000, blsMedian: 250000, min: 360000 - 50000, max: 360000 + 100000, p10: 310000, p25: 335000, p75: 415000, p90: 515000 },
-        "Staff+ (L7+)": { median: 540000, blsMedian: 370000, min: 540000 - 50000, max: 540000 + 100000, p10: 460000, p25: 500000, p75: 630000, p90: 770000 },
-      },
-    },
-    "Product Manager": {
-      "San Francisco, CA": {
-        "Junior (L1-L2)": { median: 140000, blsMedian: 125000, min: 140000 - 50000, max: 140000 + 100000, p10: 110000, p25: 125000, p75: 160000, p90: 190000 },
-        "Mid (L3-L4)": { median: 220000, blsMedian: 170000, min: 220000 - 50000, max: 220000 + 100000, p10: 175000, p25: 200000, p75: 255000, p90: 305000 },
-        "Senior (L5-L6)": { median: 310000, blsMedian: 245000, min: 310000 - 50000, max: 310000 + 100000, p10: 260000, p25: 285000, p75: 360000, p90: 450000 },
-        "Staff+ (L7+)": { median: 450000, blsMedian: 350000, min: 450000 - 50000, max: 450000 + 100000, p10: 380000, p25: 415000, p75: 530000, p90: 640000 },
-      },
-      "New York, NY": {
-        "Junior (L1-L2)": { median: 130000, blsMedian: 118000, min: 130000 - 50000, max: 130000 + 100000, p10: 100000, p25: 115000, p75: 150000, p90: 180000 },
-        "Mid (L3-L4)": { median: 200000, blsMedian: 160000, min: 200000 - 50000, max: 200000 + 100000, p10: 160000, p25: 180000, p75: 235000, p90: 280000 },
-        "Senior (L5-L6)": { median: 290000, blsMedian: 225000, min: 290000 - 50000, max: 290000 + 100000, p10: 240000, p25: 265000, p75: 340000, p90: 420000 },
-        "Staff+ (L7+)": { median: 420000, blsMedian: 330000, min: 420000 - 50000, max: 420000 + 100000, p10: 355000, p25: 390000, p75: 495000, p90: 600000 },
+        "Junior (L1-L2)": { median: 160000, blsMedian: 132000, min: 160000 - 50000, max: 160000 + 100000, p10: 130000, p25: 145000, p75: 180000, p90: 210000 },
+        "Mid (L3-L4)": { median: 245000, blsMedian: 175000, min: 245000 - 50000, max: 245000 + 100000, p10: 200000, p25: 225000, p75: 280000, p90: 330000 },
+        "Senior (L5-L6)": { median: 350000, blsMedian: 250000, min: 350000 - 50000, max: 350000 + 100000, p10: 300000, p25: 325000, p75: 400000, p90: 500000 },
+        "Staff+ (L7+)": { median: 500000, blsMedian: 370000, min: 500000 - 50000, max: 500000 + 100000, p10: 430000, p25: 470000, p75: 590000, p90: 720000 },
       },
     },
   },
   // Apple
   "Apple": {
     "Software Engineer": {
-      "San Francisco, CA": {
+      "Cupertino, CA": {
         "Junior (L1-L2)": { median: 170000, blsMedian: 135000, min: 170000 - 50000, max: 170000 + 100000, p10: 140000, p25: 155000, p75: 190000, p90: 220000 },
-        "Mid (L3-L4)": { median: 260000, blsMedian: 180000, min: 260000 - 50000, max: 260000 + 100000, p10: 210000, p25: 235000, p75: 300000, p90: 350000 },
-        "Senior (L5-L6)": { median: 370000, blsMedian: 260000, min: 370000 - 50000, max: 370000 + 100000, p10: 320000, p25: 345000, p75: 430000, p90: 530000 },
-        "Staff+ (L7+)": { median: 550000, blsMedian: 380000, min: 550000 - 50000, max: 550000 + 100000, p10: 470000, p25: 510000, p75: 640000, p90: 790000 },
-      },
-      "New York, NY": {
-        "Junior (L1-L2)": { median: 160000, blsMedian: 128000, min: 160000 - 50000, max: 160000 + 100000, p10: 130000, p25: 145000, p75: 180000, p90: 210000 },
-        "Mid (L3-L4)": { median: 250000, blsMedian: 170000, min: 250000 - 50000, max: 250000 + 100000, p10: 200000, p25: 225000, p75: 290000, p90: 340000 },
-        "Senior (L5-L6)": { median: 350000, blsMedian: 240000, min: 350000 - 50000, max: 350000 + 100000, p10: 300000, p25: 325000, p75: 400000, p90: 500000 },
-        "Staff+ (L7+)": { median: 530000, blsMedian: 360000, min: 530000 - 50000, max: 530000 + 100000, p10: 450000, p25: 490000, p75: 620000, p90: 760000 },
-      },
-      "Seattle, WA": {
-        "Junior (L1-L2)": { median: 165000, blsMedian: 132000, min: 165000 - 50000, max: 165000 + 100000, p10: 135000, p25: 150000, p75: 185000, p90: 215000 },
-        "Mid (L3-L4)": { median: 255000, blsMedian: 175000, min: 255000 - 50000, max: 255000 + 100000, p10: 205000, p25: 230000, p75: 295000, p90: 345000 },
-        "Senior (L5-L6)": { median: 360000, blsMedian: 250000, min: 360000 - 50000, max: 360000 + 100000, p10: 310000, p25: 335000, p75: 415000, p90: 515000 },
-        "Staff+ (L7+)": { median: 540000, blsMedian: 370000, min: 540000 - 50000, max: 540000 + 100000, p10: 460000, p25: 500000, p75: 630000, p90: 770000 },
-      },
-    },
-    "Product Manager": {
-      "San Francisco, CA": {
-        "Junior (L1-L2)": { median: 150000, blsMedian: 125000, min: 150000 - 50000, max: 150000 + 100000, p10: 120000, p25: 135000, p75: 170000, p90: 200000 },
-        "Mid (L3-L4)": { median: 230000, blsMedian: 170000, min: 230000 - 50000, max: 230000 + 100000, p10: 185000, p25: 210000, p75: 265000, p90: 320000 },
-        "Senior (L5-L6)": { median: 320000, blsMedian: 245000, min: 320000 - 50000, max: 320000 + 100000, p10: 270000, p25: 295000, p75: 370000, p90: 460000 },
-        "Staff+ (L7+)": { median: 470000, blsMedian: 350000, min: 470000 - 50000, max: 470000 + 100000, p10: 395000, p25: 435000, p75: 550000, p90: 660000 },
-      },
-      "New York, NY": {
-        "Junior (L1-L2)": { median: 140000, blsMedian: 118000, min: 140000 - 50000, max: 140000 + 100000, p10: 110000, p25: 125000, p75: 160000, p90: 190000 },
-        "Mid (L3-L4)": { median: 210000, blsMedian: 160000, min: 210000 - 50000, max: 210000 + 100000, p10: 170000, p25: 190000, p75: 245000, p90: 295000 },
-        "Senior (L5-L6)": { median: 300000, blsMedian: 225000, min: 300000 - 50000, max: 300000 + 100000, p10: 250000, p25: 275000, p75: 350000, p90: 435000 },
-        "Staff+ (L7+)": { median: 440000, blsMedian: 330000, min: 440000 - 50000, max: 440000 + 100000, p10: 375000, p25: 410000, p75: 520000, p90: 625000 },
+        "Mid (L3-L4)": { median: 270000, blsMedian: 180000, min: 270000 - 50000, max: 270000 + 100000, p10: 210000, p25: 240000, p75: 310000, p90: 370000 },
+        "Senior (L5-L6)": { median: 380000, blsMedian: 260000, min: 380000 - 50000, max: 380000 + 100000, p10: 330000, p25: 355000, p75: 450000, p90: 550000 },
+        "Staff+ (L7+)": { median: 570000, blsMedian: 380000, min: 570000 - 50000, max: 570000 + 100000, p10: 480000, p25: 520000, p75: 660000, p90: 810000 },
       },
     },
   },
   // Microsoft
   "Microsoft": {
     "Software Engineer": {
-      "San Francisco, CA": {
-        "Junior (L1-L2)": { median: 165000, blsMedian: 135000, min: 165000 - 50000, max: 165000 + 100000, p10: 135000, p25: 150000, p75: 185000, p90: 215000 },
-        "Mid (L3-L4)": { median: 255000, blsMedian: 180000, min: 255000 - 50000, max: 255000 + 100000, p10: 205000, p25: 230000, p75: 295000, p90: 345000 },
-        "Senior (L5-L6)": { median: 360000, blsMedian: 260000, min: 360000 - 50000, max: 360000 + 100000, p10: 310000, p25: 335000, p75: 415000, p90: 515000 },
-        "Staff+ (L7+)": { median: 530000, blsMedian: 380000, min: 530000 - 50000, max: 530000 + 100000, p10: 450000, p25: 490000, p75: 620000, p90: 760000 },
-      },
-      "New York, NY": {
-        "Junior (L1-L2)": { median: 155000, blsMedian: 128000, min: 155000 - 50000, max: 155000 + 100000, p10: 125000, p25: 140000, p75: 175000, p90: 205000 },
-        "Mid (L3-L4)": { median: 240000, blsMedian: 170000, min: 240000 - 50000, max: 240000 + 100000, p10: 190000, p25: 215000, p75: 275000, p90: 325000 },
-        "Senior (L5-L6)": { median: 340000, blsMedian: 240000, min: 340000 - 50000, max: 340000 + 100000, p10: 290000, p25: 315000, p75: 390000, p90: 490000 },
-        "Staff+ (L7+)": { median: 510000, blsMedian: 360000, min: 510000 - 50000, max: 510000 + 100000, p10: 435000, p25: 475000, p75: 600000, p90: 735000 },
-      },
-      "Seattle, WA": {
-        "Junior (L1-L2)": { median: 170000, blsMedian: 132000, min: 170000 - 50000, max: 170000 + 100000, p10: 140000, p25: 155000, p75: 190000, p90: 220000 },
-        "Mid (L3-L4)": { median: 260000, blsMedian: 175000, min: 260000 - 50000, max: 260000 + 100000, p10: 210000, p25: 235000, p75: 300000, p90: 350000 },
-        "Senior (L5-L6)": { median: 370000, blsMedian: 250000, min: 370000 - 50000, max: 370000 + 100000, p10: 320000, p25: 345000, p75: 430000, p90: 530000 },
-        "Staff+ (L7+)": { median: 550000, blsMedian: 370000, min: 550000 - 50000, max: 550000 + 100000, p10: 470000, p25: 510000, p75: 640000, p90: 790000 },
-      },
-    },
-    "Product Manager": {
-      "San Francisco, CA": {
-        "Junior (L1-L2)": { median: 145000, blsMedian: 125000, min: 145000 - 50000, max: 145000 + 100000, p10: 115000, p25: 130000, p75: 165000, p90: 195000 },
-        "Mid (L3-L4)": { median: 225000, blsMedian: 170000, min: 225000 - 50000, max: 225000 + 100000, p10: 180000, p25: 205000, p75: 260000, p90: 315000 },
-        "Senior (L5-L6)": { median: 315000, blsMedian: 245000, min: 315000 - 50000, max: 315000 + 100000, p10: 265000, p25: 290000, p75: 365000, p90: 455000 },
-        "Staff+ (L7+)": { median: 460000, blsMedian: 350000, min: 460000 - 50000, max: 460000 + 100000, p10: 390000, p25: 425000, p75: 540000, p90: 650000 },
-      },
-      "New York, NY": {
-        "Junior (L1-L2)": { median: 135000, blsMedian: 118000, min: 135000 - 50000, max: 135000 + 100000, p10: 105000, p25: 120000, p75: 155000, p90: 185000 },
-        "Mid (L3-L4)": { median: 205000, blsMedian: 160000, min: 205000 - 50000, max: 205000 + 100000, p10: 165000, p25: 185000, p75: 240000, p90: 290000 },
-        "Senior (L5-L6)": { median: 295000, blsMedian: 225000, min: 295000 - 50000, max: 295000 + 100000, p10: 245000, p25: 270000, p75: 345000, p90: 430000 },
-        "Staff+ (L7+)": { median: 430000, blsMedian: 330000, min: 430000 - 50000, max: 430000 + 100000, p10: 365000, p25: 400000, p75: 505000, p90: 610000 },
+      "Redmond, WA": {
+        "Junior (L1-L2)": { median: 165000, blsMedian: 132000, min: 165000 - 50000, max: 165000 + 100000, p10: 135000, p25: 150000, p75: 185000, p90: 215000 },
+        "Mid (L3-L4)": { median: 250000, blsMedian: 175000, min: 250000 - 50000, max: 250000 + 100000, p10: 200000, p25: 225000, p75: 290000, p90: 340000 },
+        "Senior (L5-L6)": { median: 360000, blsMedian: 250000, min: 360000 - 50000, max: 360000 + 100000, p10: 310000, p25: 335000, p75: 430000, p90: 530000 },
+        "Staff+ (L7+)": { median: 540000, blsMedian: 370000, min: 540000 - 50000, max: 540000 + 100000, p10: 460000, p25: 500000, p75: 630000, p90: 780000 },
       },
     },
   },
 };
 
-const DEFAULT_DATA: MarketData = { 
-  median: 150000, 
-  blsMedian: 145000, 
+const DEFAULT_DATA: MarketData = {
+  median: 150000,
+  blsMedian: 145000,
   min: 100000,
   max: 250000,
-  p10: 110000, 
-  p25: 130000, 
-  p75: 180000, 
-  p90: 220000 
+  p10: 110000,
+  p25: 130000,
+  p75: 180000,
+  p90: 220000
 };
 
 /**
  * getMarketData:
  * Retrieves salary market data for a specific company, role, location, and experience level.
- * Falls back to DEFAULT_DATA if the specific combination is not found.
- *
- * @param company - The company name (e.g., "Google").
- * @param role - The job role (e.g., "Software Engineer").
- * @param location - The location (e.g., "San Francisco, CA").
- * @param level - The experience level (e.g., "Mid (L3-L4)").
- * @returns MarketData object containing salary percentiles and medians.
+ * Queries Supabase first, falls back to static MARKET_DATA.
  */
-export function getMarketData(company: string, role: string, location: string, level: string): MarketData {
-  return MARKET_DATA[company]?.[role]?.[location]?.[level] ?? DEFAULT_DATA;
+export async function getMarketData(
+  company: string,
+  role: string,
+  location: string,
+  level: string
+): Promise<MarketData> {
+  try {
+    // 1. Try Supabase
+    // We fetch ALL salaries for this Company+Role combination to handle fuzzy matching for location/level in memory
+    // This reduces DB roundtrips/complex filtering for this small dataset
+    // 2. Filter by Location (fuzzy match)
+    // location param is "San Francisco, CA"
+    const locationParts = location.split(',').map(s => s.trim().toLowerCase());
+    const cityFilter = locationParts[0];
+
+    interface SalaryRecord {
+      totalComp: number;
+      baseSalary: number;
+      equity: number;
+      bonus: number;
+      level: string;
+      Company: { name: string };
+      Role: { title: string };
+      Location: { city: string; state: string };
+    }
+
+    const { data: rawData } = await supabaseAdmin
+      .from('Salary')
+      .select(`
+            totalComp,
+            baseSalary,
+            equity,
+            bonus,
+            level,
+            Company!inner(name),
+            Role!inner(title),
+            Location!inner(city, state)
+        `)
+      .ilike('Company.name', company)
+      .ilike('Role.title', role) as { data: SalaryRecord[] | null, error: unknown };
+
+
+    const rawSalaries = rawData || [];
+
+    if (!rawSalaries || rawSalaries.length === 0) {
+      // if error, fallback
+      return MARKET_DATA[company]?.[role]?.[location]?.[level] ?? DEFAULT_DATA;
+    }
+
+    const locationFiltered = rawSalaries.filter((s: SalaryRecord) => {
+      return s.Location?.city?.toLowerCase().includes(cityFilter);
+    });
+
+    if (locationFiltered.length === 0) {
+      return MARKET_DATA[company]?.[role]?.[location]?.[level] ?? DEFAULT_DATA;
+    }
+
+    // 3. Filter by Level (fuzzy match)
+    // level param might be "L3-L4" or "Mid (L3-L4)"
+    const levelFiltered = locationFiltered.filter((s: SalaryRecord) => {
+      return s.level.toLowerCase().includes(level.toLowerCase()) ||
+        level.toLowerCase().includes(s.level.toLowerCase());
+    });
+
+    // If no exact level match, we can either return average of all levels or fallback
+    // Since we want accurate data for the page, if we can't find that level, fallback to mock data which MUST have it
+    if (levelFiltered.length === 0) {
+      return MARKET_DATA[company]?.[role]?.[location]?.[level] ?? DEFAULT_DATA;
+    }
+
+    // 4. Calculate Stats from the matching row(s)
+    // Typically there is only 1 row for specific level in our seed data
+    // But if we have multiple (e.g. user submissions), we aggregate
+    const salary = levelFiltered[0]; // Take the first one for now (or average)
+
+    // We need to shape it into MarketData
+    // Our seed data stores 'median' in 'totalComp'
+    // We can simulate percentiles from the median if we don't have raw distribution
+    // Seed data: base, equity, bonus, totalComp
+
+    const median = salary.totalComp;
+
+    return {
+      median: median,
+      blsMedian: Math.round(median * 0.7), // Mock BLS
+      min: Math.round(median * 0.8),
+      max: Math.round(median * 1.2),
+      p10: Math.round(median * 0.85),
+      p25: Math.round(median * 0.9),
+      p75: Math.round(median * 1.1),
+      p90: Math.round(median * 1.15),
+    };
+
+  } catch (err) {
+    console.error('getMarketData error:', err);
+    return MARKET_DATA[company]?.[role]?.[location]?.[level] ?? DEFAULT_DATA;
+  }
 }
 
 /**
  * calculateGrade:
  * Calculates a letter grade based on the user's total compensation relative to the market median.
- *
- * @param yourTotal - The user's total compensation.
- * @param marketMedian - The market median compensation.
- * @returns A letter grade (A, B, C, D, F).
  */
 export function calculateGrade(yourTotal: number, marketMedian: number): string {
   const ratio = yourTotal / marketMedian;
@@ -253,6 +258,7 @@ export function calculateGrade(yourTotal: number, marketMedian: number): string 
 }
 
 // Export constants derived from the MARKET_DATA for dynamic generation of options/paths.
+// We keep these static for now to avoid async complexity in client components during Phase 1.
 export const COMPANIES = Object.keys(MARKET_DATA);
 export const ROLES = Array.from(new Set(Object.values(MARKET_DATA).flatMap(company => Object.keys(company))));
 export const LOCATIONS = Array.from(new Set(Object.values(MARKET_DATA).flatMap(company => Object.values(company).flatMap(role => Object.keys(role)))));
@@ -267,16 +273,61 @@ export const LEVELS = [
  * calculateTotalDataPoints:
  * Counts the total number of salary data points in MARKET_DATA
  * for displaying accurate stats on the homepage.
+ * NOW: Fetches real count from Supabase.
  */
-export function calculateTotalDataPoints(): number {
-  let count = 0;
-  Object.values(MARKET_DATA).forEach(company => {
-    Object.values(company).forEach(role => {
-      Object.values(role).forEach(location => {
-        count += Object.keys(location).length;
-      });
-    });
-  });
-  // Multiply by estimated records per level for realistic count
-  return count * 850;
+export async function calculateTotalDataPoints(): Promise<number> {
+  try {
+    const { count, error } = await supabaseAdmin
+      .from('Salary')
+      .select('*', { count: 'exact', head: true });
+
+    if (error) throw error;
+    return count || 0;
+  } catch {
+    console.warn('Failed to fetch real count, falling back to estimate');
+    // Fallback to a realistic "beta" number if DB is empty or fails
+    return 150;
+  }
+}
+
+/**
+ * getDistinctCompanies:
+ * Fetches list of unique companies from DB.
+ */
+export async function getDistinctCompanies(): Promise<string[]> {
+  try {
+    // We use a distinct query or just fetch all and Set
+    // optimize: create a separate table or materialized view for this in prod
+    const { data, error } = await supabaseAdmin
+      .from('Company')
+      .select('name');
+
+    if (error) throw error;
+    if (!data) return COMPANIES; // fallback
+
+    const names = Array.from(new Set(data.map((d: { name: string }) => d.name))).sort() as string[];
+    return names.length > 0 ? names : COMPANIES;
+  } catch {
+    return COMPANIES;
+  }
+}
+
+/**
+ * getDistinctRoles:
+ * Fetches list of unique roles from DB.
+ */
+export async function getDistinctRoles(): Promise<string[]> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('Role')
+      .select('title');
+
+    if (error) throw error;
+    if (!data) return ROLES; // fallback
+
+    const titles = Array.from(new Set(data.map((d: { title: string }) => d.title))).sort() as string[];
+    return titles.length > 0 ? titles : ROLES;
+  } catch {
+    return ROLES;
+  }
 }

@@ -10,19 +10,8 @@ import {
   Lightbulb,
   ArrowRight,
   DollarSign,
-  Briefcase,
-  ChartLine,
-  Star,
-  TrendingUp,
-  Gavel,
   Search,
   Copy,
-  Users,
-  HeartHandshake,
-  Award,
-  Handshake,
-  GitBranch,
-  Percent,
   Home,
   Globe,
 } from "lucide-react";
@@ -88,7 +77,7 @@ const RemotePayPage = () => {
           <CardContent className="p-6">
             <div className="flex items-center mb-3">
               <Home className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900">What You'll Learn</h3>
+              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
             </div>
             <ul className="space-y-2 text-gray-700">
               <li>Different models for setting remote pay (geo-adjusted, national bands).</li>
@@ -146,7 +135,7 @@ const RemotePayPage = () => {
                 <Home className="h-6 w-6 text-yellow-600 mr-2" />
                 <h3 className="text-lg font-semibold text-gray-900">Company Policy is Crucial</h3>
               </div>
-              <p className="text-gray-700">Understand your employer's specific pay philosophy for remote workers.</p>
+              <p className="text-gray-700">Understand your employer&apos;s specific pay philosophy for remote workers.</p>
             </CardContent>
           </Card>
           <Card>
@@ -167,7 +156,7 @@ const RemotePayPage = () => {
           <div className="flex items-start">
             <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
             <p className="text-gray-700">
-              <strong>Ask About the Policy:</strong> Inquire about the company's remote compensation philosophy early in the interview process.
+              <strong>Ask About the Policy:</strong> Inquire about the company&apos;s remote compensation philosophy early in the interview process.
             </p>
           </div>
           <div className="flex items-start">

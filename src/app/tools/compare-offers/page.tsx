@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { TrendingUp, TrendingDown, Minus, Plus, Trash2, Award } from "lucide-react";
+import { TrendingUp, Plus, Trash2, Award } from "lucide-react";
 
 interface Offer {
   id: string;
@@ -116,11 +115,10 @@ export default function CompareOffersPage() {
             {offers.map((offer, index) => (
               <Card
                 key={offer.id}
-                className={`flex-1 min-w-[300px] ${
-                  calculateTC(offer) === highestTC && calculateTC(offer) > 0
+                className={`flex-1 min-w-[300px] ${calculateTC(offer) === highestTC && calculateTC(offer) > 0
                     ? "border-2 border-emerald-500 shadow-lg"
                     : "border-slate-200"
-                }`}
+                  }`}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
