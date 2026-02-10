@@ -72,7 +72,7 @@ export default function GuidesPage() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-slate-900">{guide.title}</CardTitle>
-                      <span className="text-sm px-3 py-1 rounded-full bg-slate-800 text-slate-600">
+                      <span className="text-sm px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-medium border border-emerald-200">
                         {guide.category}
                       </span>
                     </div>
