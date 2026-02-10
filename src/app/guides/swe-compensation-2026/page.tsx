@@ -1,133 +1,229 @@
+// avgpay/src/app/guides/swe-compensation-2026/page.tsx
 import { Metadata } from "next";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { ArticleSchema } from "@/components/schema-markup";
-import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { ExpandableFAQ } from "@/components/ExpandableFAQ";
+import {
+  Lightbulb,
+  ArrowRight,
+  DollarSign,
+  Briefcase,
+  ChartLine,
+  Star,
+  TrendingUp,
+  Gavel,
+  Search,
+  Copy,
+  Users,
+  HeartHandshake,
+} from "lucide-react";
+
+// Placeholder data for DataTable
+const compensationData = [
+  { id: 1, role: "Software Engineer I", level: "L3", salary: "$120,000", bonus: "$10,000", equity: "$50,000" },
+  { id: 2, role: "Software Engineer II", level: "L4", salary: "$150,000", bonus: "$15,000", equity: "$100,000" },
+  { id: 3, role: "Senior Software Engineer", level: "L5", salary: "$180,000", bonus: "$20,000", equity: "$200,000" },
+  { id: 4, role: "Staff Software Engineer", level: "L6", salary: "$220,000", bonus: "$25,000", equity: "$400,000" },
+];
+
+const compensationColumns = [
+  { accessorKey: "role", header: "Role", className: "text-left" },
+  { accessorKey: "level", header: "Level", className: "text-left" },
+  { accessorKey: "salary", header: "Base Salary", className: "text-right" },
+  { accessorKey: "bonus", header: "Annual Bonus", className: "text-right" },
+  { accessorKey: "equity", header: "Annual Equity", className: "text-right" },
+];
+
+const faqs = [
+  { question: "What is the average SWE salary in 2026?", answer: "The average base salary for Software Engineers in 2026 is projected to be around $160,000, with total compensation reaching $200,000+ depending on level and location." },
+  { question: "How does equity vary by company type?", answer: "Equity grants can vary significantly. Startups might offer larger option pools with higher risk, while Big Tech companies offer RSUs with more immediate value and less volatility." },
+  { question: "What factors influence remote pay?", answer: "Remote pay is increasingly influenced by cost of labor in your region, company policy (geo-adjusted vs. national band), and the specific role's impact." },
+  { question: "When is the best time to negotiate salary?", answer: "The best times are typically when receiving a job offer, during performance reviews, or when taking on significant new responsibilities." },
+];
 
 export const metadata: Metadata = {
-  title: "Software Engineer Salary Guide 2026 | AvgPay",
-  description: "From L3 to Staff+. Compensation breakdowns at Google, Meta, Amazon, and startups. Plus leveling guides.",
+  title: "SWE Compensation Guide 2026 | AvgPay",
+  description: "A comprehensive guide to Software Engineer compensation in 2026, covering salary, bonuses, equity, and negotiation strategies.",
+  keywords: "SWE compensation, software engineer salary, tech salaries 2026, tech bonuses, equity compensation, RSU, stock options, tech negotiation",
   openGraph: {
+    title: "SWE Compensation Guide 2026 | AvgPay",
+    description: "A comprehensive guide to Software Engineer compensation in 2026, covering salary, bonuses, equity, and negotiation strategies.",
     type: "article",
-    publishedTime: "2026-02-09",
+    publishedTime: "2026-02-10T09:46:00Z",
+    images: [], // Add image URLs if available
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SWE Compensation Guide 2026 | AvgPay",
+    description: "A comprehensive guide to Software Engineer compensation in 2026, covering salary, bonuses, equity, and negotiation strategies.",
   },
 };
 
-export default function SWEGuidePage() {
-  const levelData = {
-    headers: [{label: "Level", key: "0"}, {label: "Base Salary", key: "1"}, {label: "Equity (Annual)", key: "2"}, {label: "Bonus", key: "3"}, {label: "Total Comp", key: "4"}],
-    rows: [
-      ["Junior (L3)", "$140,000", "$25,000", "$15,000", "$180,000"],
-      ["Mid-Level (L4)", "$175,000", "$60,000", "$25,000", "$260,000"],
-      ["Senior (L5)", "$210,000", "$120,000", "$40,000", "$370,000"],
-      ["Staff (L6)", "$260,000", "$220,000", "$70,000", "$550,000"],
-      ["Principal (L7+)", "$320,000", "$400,000", "$100,000", "$820,000"],
-    ],
-  };
-
-  const locationData = {
-    headers: [{label: "Location", key: "0"}, {label: "Median Total Comp", key: "1"}, {label: "Premium/Discount", key: "2"}],
-    rows: [
-      ["San Francisco Bay Area", "$280,000", "+30%"],
-      ["New York", "$260,000", "+22%"],
-      ["Seattle", "$255,000", "+20%"],
-      ["Austin", "$210,000", "+2%"],
-      ["Remote (US)", "$220,000", "+6%"],
-    ],
-  };
-
+const SWCompensationPage = () => {
   return (
-    <main className="min-h-screen bg-white">
-      <ArticleSchema headline="Software Engineer Salary Guide 2026" datePublished="2026-02-09" authorName="AvgPay Team" />
-      
-      <article className="max-w-3xl mx-auto px-6 py-12 prose prose-slate lg:prose-lg">
-        <div className="mb-8 not-prose">
-          <span className="text-emerald-600 text-sm font-medium">February 2026</span>
-          <h1 className="text-4xl font-bold text-slate-900 mt-2">Software Engineer Salary Guide 2026</h1>
-          <p className="text-xl text-slate-600 mt-4">
-            A deep dive into Software Engineering compensation across the tech industry. 
-            Based on 8,000+ verified data points from BLS, H-1B filings, and public pay transparency data.
-          </p>
-        </div>
+    <div className="container mx-auto px-4 py-12">
+      <ArticleSchema
+        title="Software Engineer Compensation Guide 2026"
+        description="A comprehensive guide to Software Engineer compensation in 2026."
+        datePublished="2026-02-10"
+        authorName="AvgPay Team"
+        canonicalUrl="https://avgpay.com/guides/swe-compensation-2026" // Replace with actual URL
+      />
 
-        <div className="not-prose my-8 p-6 bg-emerald-50 border border-emerald-200 rounded-lg">
-          <h2 className="text-lg font-semibold text-emerald-700 mb-2">Executive Summary</h2>
-          <p className="text-slate-700">
-            Software Engineers command the highest median compensation in tech, with a median total comp of $260,000 for mid-level roles in major hubs. 
-            AI/ML specializations are seeing a 20-30% premium over generalist roles.
-          </p>
-        </div>
+      <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
+        Software Engineer Compensation Guide 2026
+      </h1>
+      <p className="mb-8 text-lg text-gray-600">
+        Navigate the evolving landscape of Software Engineer salaries, bonuses, and equity in 2026.
+      </p>
 
-        <h2>Compensation by Level</h2>
-        <div className="not-prose my-6">
-          <DataTable headers={levelData.headers} rows={levelData.rows} />
-        </div>
+      <div className="mb-12 grid gap-8 md:grid-cols-2">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center mb-3">
+              <Briefcase className="h-6 w-6 text-blue-600 mr-2" />
+              <h3 className="text-xl font-semibold text-gray-900">What You'll Learn</h3>
+            </div>
+            <ul className="space-y-2 text-gray-700">
+              <li>Understanding salary, bonus, and equity components.</li>
+              <li>Factors impacting SWE compensation in 2026.</li>
+              <li>Strategies for maximizing your total compensation.</li>
+              <li>How to interpret compensation data.</li>
+              <li>Key insights into remote work compensation trends.</li>
+            </ul>
+          </CardContent>
+        </Card>
 
-        <h2>Compensation by Location</h2>
-        <p>While remote work remains popular, top-tier compensation is still concentrated in major tech hubs:</p>
-        
-        <div className="not-prose my-6">
-          <DataTable headers={locationData.headers} rows={locationData.rows} />
-        </div>
+        <Card>
+          <CardContent className="p-6 bg-blue-50 border border-blue-200 shadow-inner">
+            <div className="flex items-center mb-3">
+              <Search className="h-6 w-6 text-blue-600 mr-2" />
+              <h3 className="text-xl font-semibold text-blue-800">Executive Summary</h3>
+            </div>
+            <p className="text-gray-800">
+              2026 is shaping up to be a dynamic year for Software Engineer compensation. Total compensation packages,
+              especially those including equity, continue to be a major differentiator. Understanding market trends,
+              negotiation tactics, and the nuances of different company types is crucial for career growth and financial success. This guide provides actionable insights into the current compensation landscape.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
-        <h2>Top Paying Companies (Staff L6+)</h2>
-        <p>At the Staff level, equity packages significantly diverge:</p>
-        
-        <ol>
-          <li><strong>OpenAI / Anthropic:</strong> $900,000+ total comp (liquid equity varies)</li>
-          <li><strong>Netflix:</strong> $750,000 (all cash option available)</li>
-          <li><strong>Meta:</strong> $700,000</li>
-          <li><strong>Google:</strong> $650,000</li>
-          <li><strong>Databricks:</strong> $620,000</li>
-        </ol>
-
-        <h2>Negotiation Tips for Engineers</h2>
-        
-        <h3>1. Multiple Offers are Key</h3>
-        <p>
-          Engineers with competing offers see an average initial offer increase of 22%. 
-          Companies have specific bands, but competing offers unlock &quot;out-of-band&quot; approvals.
+      <section className="mb-12">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Compensation Breakdown</h2>
+        <p className="mb-4 text-gray-700">
+          Explore the typical compensation structure for Software Engineers in 2026. This includes base salary, annual bonuses, and equity grants (RSUs and stock options).
         </p>
-
-        <h3>2. Understand the Equity Grant</h3>
-        <p>
-          Ask about the 409A valuation (for private companies) or the grant price (public). 
-          Understand the vesting schedule—Amazon is back-weighted (5/15/40/40), while Google is front-weighted (33/33/22/12) or flat (25% annually).
-        </p>
-
-        <h3>3. Sign-on Bonuses</h3>
-        <p>
-          Sign-on bonuses, often ranging from $20k to $100k+, are the easiest lever for recruiters 
-          to pull to close a candidate without disrupting salary bands. 
-          Always ask for a sign-on if the base salary is inflexible.
-        </p>
-
-        <h2>Future Outlook</h2>
-        <p>
-          Demand for specialized roles (ML Infra, Kernel, Distributed Systems) is outpacing general 
-          full-stack web development. Engineers investing in lower-level systems knowledge or 
-          model deployment pipelines are seeing faster career velocity.
-        </p>
-
-        <div className="not-prose my-12 p-8 bg-slate-50 border border-slate-200 rounded-xl text-center">
-          <h3 className="text-2xl font-bold text-slate-900 mb-2">Check your market rate</h3>
-          <p className="text-slate-600 mb-4">
-            See exactly where your offer lands against verified benchmarks.
-          </p>
-          <Link href="/#analyzer">
-            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
-              Analyze Your Offer
+        <DataTable columns={compensationColumns} data={compensationData} />
+        <div className="mt-4 flex justify-center">
+          <Link href="/analyzer" legacyBehavior>
+            <Button variant="outline" className="group">
+              Get Your Personalized Analyzer <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
         </div>
+      </section>
 
-        <hr className="border-slate-200" />
-        
-        <p className="text-slate-600 text-sm not-prose">
-          Last updated: February 2026. Data sourced from BLS, H-1B filings, and 
-          pay transparency laws.
+      <section className="mb-12">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Takeaways</h2>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <DollarSign className="h-6 w-6 text-green-600 mr-2" />
+                <h3 className="text-lg font-semibold text-gray-900">Base Salary Growth</h3>
+              </div>
+              <p className="text-gray-700">Base salaries continue to rise, especially for mid to senior levels and in high-demand tech hubs.</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <Star className="h-6 w-6 text-yellow-600 mr-2" />
+                <h3 className="text-lg font-semibold text-gray-900">Equity's Enduring Value</h3>
+              </div>
+              <p className="text-gray-700">Equity (RSUs and stock options) remains a significant component of total compensation, particularly in public tech companies.</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center mb-3">
+                <TrendingUp className="h-6 w-6 text-purple-600 mr-2" />
+                <h3 className="text-lg font-semibold text-gray-900">Performance Bonuses</h3>
+              </div>
+              <p className="text-gray-700">Performance-driven bonuses are crucial, often tied to individual and company success, contributing significantly to total earnings.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="flex items-start">
+            <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
+            <p className="text-gray-700">
+              <strong>Negotiate Total Compensation:</strong> Don't just focus on base salary; consider bonuses, equity, and benefits holistically.
+            </p>
+          </div>
+          <div className="flex items-start">
+            <Gavel className="h-5 w-5 text-gray-500 mr-2 flex-shrink-0" />
+            <p className="text-gray-700">
+              <strong>Leverage Market Data:</strong> Use resources like AvgPay to understand your worth and negotiate from a position of strength.
+            </p>
+          </div>
+          <div className="flex items-start">
+            <Copy className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
+            <p className="text-gray-700">
+              <strong>Research Company Bands:</strong> Understand the typical compensation bands for your role and level at target companies.
+            </p>
+          </div>
+          <div className="flex items-start">
+            <DollarSign className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
+            <p className="text-gray-700">
+              <strong>Understand Vesting Schedules:</strong> Know how your equity vests and its total potential value over time—essential for long-term planning.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
+        {faqs.map((faq, index) => (
+          <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
+        ))}
+      </section>
+
+      <section className="text-center py-12 bg-gray-50 rounded-lg">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Ready to Optimize Your Pay?</h2>
+        <p className="mb-8 text-lg text-gray-700">
+          Use our advanced analyzer to get a personalized compensation report and negotiation strategies.
         </p>
-      </article>
-    </main>
+        <Link href="/analyzer" legacyBehavior>
+          <Button className="px-8 py-3 text-lg group">
+            Go to Analyzer <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+          </Button>
+        </Link>
+      </section>
+
+      <footer className="mt-16 text-center text-sm text-gray-500">
+        <p>© 2026 AvgPay. All rights reserved.</p>
+        <div className="mt-2 flex flex-wrap justify-center gap-2">
+          <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
+          <Link href="/terms" className="hover:underline">Terms of Service</Link>
+          <Link href="/guides/swe-compensation-2026" className="font-semibold text-blue-600">SWE Compensation 2026</Link>
+          <Link href="/guides/pm-compensation-2026" className="hover:underline">PM Compensation 2026</Link>
+          <Link href="/guides/negotiation" className="hover:underline">Negotiation Guide</Link>
+          <Link href="/guides/equity" className="hover:underline">Equity Guide</Link>
+          <Link href="/guides/remote-pay" className="hover:underline">Remote Pay Guide</Link>
+          <Link href="/guides/startup-vs-bigtech" className="hover:underline">Startup vs. Big Tech</Link>
+        </div>
+      </footer>
+    </div>
   );
-}
+};
+
+export default SWCompensationPage;
