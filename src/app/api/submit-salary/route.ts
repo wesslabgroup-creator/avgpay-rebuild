@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { queueEnrichment, buildCityContextData } from '@/lib/enrichment';
+import { log } from '@/lib/enrichmentLogger';
 
 // Levenshtein distance for fuzzy matching
 function levenshteinDistance(a: string, b: string): number {
@@ -230,6 +231,10 @@ export async function POST(request: Request) {
 
   const { jobTitle, companyName, location, baseSalary, totalComp, level } = await request.json();
 
+  log('info', 'salary_submission_received', 'New salary submission', {
+    jobTitle, companyName, location, baseSalary, totalComp, level,
+  });
+
   // Basic Validation
   if (!jobTitle || !companyName || !totalComp || !location || !level) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -279,63 +284,93 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to save salary data' }, { status: 500 });
     }
 
-    // 3. Queue enrichment for any new entities (non-blocking, fire-and-forget)
+    // 3. Queue enrichment for ALL entities missing analysis (not just new ones)
+    //    This is idempotent — queueEnrichment deduplicates via entityKey.
+    log('info', 'enrichment_check', 'Checking entities for missing analysis', {
+      companyId: companyEntry.id,
+      companyName: companyEntry.name,
+      companyIsNew: companyEntry.isNew,
+      jobId: jobEntry.id,
+      jobTitle: jobEntry.title,
+      jobIsNew: jobEntry.isNew,
+      locationId: locationEntry.id,
+      locationName: locationEntry.name,
+      locationIsNew: locationEntry.isNew,
+    });
+
     const enrichmentPromises: Promise<string | null>[] = [];
 
-    if (companyEntry.isNew) {
-      // Check if company already has analysis cached
-      const { data: companyRecord } = await supabaseAdmin
-        .from('Company')
-        .select('analysis')
-        .eq('id', companyEntry.id)
-        .single();
+    // Check company analysis — always, not just for new entities
+    const { data: companyRecord } = await supabaseAdmin
+      .from('Company')
+      .select('analysis, enrichmentStatus')
+      .eq('id', companyEntry.id)
+      .single();
 
-      if (!companyRecord?.analysis) {
-        enrichmentPromises.push(
-          queueEnrichment('Company', companyEntry.id, companyEntry.name)
-        );
-      }
+    if (!companyRecord?.analysis || companyRecord.enrichmentStatus === 'error') {
+      log('info', 'enrichment_decision', `Enqueuing Company enrichment: analysis=${!!companyRecord?.analysis}, status=${companyRecord?.enrichmentStatus}`, {
+        entityType: 'Company', entityId: companyEntry.id, entityName: companyEntry.name,
+      });
+      enrichmentPromises.push(
+        queueEnrichment('Company', companyEntry.id, companyEntry.name)
+      );
+    } else {
+      log('info', 'enrichment_decision', `Skipping Company enrichment: analysis exists`, {
+        entityType: 'Company', entityId: companyEntry.id,
+      });
     }
 
-    if (jobEntry.isNew) {
-      const { data: roleRecord } = await supabaseAdmin
-        .from('Role')
-        .select('analysis')
-        .eq('id', jobEntry.id)
-        .single();
+    // Check job analysis — always
+    const { data: roleRecord } = await supabaseAdmin
+      .from('Role')
+      .select('analysis, enrichmentStatus')
+      .eq('id', jobEntry.id)
+      .single();
 
-      if (!roleRecord?.analysis) {
-        enrichmentPromises.push(
-          queueEnrichment('Job', jobEntry.id, jobEntry.title)
-        );
-      }
+    if (!roleRecord?.analysis || roleRecord.enrichmentStatus === 'error') {
+      log('info', 'enrichment_decision', `Enqueuing Job enrichment: analysis=${!!roleRecord?.analysis}, status=${roleRecord?.enrichmentStatus}`, {
+        entityType: 'Job', entityId: jobEntry.id, entityName: jobEntry.title,
+      });
+      enrichmentPromises.push(
+        queueEnrichment('Job', jobEntry.id, jobEntry.title)
+      );
+    } else {
+      log('info', 'enrichment_decision', `Skipping Job enrichment: analysis exists`, {
+        entityType: 'Job', entityId: jobEntry.id,
+      });
     }
 
-    if (locationEntry.isNew) {
-      // Parse city/state for context
-      const locParts = locationEntry.name.split(',').map((p: string) => p.trim());
-      const city = locParts[0];
-      const state = locParts[1] || '';
+    // Check location analysis — always
+    const locParts = locationEntry.name.split(',').map((p: string) => p.trim());
+    const city = locParts[0];
+    const state = locParts[1] || '';
 
-      const { data: locRecord } = await supabaseAdmin
-        .from('Location')
-        .select('analysis')
-        .eq('id', locationEntry.id)
-        .single();
+    const { data: locRecord } = await supabaseAdmin
+      .from('Location')
+      .select('analysis, enrichmentStatus')
+      .eq('id', locationEntry.id)
+      .single();
 
-      if (!locRecord?.analysis) {
-        const cityContext = buildCityContextData({ city, state });
-        enrichmentPromises.push(
-          queueEnrichment('City', locationEntry.id, locationEntry.name, cityContext)
-        );
-      }
+    if (!locRecord?.analysis || locRecord.enrichmentStatus === 'error') {
+      log('info', 'enrichment_decision', `Enqueuing City enrichment: analysis=${!!locRecord?.analysis}, status=${locRecord?.enrichmentStatus}`, {
+        entityType: 'City', entityId: locationEntry.id, entityName: locationEntry.name,
+      });
+      const cityContext = buildCityContextData({ city, state });
+      enrichmentPromises.push(
+        queueEnrichment('City', locationEntry.id, locationEntry.name, cityContext)
+      );
+    } else {
+      log('info', 'enrichment_decision', `Skipping City enrichment: analysis exists`, {
+        entityType: 'City', entityId: locationEntry.id,
+      });
     }
 
     // Fire enrichment queue entries without blocking the response
     if (enrichmentPromises.length > 0) {
       Promise.allSettled(enrichmentPromises).then(results => {
-        const queued = results.filter(r => r.status === 'fulfilled').length;
-        console.log(`Queued ${queued} enrichment job(s) from salary submission`);
+        const queued = results.filter(r => r.status === 'fulfilled' && r.value !== null).length;
+        const skipped = results.length - queued;
+        log('info', 'enrichment_queued', `Queued ${queued} enrichment job(s), ${skipped} skipped/deduped from salary submission`);
       });
     }
 

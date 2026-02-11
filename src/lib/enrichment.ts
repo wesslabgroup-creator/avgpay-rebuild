@@ -7,6 +7,8 @@ import {
   type EntityMetricsScope,
   type EntityMetricsSnapshot,
 } from '@/lib/marketStats';
+import { buildEntityKey } from '@/lib/normalization';
+import { log } from '@/lib/enrichmentLogger';
 
 // ============================================================
 // Types
@@ -64,11 +66,15 @@ export interface EnrichmentJob {
   entityType: EntityType;
   entityId: string;
   entityName: string;
+  entityKey: string;
   contextData?: Record<string, unknown>;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   attempts: number;
   lastError?: string;
   result?: AnalysisResult;
+  runAfter: string;
+  lockedAt?: string;
+  lockedBy?: string;
   createdAt: string;
   processedAt?: string;
 }
@@ -326,18 +332,44 @@ let autoProcessorRequestedWhileRunning = false;
 const AUTO_PROCESS_MAX_JOBS_PER_PASS = 20;
 const AUTO_PROCESS_DELAY_MS = 750;
 
+/** Unique worker ID for locking (per-instance) */
+const WORKER_ID = `worker-${crypto.randomUUID().slice(0, 8)}`;
+
+/** Lock timeout: if a job has been locked for longer than this, it's considered stale */
+const LOCK_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function hasPendingEnrichmentJobs() {
+/**
+ * Compute exponential backoff delay for failed jobs.
+ * attempt 1 → 30s, attempt 2 → 120s, attempt 3+ → 300s
+ */
+function computeBackoffMs(attempts: number): number {
+  const delays = [30_000, 120_000, 300_000];
+  return delays[Math.min(attempts, delays.length - 1)];
+}
+
+/** Map EntityType → DB table name */
+function entityTableName(entityType: string): string | null {
+  switch (entityType) {
+    case 'City': return 'Location';
+    case 'Job': return 'Role';
+    case 'Company': return 'Company';
+    default: return null;
+  }
+}
+
+async function hasPendingEnrichmentJobs(): Promise<boolean> {
   const { count, error } = await supabaseAdmin
     .from('EnrichmentQueue')
     .select('id', { count: 'exact', head: true })
-    .eq('status', 'pending');
+    .eq('status', 'pending')
+    .lte('runAfter', new Date().toISOString());
 
   if (error) {
-    console.error('Failed checking pending enrichment jobs:', error);
+    log('error', 'queue_check', 'Failed checking pending enrichment jobs', { error: error.message });
     return false;
   }
 
@@ -354,12 +386,11 @@ async function triggerAutoQueueProcessor() {
   }
 
   isAutoProcessorRunning = true;
+  log('info', 'auto_processor_start', 'Auto queue processor started');
 
   try {
     let processedInPass = 0;
 
-    // Keep processing in small, throttled batches so uploads don't leave stale pending rows.
-    // Batch limits prevent one request from monopolizing server resources.
     while (processedInPass < AUTO_PROCESS_MAX_JOBS_PER_PASS) {
       const result = await processNextEnrichmentJob();
 
@@ -368,9 +399,13 @@ async function triggerAutoQueueProcessor() {
       }
 
       processedInPass++;
-      console.log(`Auto-processed enrichment job ${result.jobId} (${result.status})`);
+      log('info', 'auto_processor_job', `Auto-processed enrichment job ${result.jobId} (${result.status})`, {
+        jobId: result.jobId,
+        entityType: result.entityType,
+        entityName: result.entityName,
+        status: result.status,
+      });
 
-      // Throttle outbound model calls to avoid API/server spikes.
       await sleep(AUTO_PROCESS_DELAY_MS);
     }
 
@@ -379,20 +414,26 @@ async function triggerAutoQueueProcessor() {
 
     if (shouldContinue) {
       autoProcessorRequestedWhileRunning = false;
-      // Continue in a detached tick so this invocation exits quickly.
       setTimeout(() => {
         void triggerAutoQueueProcessor();
       }, AUTO_PROCESS_DELAY_MS);
     }
   } catch (error) {
-    console.error('Auto queue processor failed:', error);
+    log('error', 'auto_processor_error', 'Auto queue processor failed', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   } finally {
     isAutoProcessorRunning = false;
+    log('info', 'auto_processor_end', 'Auto queue processor finished');
   }
 }
 
 /**
- * Queue an entity for enrichment. Skips if a pending/processing job already exists.
+ * Queue an entity for enrichment. Idempotent: skips if a pending/processing
+ * job already exists for the same entityKey.
+ *
+ * If a previous job for this entity failed and its backoff has expired,
+ * it resets the job to pending.
  */
 export async function queueEnrichment(
   entityType: EntityType,
@@ -400,20 +441,77 @@ export async function queueEnrichment(
   entityName: string,
   contextData?: Record<string, unknown>
 ): Promise<string | null> {
-  // Check if there's already a pending or processing job for this entity
+  const entityKey = buildEntityKey(entityType, entityName);
+
+  log('info', 'queue_attempt', `Attempting to queue enrichment`, {
+    entityType, entityId, entityName, entityKey,
+  });
+
+  // Check if there's already an active job for this entity key
   const { data: existing } = await supabaseAdmin
     .from('EnrichmentQueue')
-    .select('id, status')
-    .eq('entityType', entityType)
-    .eq('entityId', entityId)
+    .select('id, status, runAfter, attempts')
+    .eq('entityKey', entityKey)
     .in('status', ['pending', 'processing'])
     .maybeSingle();
 
   if (existing) {
-    console.log(`Enrichment already queued for ${entityType} "${entityName}" (${existing.status})`);
+    log('info', 'queue_dedup', `Enrichment already queued for ${entityType} "${entityName}" (${existing.status})`, {
+      existingJobId: existing.id, entityKey,
+    });
     return existing.id;
   }
 
+  // Check if there's a failed job whose backoff has expired — reset it instead of creating a new one
+  const { data: failedJob } = await supabaseAdmin
+    .from('EnrichmentQueue')
+    .select('id, attempts, runAfter')
+    .eq('entityKey', entityKey)
+    .eq('status', 'failed')
+    .order('createdAt', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (failedJob) {
+    const runAfter = failedJob.runAfter ? new Date(failedJob.runAfter) : new Date(0);
+    if (runAfter <= new Date()) {
+      // Reset the failed job back to pending
+      await supabaseAdmin
+        .from('EnrichmentQueue')
+        .update({
+          status: 'pending',
+          lastError: null,
+          contextData: contextData || null,
+          runAfter: new Date().toISOString(),
+          lockedAt: null,
+          lockedBy: null,
+        })
+        .eq('id', failedJob.id);
+
+      log('info', 'queue_reset', `Reset failed job to pending for ${entityType} "${entityName}"`, {
+        jobId: failedJob.id, entityKey,
+      });
+
+      // Update entity status
+      const table = entityTableName(entityType);
+      if (table) {
+        await supabaseAdmin
+          .from(table)
+          .update({ enrichmentStatus: 'pending' })
+          .eq('id', entityId);
+      }
+
+      void triggerAutoQueueProcessor();
+      return failedJob.id;
+    } else {
+      log('info', 'queue_backoff', `Failed job still in backoff for ${entityType} "${entityName}"`, {
+        jobId: failedJob.id, runAfter: failedJob.runAfter,
+      });
+      return failedJob.id;
+    }
+  }
+
+  // Create a new job
   const jobId = crypto.randomUUID();
   const { error } = await supabaseAdmin
     .from('EnrichmentQueue')
@@ -422,27 +520,47 @@ export async function queueEnrichment(
       entityType,
       entityId,
       entityName,
+      entityKey,
       contextData: contextData || null,
       status: 'pending',
       attempts: 0,
+      runAfter: new Date().toISOString(),
     });
 
   if (error) {
-    console.error(`Failed to queue enrichment for ${entityType} "${entityName}":`, error);
+    // Handle unique constraint violation (race condition — another request already inserted)
+    if (error.code === '23505') {
+      log('info', 'queue_dedup_constraint', `Duplicate prevented by constraint for ${entityType} "${entityName}"`, {
+        entityKey,
+      });
+      return null;
+    }
+    log('error', 'queue_insert_error', `Failed to queue enrichment for ${entityType} "${entityName}"`, {
+      error: error.message, entityKey,
+    });
     return null;
   }
 
-  // Fire a best-effort processing pass immediately after queueing.
-  // This keeps enrichment moving even if cron/webhook workers are not configured.
+  // Update entity enrichmentStatus
+  const table = entityTableName(entityType);
+  if (table) {
+    await supabaseAdmin
+      .from(table)
+      .update({ enrichmentStatus: 'pending' })
+      .eq('id', entityId);
+  }
+
   void triggerAutoQueueProcessor();
 
-  console.log(`Queued enrichment job ${jobId} for ${entityType} "${entityName}"`);
+  log('info', 'queue_created', `Queued enrichment job ${jobId} for ${entityType} "${entityName}"`, {
+    jobId, entityType, entityId, entityName, entityKey,
+  });
   return jobId;
 }
 
 /**
  * Process the next pending enrichment job from the queue.
- * This is designed to be called from a cron/API endpoint.
+ * Uses locking to prevent double-processing and respects runAfter for backoff.
  */
 export async function processNextEnrichmentJob(): Promise<{
   processed: boolean;
@@ -452,28 +570,65 @@ export async function processNextEnrichmentJob(): Promise<{
   status?: string;
   error?: string;
 }> {
-  // Fetch the oldest pending job
+  const now = new Date();
+  const staleThreshold = new Date(now.getTime() - LOCK_TIMEOUT_MS).toISOString();
+
+  // First, release any stale locks (processing for too long)
+  await supabaseAdmin
+    .from('EnrichmentQueue')
+    .update({ status: 'pending', lockedAt: null, lockedBy: null })
+    .eq('status', 'processing')
+    .lt('lockedAt', staleThreshold);
+
+  // Fetch the oldest pending job that is ready to run
   const { data: job, error: fetchError } = await supabaseAdmin
     .from('EnrichmentQueue')
     .select('*')
     .eq('status', 'pending')
+    .lte('runAfter', now.toISOString())
     .order('createdAt', { ascending: true })
     .limit(1)
     .maybeSingle();
 
   if (fetchError) {
+    log('error', 'worker_fetch_error', `Failed to fetch queue`, { error: fetchError.message });
     return { processed: false, error: `Failed to fetch queue: ${fetchError.message}` };
   }
 
   if (!job) {
-    return { processed: false, error: 'No pending jobs in queue' };
+    return { processed: false, error: 'No pending jobs ready to process' };
   }
 
-  // Mark as processing
-  await supabaseAdmin
+  // Claim the job with a lock
+  const newAttempts = job.attempts + 1;
+  const { error: lockError } = await supabaseAdmin
     .from('EnrichmentQueue')
-    .update({ status: 'processing', attempts: job.attempts + 1 })
-    .eq('id', job.id);
+    .update({
+      status: 'processing',
+      attempts: newAttempts,
+      lockedAt: now.toISOString(),
+      lockedBy: WORKER_ID,
+    })
+    .eq('id', job.id)
+    .eq('status', 'pending'); // Optimistic lock: only update if still pending
+
+  if (lockError) {
+    log('warn', 'worker_lock_failed', `Failed to lock job ${job.id}`, { error: lockError.message });
+    return { processed: false, error: `Failed to lock job: ${lockError.message}` };
+  }
+
+  log('info', 'worker_start', `Processing job ${job.id} for ${job.entityType} "${job.entityName}" (attempt ${newAttempts})`, {
+    jobId: job.id, entityType: job.entityType, entityName: job.entityName, attempt: newAttempts,
+  });
+
+  // Update entity status to processing
+  const entityTable = entityTableName(job.entityType);
+  if (entityTable) {
+    await supabaseAdmin
+      .from(entityTable)
+      .update({ enrichmentStatus: 'processing' })
+      .eq('id', job.entityId);
+  }
 
   try {
     // Generate analysis
@@ -483,19 +638,36 @@ export async function processNextEnrichmentJob(): Promise<{
       job.contextData as Record<string, unknown> | undefined
     );
 
-    // Validate the analysis (pass entityType for structural key checking)
+    log('info', 'gemini_response', `Received Gemini response for ${job.entityType} "${job.entityName}"`, {
+      jobId: job.id, keys: Object.keys(analysis),
+    });
+
+    // Validate the analysis
     const validation = validateAnalysis(analysis as Record<string, string>, job.entityType as EntityType);
 
     if (!validation.valid) {
-      // If validation fails and we have retries left, re-queue
-      if (job.attempts + 1 < MAX_ATTEMPTS) {
+      log('warn', 'validation_failed', `Analysis validation failed for ${job.entityType} "${job.entityName}": ${validation.reason}`, {
+        jobId: job.id, attempt: newAttempts, reason: validation.reason,
+      });
+
+      if (newAttempts < MAX_ATTEMPTS) {
+        const backoffMs = computeBackoffMs(newAttempts);
+        const runAfter = new Date(now.getTime() + backoffMs).toISOString();
+
         await supabaseAdmin
           .from('EnrichmentQueue')
           .update({
             status: 'pending',
             lastError: `Validation failed: ${validation.reason}`,
+            runAfter,
+            lockedAt: null,
+            lockedBy: null,
           })
           .eq('id', job.id);
+
+        if (entityTable) {
+          await supabaseAdmin.from(entityTable).update({ enrichmentStatus: 'pending' }).eq('id', job.entityId);
+        }
 
         return {
           processed: true,
@@ -513,9 +685,18 @@ export async function processNextEnrichmentJob(): Promise<{
         .update({
           status: 'failed',
           lastError: `Validation failed after ${MAX_ATTEMPTS} attempts: ${validation.reason}`,
-          processedAt: new Date().toISOString(),
+          processedAt: now.toISOString(),
+          lockedAt: null,
+          lockedBy: null,
         })
         .eq('id', job.id);
+
+      if (entityTable) {
+        await supabaseAdmin.from(entityTable).update({
+          enrichmentStatus: 'error',
+          enrichmentError: `Validation failed after ${MAX_ATTEMPTS} attempts: ${validation.reason}`,
+        }).eq('id', job.entityId);
+      }
 
       return {
         processed: true,
@@ -536,35 +717,36 @@ export async function processNextEnrichmentJob(): Promise<{
           analysis,
           statsSnapshot: statsSnapshot || null,
         },
-        processedAt: new Date().toISOString(),
+        processedAt: now.toISOString(),
+        lockedAt: null,
+        lockedBy: null,
       })
       .eq('id', job.id);
 
     // Update the entity record with the analysis
-    const entityTable = job.entityType === 'City'
-      ? 'Location'
-      : job.entityType === 'Job'
-        ? 'Role'
-        : job.entityType === 'Company'
-          ? 'Company'
-          : null;
-
     if (entityTable) {
+      const analysisPayload = statsSnapshot
+        ? {
+          ...(analysis as Record<string, unknown>),
+          source_context_snapshot: statsSnapshot,
+        }
+        : analysis;
+
       await supabaseAdmin
         .from(entityTable)
         .update({
-          analysis: statsSnapshot
-            ? {
-              ...(analysis as Record<string, unknown>),
-              source_context_snapshot: statsSnapshot,
-            }
-            : analysis,
-          analysisGeneratedAt: new Date().toISOString(),
+          analysis: analysisPayload,
+          analysisGeneratedAt: now.toISOString(),
+          enrichmentStatus: 'complete',
+          enrichedAt: now.toISOString(),
+          enrichmentError: null,
         })
         .eq('id', job.entityId);
     }
 
-    console.log(`Enrichment completed for ${job.entityType} "${job.entityName}"`);
+    log('info', 'worker_complete', `Enrichment completed for ${job.entityType} "${job.entityName}"`, {
+      jobId: job.id, entityType: job.entityType, entityName: job.entityName,
+    });
 
     return {
       processed: true,
@@ -576,24 +758,46 @@ export async function processNextEnrichmentJob(): Promise<{
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 
-    // Check retries
-    if (job.attempts + 1 < MAX_ATTEMPTS) {
+    log('error', 'worker_error', `Enrichment failed for ${job.entityType} "${job.entityName}": ${errorMessage}`, {
+      jobId: job.id, attempt: newAttempts, error: errorMessage,
+    });
+
+    if (newAttempts < MAX_ATTEMPTS) {
+      const backoffMs = computeBackoffMs(newAttempts);
+      const runAfter = new Date(now.getTime() + backoffMs).toISOString();
+
       await supabaseAdmin
         .from('EnrichmentQueue')
         .update({
           status: 'pending',
           lastError: errorMessage,
+          runAfter,
+          lockedAt: null,
+          lockedBy: null,
         })
         .eq('id', job.id);
+
+      if (entityTable) {
+        await supabaseAdmin.from(entityTable).update({ enrichmentStatus: 'pending' }).eq('id', job.entityId);
+      }
     } else {
       await supabaseAdmin
         .from('EnrichmentQueue')
         .update({
           status: 'failed',
           lastError: `Failed after ${MAX_ATTEMPTS} attempts: ${errorMessage}`,
-          processedAt: new Date().toISOString(),
+          processedAt: now.toISOString(),
+          lockedAt: null,
+          lockedBy: null,
         })
         .eq('id', job.id);
+
+      if (entityTable) {
+        await supabaseAdmin.from(entityTable).update({
+          enrichmentStatus: 'error',
+          enrichmentError: `Failed after ${MAX_ATTEMPTS} attempts: ${errorMessage}`,
+        }).eq('id', job.entityId);
+      }
     }
 
     return {
@@ -609,6 +813,7 @@ export async function processNextEnrichmentJob(): Promise<{
 
 /**
  * Process all pending enrichment jobs in the queue (batch mode).
+ * Hard cap at 50 to prevent runaway processing.
  */
 export async function processAllPendingJobs(): Promise<{
   totalProcessed: number;
@@ -616,10 +821,12 @@ export async function processAllPendingJobs(): Promise<{
 }> {
   const results: Array<{ jobId: string; entityName: string; status: string }> = [];
   let totalProcessed = 0;
+  const HARD_CAP = 50;
 
-  // Process jobs one at a time to avoid overwhelming the API
+  log('info', 'batch_start', 'Starting batch processing of all pending jobs');
+
   // eslint-disable-next-line no-constant-condition
-  while (true) {
+  while (totalProcessed < HARD_CAP) {
     const result = await processNextEnrichmentJob();
 
     if (!result.processed) break;
@@ -632,8 +839,12 @@ export async function processAllPendingJobs(): Promise<{
     });
 
     // Brief pause between jobs to respect rate limits
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await sleep(1000);
   }
+
+  log('info', 'batch_end', `Batch processing completed: ${totalProcessed} jobs processed`, {
+    totalProcessed,
+  });
 
   return { totalProcessed, results };
 }
@@ -645,20 +856,20 @@ export async function getEnrichmentStatus(
   entityType: EntityType,
   entityId: string
 ): Promise<{ status: string; analysis?: AnalysisResult } | null> {
-  // First check if the entity already has analysis
-  const entityTable = entityType === 'City' ? 'Location' : entityType === 'Job' ? 'Role' : 'Company';
+  const table = entityTableName(entityType);
+  if (!table) return null;
 
   const { data: entity } = await supabaseAdmin
-    .from(entityTable)
-    .select('analysis, analysisGeneratedAt')
+    .from(table)
+    .select('analysis, analysisGeneratedAt, enrichmentStatus')
     .eq('id', entityId)
     .single();
 
-  if (entity?.analysis) {
+  if (entity?.analysis && hasRenderableAnalysis(entity.analysis, entityType)) {
     return { status: 'completed', analysis: entity.analysis as AnalysisResult };
   }
 
-  // Check the queue
+  // Check the queue for more detailed status
   const { data: job } = await supabaseAdmin
     .from('EnrichmentQueue')
     .select('status, result, lastError')
@@ -674,6 +885,108 @@ export async function getEnrichmentStatus(
     status: job.status,
     analysis: job.result?.analysis as AnalysisResult | undefined,
   };
+}
+
+// ============================================================
+// Backfill: find entities with missing analysis
+// ============================================================
+
+/**
+ * Scan entity tables for records missing analysis and enqueue them.
+ * Rate-limited: processes at most `batchSize` entities per call.
+ *
+ * Designed to be called from a cron job endpoint.
+ */
+export async function backfillMissingAnalysis(batchSize = 25): Promise<{
+  enqueued: number;
+  scanned: { companies: number; roles: number; locations: number };
+}> {
+  log('info', 'backfill_start', `Starting backfill scan (batch size: ${batchSize})`);
+
+  let enqueued = 0;
+  const remaining = () => batchSize - enqueued;
+
+  // 1. Companies missing analysis
+  const { data: companies } = await supabaseAdmin
+    .from('Company')
+    .select('id, name')
+    .or('analysis.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
+    .limit(remaining());
+
+  const companiesScanned = companies?.length ?? 0;
+  if (companies) {
+    for (const c of companies) {
+      if (enqueued >= batchSize) break;
+      const result = await queueEnrichment('Company', c.id, c.name);
+      if (result) enqueued++;
+    }
+  }
+
+  // 2. Roles (Jobs) missing analysis
+  const { data: roles } = await supabaseAdmin
+    .from('Role')
+    .select('id, title')
+    .or('analysis.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
+    .limit(remaining());
+
+  const rolesScanned = roles?.length ?? 0;
+  if (roles) {
+    for (const r of roles) {
+      if (enqueued >= batchSize) break;
+      const result = await queueEnrichment('Job', r.id, r.title);
+      if (result) enqueued++;
+    }
+  }
+
+  // 3. Locations (Cities) missing analysis
+  const { data: locations } = await supabaseAdmin
+    .from('Location')
+    .select('id, city, state')
+    .or('analysis.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
+    .limit(remaining());
+
+  const locationsScanned = locations?.length ?? 0;
+  if (locations) {
+    for (const loc of locations) {
+      if (enqueued >= batchSize) break;
+      const cityName = `${loc.city}, ${loc.state}`;
+      const contextData = buildCityContextData({ city: loc.city, state: loc.state });
+      const result = await queueEnrichment('City', loc.id, cityName, contextData);
+      if (result) enqueued++;
+    }
+  }
+
+  log('info', 'backfill_end', `Backfill completed: ${enqueued} enqueued`, {
+    enqueued,
+    scanned: { companies: companiesScanned, roles: rolesScanned, locations: locationsScanned },
+  });
+
+  return {
+    enqueued,
+    scanned: { companies: companiesScanned, roles: rolesScanned, locations: locationsScanned },
+  };
+}
+
+// ============================================================
+// Health check: recent enrichment jobs
+// ============================================================
+
+/**
+ * Return the last N enrichment jobs for debugging/admin visibility.
+ */
+export async function getRecentEnrichmentJobs(limit = 20): Promise<EnrichmentJob[]> {
+  const { data, error } = await supabaseAdmin
+    .from('EnrichmentQueue')
+    .select('*')
+    .order('createdAt', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    log('error', 'health_check_error', 'Failed to fetch recent jobs', { error: error.message });
+    return [];
+  }
+
+  return (data || []) as EnrichmentJob[];
 }
 
 // ============================================================
