@@ -88,11 +88,20 @@ const GUIDES = [
   },
 ];
 
+const iconColorClasses: Record<string, string> = {
+  blue: "bg-blue-100 text-blue-700",
+  emerald: "bg-emerald-100 text-emerald-700",
+  purple: "bg-purple-100 text-purple-700",
+  indigo: "bg-indigo-100 text-indigo-700",
+  teal: "bg-teal-100 text-teal-700",
+  amber: "bg-amber-100 text-amber-700",
+};
+
 const categoryColors: Record<string, string> = {
-  "Role-Specific": "bg-blue-100 text-blue-700 border-blue-200",
-  "Strategy": "bg-emerald-100 text-emerald-700 border-emerald-200",
-  "Education": "bg-purple-100 text-purple-700 border-purple-200",
-  "Research": "bg-teal-100 text-teal-700 border-teal-200",
+  "Role-Specific": "bg-blue-100 text-slate-800 border-blue-200",
+  "Strategy": "bg-emerald-100 text-slate-800 border-emerald-200",
+  "Education": "bg-purple-100 text-slate-800 border-purple-200",
+  "Research": "bg-teal-100 text-slate-800 border-teal-200",
 };
 
 export default function GuidesPage() {
@@ -129,8 +138,8 @@ export default function GuidesPage() {
                     <div className="flex flex-col sm:flex-row">
                       {/* Left: Visual */}
                       <div className="sm:w-16 md:w-20 flex-shrink-0 flex items-start justify-center pt-6 sm:pt-8 px-6 sm:px-0">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${guide.color}-100`}>
-                          <Icon className={`w-6 h-6 text-${guide.color}-600`} />
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconColorClasses[guide.color]}`}>
+                          <Icon className="w-6 h-6" />
                         </div>
                       </div>
                       
