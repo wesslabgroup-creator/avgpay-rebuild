@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { buildCityContextData, getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 
 type SalaryWithCompanyAndRole = {
@@ -69,6 +70,26 @@ async function buildCityResponse(locationData: {
   analysisGeneratedAt?: string | null;
 }) {
   const locationId = locationData.id;
+
+  const validAnalysis = hasRenderableAnalysis(locationData.analysis, 'City')
+    ? locationData.analysis
+    : null;
+
+  let enrichmentStatus = 'completed';
+  if (!validAnalysis) {
+    const status = await getEnrichmentStatus('City', locationId);
+
+    if (!status || status.status === 'failed') {
+      const contextData = buildCityContextData({
+        city: locationData.city,
+        state: locationData.state,
+      });
+      await queueEnrichment('City', locationId, `${locationData.city}, ${locationData.state}`, contextData);
+      enrichmentStatus = 'pending';
+    } else {
+      enrichmentStatus = status.status;
+    }
+  }
 
   // 2. Fetch all salaries for this location with company and role info
   const { data: rawSalaries, error: salaryError } = await supabaseAdmin
@@ -149,7 +170,7 @@ async function buildCityResponse(locationData: {
       country: locationData.country,
       metro: locationData.metro,
       slug: locationData.slug,
-      analysis: locationData.analysis || null,
+      analysis: validAnalysis,
       analysisGeneratedAt: locationData.analysisGeneratedAt || null,
     },
     stats: {
@@ -162,5 +183,6 @@ async function buildCityResponse(locationData: {
     },
     topCompanies,
     topJobs,
+    enrichmentStatus,
   });
 }

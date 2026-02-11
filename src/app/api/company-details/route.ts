@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
-import { getEnrichmentStatus, queueEnrichment } from '@/lib/enrichment';
+import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
 
 type SalarySummaryRow = {
   totalComp: number;
@@ -26,9 +26,13 @@ export async function GET(request: Request) {
 
     if (companyError) throw new Error(`Company not found: ${companyError.message}`);
 
-    // Ensure enrichment is queued if analysis is missing or previously failed.
+    const validAnalysis = hasRenderableAnalysis(companyData.analysis, 'Company')
+      ? companyData.analysis
+      : null;
+
+    // Ensure enrichment is queued if analysis is missing/blank or previously failed.
     let enrichmentStatus = 'completed';
-    if (!companyData.analysis) {
+    if (!validAnalysis) {
       const status = await getEnrichmentStatus('Company', companyData.id);
       if (!status || status.status === 'failed') {
         await queueEnrichment('Company', companyData.id, companyData.name);
@@ -78,7 +82,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       companyData: {
         ...companyData,
-        analysis: companyData.analysis || null,
+        analysis: validAnalysis,
         analysisGeneratedAt: companyData.analysisGeneratedAt || null,
       },
       salarySummary: aggregatedSummary,

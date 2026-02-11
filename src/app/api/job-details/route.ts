@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
-import { getEnrichmentStatus, queueEnrichment } from '@/lib/enrichment';
+import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
 
 type CompanySalaryRow = { totalComp: number; Company: { name: string } | { name: string }[] | null };
 type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string } | { city: string; state: string }[] | null };
@@ -24,9 +24,13 @@ export async function GET(request: Request) {
 
     if (jobError) throw new Error(`Job not found: ${jobError.message}`);
 
-    // Ensure enrichment is queued if analysis is missing or previously failed.
+    const validAnalysis = hasRenderableAnalysis(jobData.analysis, 'Job')
+      ? jobData.analysis
+      : null;
+
+    // Ensure enrichment is queued if analysis is missing/blank or previously failed.
     let enrichmentStatus = 'completed';
-    if (!jobData.analysis) {
+    if (!validAnalysis) {
       const status = await getEnrichmentStatus('Job', jobData.id);
       if (!status || status.status === 'failed') {
         await queueEnrichment('Job', jobData.id, jobData.title);
@@ -164,7 +168,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       jobData: {
         ...jobData,
-        analysis: jobData.analysis || null,
+        analysis: validAnalysis,
         analysisGeneratedAt: jobData.analysisGeneratedAt || null,
         global_count: count,
         global_median_comp: median,
