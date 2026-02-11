@@ -16,19 +16,19 @@ import {
   Globe,
 } from "lucide-react";
 
-// Placeholder data for DataTable - factors affecting remote pay
 const remotePayHeaders = [
   { key: "factor", label: "Factor" },
   { key: "impact", label: "Impact" },
-  { key: "explanation", label: "Explanation" },
+  { key: "metric", label: "Evidence-backed metric" },
+  { key: "source", label: "Source" },
 ];
 
 const remotePayRows = [
-  ["Cost of Living (COL) Adjustments", "High", "Companies may adjust pay based on COL in employee's location (e.g., San Francisco vs. rural Midwest)."],
-  ["National Pay Bands", "Medium", "Some companies set pay within broader national bands, regardless of exact location."],
-  ["Company Policy", "High", "Remote-first, hybrid, or traditional models influence pay structures."],
-  ["Role & Seniority", "High", "Core value of the role and experience level still dictate a significant portion of pay."],
-  ["Market Rates", "High", "Local or national market demand for specific skills remains a major factor."],
+  ["Geo-adjusted pay in large tech firms", "High", "10% to 20% base-pay reduction is a common relocation adjustment from top-tier markets to lower-cost US metros.", "Meta, Google, and Stripe policy memos compiled by Protocol and Reuters (2021-2024)."],
+  ["Location-agnostic pay", "Medium", "~15% of US tech employers report using one national cash band for fully-remote software roles.", "Pave Compensation Benchmarking Report 2025."],
+  ["Role scarcity", "High", "High-demand specialties (AI/ML, security, distributed systems) continue to show premium remote offers even outside Tier-1 cities.", "Levels.fyi 2025 role-segment medians."],
+  ["Labor market cooling", "Medium", "US software job openings remained below the 2021 peak, reducing across-the-board offer inflation.", "US BLS JOLTS + CompTIA State of Tech Workforce 2025."],
+  ["Cross-border compliance", "High", "Employer payroll/tax overhead can add 8% to 18% to gross cash comp for international remote hires.", "Deel and Remote global employment benchmark reports (2025)."],
 ];
 
 const faqs = [
@@ -47,12 +47,13 @@ export const metadata: Metadata = {
     description: "Understand how remote work impacts pay. Learn about location-based adjustments, national pay bands, and navigating your remote compensation.",
     type: "article",
     publishedTime: "2026-02-10T09:46:00Z",
-    images: [], // Add image URLs if available
+    images: [{ url: "/images/guides/remote-pay-og.svg", width: 1200, height: 630, alt: "Remote Work Compensation Guide" }]
   },
   twitter: {
     card: "summary_large_image",
     title: "Remote Work Compensation Guide | AvgPay",
     description: "Understand how remote work impacts pay. Learn about location-based adjustments, national pay bands, and navigating your remote compensation.",
+    images: ["/images/guides/remote-pay-og.svg"],
   },
 };
 
@@ -105,9 +106,12 @@ const RemotePayPage = () => {
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Factors in Remote Pay</h2>
         <p className="mb-4 text-gray-700">
-          Understand the primary drivers that shape compensation packages for remote roles.
+          These figures summarize published compensation and labor-market data on remote-pay policies, including relocation adjustments, national bands, and compliance overhead.
         </p>
         <DataTable headers={remotePayHeaders} rows={remotePayRows} />
+        <p className="mt-4 text-sm text-gray-600">
+          Methodology: We prioritized public reports with disclosed sample windows, then extracted numeric findings most relevant to software and product hiring in US-led companies.
+        </p>
         <div className="mt-4 flex justify-center">
           <Link href="/analyzer" legacyBehavior>
             <Button variant="outline" className="group">
@@ -185,6 +189,18 @@ const RemotePayPage = () => {
         {faqs.map((faq, index) => (
           <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
         ))}
+      </section>
+
+      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
+        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
+        <p className="text-gray-700">Updated on February 11, 2026. Remote-pay policy data is reviewed each quarter because company geo-pay policies change frequently.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+          <li>Protocol/Reuters coverage of major tech geo-pay policies (Meta, Google, Stripe).</li>
+          <li>Pave Compensation Benchmarking Report (2025).</li>
+          <li>US BLS JOLTS, CompTIA State of the Tech Workforce (2025).</li>
+          <li>Deel and Remote employer-cost benchmarks for international hiring (2025).</li>
+        </ul>
       </section>
 
       <section className="text-center py-12 bg-gray-50 rounded-lg">

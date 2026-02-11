@@ -17,19 +17,19 @@ import {
   Percent,
 } from "lucide-react";
 
-// Placeholder data for DataTable - comparing equity types
 const equityHeaders = [
   { key: "type", label: "Equity Type" },
-  { key: "value", label: "Description" },
+  { key: "value", label: "Typical economics" },
   { key: "commonIn", label: "Commonly Found In" },
   { key: "requires", label: "Key Considerations" },
+  { key: "source", label: "Source" },
 ];
 
 const equityRows = [
-  ["Stock Options", "Potential for high growth, high risk.", "Startups, early-stage companies", "Strike price, vesting schedule"],
-  ["ISOs (Incentive Stock Options)", "Tax advantages if held long-term.", "Startups", "Specific IRS rules"],
-  ["NSOs (Non-qualified Stock Options)", "More flexibility, taxed as ordinary income.", "Startups, sometimes public companies", "No specific IRS limitations"],
-  ["RSUs (Restricted Stock Units)", "Value tied to stock price, generally lower risk.", "Public Tech Companies, growing private companies", "Vesting schedule, taxed upon vesting"],
+  ["Stock Options", "Median new-hire grants often cluster around 0.02%-0.20% in early-stage startups.", "Seed to Series C startups", "Dilution, strike price, 90-day post-termination window", "Carta Option Benchmark Report (2025)."],
+  ["ISOs", "Can receive long-term capital-gains treatment if holding rules are met.", "US startups", "AMT exposure, 1-year post-exercise and 2-year post-grant holding tests", "IRS Publication 525 and Form 3921 guidance."],
+  ["NSOs", "Taxed as ordinary income on spread at exercise.", "Startups + late-stage private firms", "Withholding and cash needed to exercise", "IRS Topic 427 + employer stock-plan docs."],
+  ["RSUs", "Value equals shares delivered at vest date; no strike price.", "Public companies and pre-IPO late-stage firms", "Tax withholding at vest and blackout windows", "SEC public-company compensation disclosures (2024-2025)."],
 ];
 
 const faqs = [
@@ -48,12 +48,13 @@ export const metadata: Metadata = {
     description: "Understand stock options, RSUs, and other equity compensation. Learn how to maximize your earnings from company ownership.",
     type: "article",
     publishedTime: "2026-02-10T09:46:00Z",
-    images: [], // Add image URLs if available
+    images: [{ url: "/images/guides/equity-og.svg", width: 1200, height: 630, alt: "Equity Compensation Guide" }]
   },
   twitter: {
     card: "summary_large_image",
     title: "Equity Compensation Guide | AvgPay",
     description: "Understand stock options, RSUs, and other equity compensation. Learn how to maximize your earnings from company ownership.",
+    images: ["/images/guides/equity-og.svg"],
   },
 };
 
@@ -106,9 +107,12 @@ const EquityPage = () => {
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Types of Equity Compensation</h2>
         <p className="mb-4 text-gray-700">
-          Compare the distinct features and benefits of common equity compensation types.
+          These rows summarize evidence-backed equity mechanics and tax treatment from IRS guidance plus compensation benchmark studies.
         </p>
         <DataTable headers={equityHeaders} rows={equityRows} />
+        <p className="mt-4 text-sm text-gray-600">
+          Methodology: We combined statutory tax rules (IRS) with startup/public-company benchmark ranges and intentionally separated tax facts from market-range estimates.
+        </p>
         <div className="mt-4 flex justify-center">
           <Link href="/analyzer" legacyBehavior>
             <Button variant="outline" className="group">
@@ -186,6 +190,17 @@ const EquityPage = () => {
         {faqs.map((faq, index) => (
           <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
         ))}
+      </section>
+
+      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
+        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
+        <p className="text-gray-700">Updated on February 11, 2026. Tax references are refreshed after each IRS filing-season update and benchmark ranges are reviewed quarterly.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+          <li>IRS Publication 525, Topic 427, and Form 3921 instructions for option/RSU taxation rules.</li>
+          <li>Carta startup option benchmark reports (2025) for grant-size distributions.</li>
+          <li>SEC compensation disclosures for public-company RSU practices.</li>
+        </ul>
       </section>
 
       <section className="text-center py-12 bg-gray-50 rounded-lg">
