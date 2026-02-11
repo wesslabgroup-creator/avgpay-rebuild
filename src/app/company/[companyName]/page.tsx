@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, ExternalLink, Sparkles } from 'lucide-react';
 import { DataTable } from "@/components/data-table";
-import { InsightCards } from '@/components/insight-cards';
+import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
+import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
 
 interface SalarySummary {
   role: string;
@@ -235,7 +236,19 @@ const CompanyDetailPage = () => {
           </Card>
 
 
-          {!companyData.analysis && (
+          <EnrichmentDebugBanner
+            entityType="Company"
+            entityName={companyData.name}
+            enrichmentStatus={enrichmentStatus}
+            analysisExists={!!companyData.analysis}
+            analysisKeys={companyData.analysis ? Object.keys(companyData.analysis) : []}
+          />
+
+          {!companyData.analysis && (enrichmentStatus === 'pending' || enrichmentStatus === 'processing') && (
+            <InsightCardsSkeleton />
+          )}
+
+          {!companyData.analysis && enrichmentStatus !== 'pending' && enrichmentStatus !== 'processing' && (
             <Card className="bg-emerald-50 border-emerald-200 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-slate-900 flex items-center gap-2">
@@ -243,11 +256,9 @@ const CompanyDetailPage = () => {
                   Insights Briefing
                 </CardTitle>
                 <CardDescription className="text-slate-600">
-                  {enrichmentStatus === 'failed'
+                  {enrichmentStatus === 'failed' || enrichmentStatus === 'error'
                     ? 'The latest insights refresh failed quality checks. It will be retried after new salary submissions.'
-                    : enrichmentStatus === 'pending' || enrichmentStatus === 'processing'
-                      ? 'A fresh narrative is being generated for this company. Check back shortly for deeper context.'
-                      : 'No narrative is available yet. Submitting more salary data helps trigger richer insights.'}
+                    : 'Analysis pending. Submitting more salary data helps trigger richer insights.'}
                 </CardDescription>
               </CardHeader>
             </Card>

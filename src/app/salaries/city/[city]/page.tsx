@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/data-table';
 import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
+import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
 import {
   ChevronLeft,
   MapPin,
@@ -250,18 +251,28 @@ export default function CityPage() {
             </CardContent>
           </Card>
 
+          {/* Debug Banner (dev-only) */}
+          <EnrichmentDebugBanner
+            entityType="City"
+            entityName={cityLabel}
+            enrichmentStatus={enrichmentStatus}
+            analysisExists={!!cityData.analysis}
+            analysisKeys={cityData.analysis ? Object.keys(cityData.analysis) : []}
+            enrichedAt={cityData.analysisGeneratedAt}
+          />
+
           {/* The Analyst View (Gemini Analysis Insight Cards) */}
           {cityData.analysis ? (
             <InsightCards analysis={cityData.analysis} entityName={cityLabel} />
+          ) : (enrichmentStatus === 'pending' || enrichmentStatus === 'processing') ? (
+            <InsightCardsSkeleton />
           ) : (
             <Card className="bg-slate-50 border-slate-200 border-dashed">
               <CardContent className="py-8">
                 <p className="text-center text-slate-500">
-                  {enrichmentStatus === 'failed'
-                    ? `We couldn't generate market analysis for ${cityLabel} yet. Please try again shortly.`
-                    : enrichmentStatus === 'pending' || enrichmentStatus === 'processing'
-                      ? `Market analysis for ${cityLabel} is being generated now.`
-                      : `Market analysis for ${cityLabel} is being generated. Check back shortly.`}
+                  {enrichmentStatus === 'failed' || enrichmentStatus === 'error'
+                    ? `We couldn't generate market analysis for ${cityLabel} yet. It will be retried automatically.`
+                    : `Analysis pending for ${cityLabel}. Check back shortly.`}
                 </p>
               </CardContent>
             </Card>

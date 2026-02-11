@@ -8,8 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users, Sparkles } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
-import { InsightCards } from '@/components/insight-cards';
+import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { SalaryDistributionChart } from '@/components/salary-distribution-chart'; // Placeholder for chart
+import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
 
 interface JobDetails {
   jobData: {
@@ -201,7 +202,19 @@ export default function JobDetailPage() {
           </Card>
 
 
-          {!jobData.analysis && (
+          <EnrichmentDebugBanner
+            entityType="Job"
+            entityName={jobData.title}
+            enrichmentStatus={enrichmentStatus}
+            analysisExists={!!jobData.analysis}
+            analysisKeys={jobData.analysis ? Object.keys(jobData.analysis) : []}
+          />
+
+          {!jobData.analysis && (enrichmentStatus === 'pending' || enrichmentStatus === 'processing') && (
+            <InsightCardsSkeleton />
+          )}
+
+          {!jobData.analysis && enrichmentStatus !== 'pending' && enrichmentStatus !== 'processing' && (
             <Card className="bg-emerald-50 border-emerald-200">
               <CardHeader>
                 <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
@@ -209,11 +222,9 @@ export default function JobDetailPage() {
                   Insights Briefing
                 </CardTitle>
                 <p className="text-sm text-slate-600">
-                  {enrichmentStatus === 'failed'
+                  {enrichmentStatus === 'failed' || enrichmentStatus === 'error'
                     ? 'The latest narrative failed validation and needs a retry with richer sample depth.'
-                    : enrichmentStatus === 'pending' || enrichmentStatus === 'processing'
-                      ? 'A job-specific narrative is being generated. Refresh in a moment to view the full briefing.'
-                      : 'No narrative is available yet. New submissions for this role will improve insight quality.'}
+                    : 'Analysis pending. New submissions for this role will improve insight quality.'}
                 </p>
               </CardHeader>
             </Card>

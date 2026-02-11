@@ -15,6 +15,10 @@ model Company {
   industry            String?
   analysis            Json?
   analysisGeneratedAt DateTime?
+  enrichmentStatus    String    @default("none") // none, pending, processing, complete, error
+  enrichedAt          DateTime?
+  enrichmentError     String?
+  analysisVersion     Int       @default(1)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -30,6 +34,10 @@ model Role {
   category            String?
   analysis            Json?
   analysisGeneratedAt DateTime?
+  enrichmentStatus    String    @default("none")
+  enrichedAt          DateTime?
+  enrichmentError     String?
+  analysisVersion     Int       @default(1)
 
   salaries    Salary[]
   postings    JobPosting[]
@@ -44,6 +52,10 @@ model Location {
   slug                String    @unique
   analysis            Json?
   analysisGeneratedAt DateTime?
+  enrichmentStatus    String    @default("none")
+  enrichedAt          DateTime?
+  enrichmentError     String?
+  analysisVersion     Int       @default(1)
 
   salaries Salary[]
   postings JobPosting[]
@@ -54,11 +66,15 @@ model EnrichmentQueue {
   entityType  String    // Company, City, Job
   entityId    String
   entityName  String
+  entityKey   String    // Normalized key for dedup: "Company:google", "City:austin-tx"
   contextData Json?
   status      String    @default("pending") // pending, processing, completed, failed
   attempts    Int       @default(0)
   lastError   String?
   result      Json?
+  runAfter    DateTime  @default(now()) // Backoff: do not process before this time
+  lockedAt    DateTime? // Prevent double-processing
+  lockedBy    String?   // Worker ID that claimed this job
   createdAt   DateTime  @default(now())
   processedAt DateTime?
 
