@@ -51,7 +51,9 @@ export default function JobDetailPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/job-details?jobTitle=${encodeURIComponent(jobTitle)}`);
+        const response = await fetch(`/api/job-details?jobTitle=${encodeURIComponent(jobTitle)}`, {
+          cache: 'no-store',
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -137,7 +139,10 @@ export default function JobDetailPage() {
     <>
       <Head>
         <title>{jobData.seo_meta_title || `Average ${jobData.title} Salary in 2026`}</title>
-        <meta name="description" content={jobData.seo_meta_description || `Find top companies, locations, and salary data for ${jobData.title}.`} />
+        <meta
+          name="description"
+          content={jobData.seo_meta_description || `${jobData.title} salary insights with a median of ${formatCurrency(jobData.global_median_comp)}, pay range from ${formatCurrency(jobData.global_min_comp)} to ${formatCurrency(jobData.global_max_comp)}, and ${(jobData.global_count || 0).toLocaleString()} real submissions.`}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -201,14 +206,14 @@ export default function JobDetailPage() {
               <CardHeader>
                 <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-emerald-600" />
-                  Gemini Analyst Briefing
+                  Insights Briefing
                 </CardTitle>
                 <p className="text-sm text-slate-600">
                   {enrichmentStatus === 'failed'
-                    ? 'The latest AI narrative failed validation and needs a retry with richer sample depth.'
+                    ? 'The latest narrative failed validation and needs a retry with richer sample depth.'
                     : enrichmentStatus === 'pending' || enrichmentStatus === 'processing'
-                      ? 'A job-specific AI narrative is being generated. Refresh in a moment to view the full briefing.'
-                      : 'No AI narrative is available yet. New submissions for this role will improve insight quality.'}
+                      ? 'A job-specific narrative is being generated. Refresh in a moment to view the full briefing.'
+                      : 'No narrative is available yet. New submissions for this role will improve insight quality.'}
                 </p>
               </CardHeader>
             </Card>
@@ -220,7 +225,10 @@ export default function JobDetailPage() {
             </CardHeader>
             <CardContent className="space-y-3 text-slate-700">
               <p>
-                The observed compensation spread for {jobData.title} is {formatCurrency(jobData.global_min_comp)} to {formatCurrency(jobData.global_max_comp)}, a {formatCurrency(spread)} range that signals meaningful variation by employer and location.
+                This role currently shows a median package of {formatCurrency(jobData.global_median_comp)} across {(jobData.global_count || 0).toLocaleString()} submissions, giving you a concrete negotiation baseline anchored in live market data.
+              </p>
+              <p>
+                The observed compensation spread for {jobData.title} is {formatCurrency(jobData.global_min_comp)} to {formatCurrency(jobData.global_max_comp)}, a {formatCurrency(spread)} range that signals meaningful variation by employer, seniority, and location.
               </p>
               {topCompany && (
                 <p>
@@ -232,10 +240,15 @@ export default function JobDetailPage() {
                   {topLocation.location} appears as the highest-paying location in this role snapshot, indicating stronger market pricing pressure for this talent pool.
                 </p>
               )}
+              {bottomLocations[0] && (
+                <p>
+                  Comparing the highest and lowest paying locations highlights geographic pricing gaps, which can materially change take-home outcomes even for the same title.
+                </p>
+              )}
             </CardContent>
           </Card>
 
-          {/* The Analyst View (Gemini Analysis) */}
+          {/* The Analyst View (Dynamic Insights) */}
           {jobData.analysis && (
             <InsightCards analysis={jobData.analysis} entityName={jobData.title} />
           )}

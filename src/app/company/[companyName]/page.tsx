@@ -55,7 +55,9 @@ const CompanyDetailPage = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/company-details?companyName=${encodeURIComponent(companyName)}`);
+        const response = await fetch(`/api/company-details?companyName=${encodeURIComponent(companyName)}`, {
+          cache: 'no-store',
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -72,7 +74,9 @@ const CompanyDetailPage = () => {
         });
         setEnrichmentStatus(initialEnrichmentStatus || 'none');
 
-        const similarResponse = await fetch(`/api/company-similar?companyName=${encodeURIComponent(companyName)}`);
+        const similarResponse = await fetch(`/api/company-similar?companyName=${encodeURIComponent(companyName)}`, {
+          cache: 'no-store',
+        });
         if (similarResponse.ok) {
           const payload = await similarResponse.json();
           setSimilarCompanies(payload.similarCompanies || []);
@@ -236,14 +240,14 @@ const CompanyDetailPage = () => {
               <CardHeader>
                 <CardTitle className="text-slate-900 flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-emerald-600" />
-                  Gemini Analyst Briefing
+                  Insights Briefing
                 </CardTitle>
                 <CardDescription className="text-slate-600">
                   {enrichmentStatus === 'failed'
-                    ? 'The latest AI insight run failed quality checks. It will be retried after new salary submissions.'
+                    ? 'The latest insights refresh failed quality checks. It will be retried after new salary submissions.'
                     : enrichmentStatus === 'pending' || enrichmentStatus === 'processing'
-                      ? 'A fresh AI narrative is being generated for this company. Check back shortly for deeper context.'
-                      : 'No AI narrative is available yet. Submitting more salary data helps trigger richer analysis.'}
+                      ? 'A fresh narrative is being generated for this company. Check back shortly for deeper context.'
+                      : 'No narrative is available yet. Submitting more salary data helps trigger richer insights.'}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -253,10 +257,13 @@ const CompanyDetailPage = () => {
             <CardHeader>
               <CardTitle className="text-slate-900">Compensation Storyline</CardTitle>
               <CardDescription className="text-slate-500">
-                Human-readable highlights generated from submitted salary data.
+                A living narrative generated from real salary submissions and updated as new data arrives.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-slate-700">
+              <p>
+                This page tracks how compensation evolves at {companyData.name}. As new salaries are submitted, the role mix, pay bands, and peer benchmarks automatically adjust to keep this storyline current.
+              </p>
               <p>
                 {strongestRole
                   ? `${companyData.name}'s top-paying role in our dataset is ${strongestRole.role} with a median total compensation of ${formatCurrency(strongestRole.medianComp)}.`
@@ -272,10 +279,15 @@ const CompanyDetailPage = () => {
                   Peer data suggests the closest salary market neighbors are {similarCompanies.slice(0, 2).map((c) => c.company).join(' and ')}, giving you a practical benchmark set for offer evaluation.
                 </p>
               )}
+              {strongestRole && broadestRole && strongestRole.role !== broadestRole.role && (
+                <p>
+                  The best-paid track ({strongestRole.role}) differs from the most common track ({broadestRole.role}), which can indicate specialized premium paths versus broader hiring demand.
+                </p>
+              )}
             </CardContent>
           </Card>
 
-          {/* The Analyst View (Gemini Analysis) */}
+          {/* The Analyst View (Dynamic Insights) */}
           {companyData.analysis && (
             <InsightCards analysis={companyData.analysis} entityName={companyData.name} />
           )}

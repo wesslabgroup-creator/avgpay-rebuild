@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabaseClient';
 
 export const dynamic = 'force-dynamic';
 
+const PAGE_SIZE = 1000;
+
 // Helper to calculate percentiles from a list of numbers
 function calculateStats(values: number[]) {
   if (values.length === 0) return null;
@@ -36,6 +38,34 @@ interface SalaryData {
   Location?: { city: string; state?: string } | null;
 }
 
+async function fetchAllSalaries(): Promise<SalaryData[]> {
+  const allRows: SalaryData[] = [];
+  let from = 0;
+
+  while (true) {
+    const to = from + PAGE_SIZE - 1;
+    const { data, error } = await supabaseAdmin
+      .from('Salary')
+      .select(`
+        totalComp,
+        Company(name),
+        Role(title),
+        Location(city)
+      `)
+      .range(from, to);
+
+    if (error) throw error;
+
+    const page = (data as unknown as SalaryData[]) || [];
+    allRows.push(...page);
+
+    if (page.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+
+  return allRows;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -59,11 +89,6 @@ export async function GET(request: Request) {
         .ilike('Company.name', company)
         .ilike('Role.title', role);
 
-      // Location matching is tricky due to "San Francisco, CA" format vs City/State
-      // We'll try simple matching or just filter in memory if needed
-      // For now, let's assume strict match on city/state string isn't easy via filters without splitting
-      // So we fetch matching Company+Role and filter Location in memory or use fuzzy match
-
       const { data: rawSalaries, error } = await query;
 
       if (error) throw error;
@@ -71,7 +96,6 @@ export async function GET(request: Request) {
       // Filter by location fuzzy match
       const locationParts = location.split(',').map(s => s.trim().toLowerCase());
       const filtered = (rawSalaries as unknown as SalaryData[])?.filter((s) => {
-        // Check against city or state or combo
         if (!s.Location) return false;
         const cityMatch = s.Location.city && s.Location.city.toLowerCase().includes(locationParts[0]);
         return cityMatch;
@@ -80,10 +104,10 @@ export async function GET(request: Request) {
       const stats = calculateStats(filtered.map((s: SalaryData) => s.totalComp));
 
       if (!stats) {
-        // Fallback to "National" data for that role if location match fails, or returning zeros
-        // Ideally we should look for role-only match as fallback
         return NextResponse.json({
           median: 0, blsMedian: 0, min: 0, max: 0, p10: 0, p25: 0, p75: 0, p90: 0
+        }, {
+          headers: { 'Cache-Control': 'no-store, max-age=0' },
         });
       }
 
@@ -96,31 +120,19 @@ export async function GET(request: Request) {
         p25: stats.p25,
         p75: stats.p75,
         p90: stats.p90,
+      }, {
+        headers: { 'Cache-Control': 'no-store, max-age=0' },
       });
     }
 
     // Case 2: Aggregate Views (Charts)
     // view='company' -> group by company
     // view='role_global' -> group by role
-
-    // For now, simplified implementation returning top-level aggregates
-    // We fetch ALL salaries (limit 2000) and aggregate in memory for the beta 
-    const { data: allSalaries, error: aggError } = await supabaseAdmin
-      .from('Salary')
-      .select(`
-            totalComp,
-            Company(name),
-            Role(title),
-            Location(city)
-        `)
-      .limit(2000);
-
-    if (aggError) throw aggError;
+    const allSalaries = await fetchAllSalaries();
 
     if (view === 'company') {
-      // Group by Company
       const groups: Record<string, number[]> = {};
-      (allSalaries as unknown as SalaryData[])?.forEach((s) => {
+      allSalaries.forEach((s) => {
         const name = s.Company?.name;
         if (name) {
           if (!groups[name]) groups[name] = [];
@@ -128,7 +140,35 @@ export async function GET(request: Request) {
         }
       });
 
-      const results = Object.entries(groups).map(([key, values]) => {
+      const results = Object.entries(groups)
+        .map(([key, values]) => {
+          const s = calculateStats(values)!;
+          return {
+            groupKey: key,
+            medianTotalComp: s.median,
+            minComp: s.min,
+            maxComp: s.max,
+            count: s.count
+          };
+        })
+        .sort((a, b) => b.count - a.count || b.medianTotalComp - a.medianTotalComp);
+
+      return NextResponse.json(results, {
+        headers: { 'Cache-Control': 'no-store, max-age=0' },
+      });
+    }
+
+    const groups: Record<string, number[]> = {};
+    allSalaries.forEach((s) => {
+      const title = s.Role?.title;
+      if (title) {
+        if (!groups[title]) groups[title] = [];
+        groups[title].push(s.totalComp);
+      }
+    });
+
+    const results = Object.entries(groups)
+      .map(([key, values]) => {
         const s = calculateStats(values)!;
         return {
           groupKey: key,
@@ -137,32 +177,12 @@ export async function GET(request: Request) {
           maxComp: s.max,
           count: s.count
         };
-      });
-      return NextResponse.json(results);
-    }
+      })
+      .sort((a, b) => b.count - a.count || b.medianTotalComp - a.medianTotalComp);
 
-    // Default: Group by Role
-    const groups: Record<string, number[]> = {};
-    (allSalaries as unknown as SalaryData[])?.forEach((s) => {
-      const title = s.Role?.title;
-      if (title) {
-        if (!groups[title]) groups[title] = [];
-        groups[title].push(s.totalComp);
-      }
+    return NextResponse.json(results, {
+      headers: { 'Cache-Control': 'no-store, max-age=0' },
     });
-
-    const results = Object.entries(groups).map(([key, values]) => {
-      const s = calculateStats(values)!;
-      return {
-        groupKey: key,
-        medianTotalComp: s.median,
-        minComp: s.min,
-        maxComp: s.max,
-        count: s.count
-      };
-    });
-
-    return NextResponse.json(results);
 
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Internal server error';
