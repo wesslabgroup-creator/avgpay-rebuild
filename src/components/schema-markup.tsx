@@ -13,6 +13,11 @@ interface ArticleSchemaProps {
   description?: string;
 }
 
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
 export const BreadcrumbSchema = ({ items }: { items: BreadcrumbItem[] }) => (
   <Script id="breadcrumb-schema" type="application/ld+json">
     {`
@@ -111,6 +116,23 @@ export const JobPostingSchema = ({
         }
       },
       "employmentType": "FULL_TIME"
+    })}
+  </Script>
+);
+
+export const FAQSchema = ({ items, id = 'faq-schema' }: { items: FAQItem[]; id?: string }) => (
+  <Script id={id} type="application/ld+json">
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: items.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
     })}
   </Script>
 );
