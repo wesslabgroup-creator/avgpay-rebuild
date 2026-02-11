@@ -23,59 +23,105 @@ export async function GET(request: Request) {
 
     if (jobError) throw new Error(`Job not found: ${jobError.message}`);
 
-    // 2. Get Top 5 Companies
+    // 2. Get Top Companies (Aggregated)
+    // Fetch more rows to allow for aggregation
     const { data: topSalaries, error: topSalariesError } = await (supabaseAdmin
       .from('Salary')
       .select('totalComp, Company!inner(name)')
       .eq('roleId', jobData.id)
       .order('totalComp', { ascending: false })
-      .limit(5));
+      .limit(200));
 
     if (topSalariesError) throw new Error(`Error fetching top companies: ${topSalariesError.message}`);
 
-    const topCompanies = (topSalaries as CompanySalaryRow[] | null)?.map((s) => {
+    // Aggregate by Company Name
+    const companyMap = new Map<string, number[]>();
+    (topSalaries as CompanySalaryRow[] | null)?.forEach((s) => {
       const companyName = Array.isArray(s.Company) ? s.Company[0]?.name : s.Company?.name;
-      return {
-        company_name: companyName,
-        total_comp: s.totalComp
-      };
+      if (companyName) {
+        if (!companyMap.has(companyName)) {
+          companyMap.set(companyName, []);
+        }
+        companyMap.get(companyName)?.push(s.totalComp);
+      }
     });
 
-    // 3. Get Top 5 Locations
+    // Calculate median for each company and sort
+    const topCompanies = Array.from(companyMap.entries())
+      .map(([name, comps]) => {
+        comps.sort((a, b) => a - b);
+        const median = comps[Math.floor(comps.length / 2)];
+        return { company_name: name, total_comp: median };
+      })
+      .sort((a, b) => b.total_comp - a.total_comp)
+      .slice(0, 5);
+
+
+    // 3. Get Top 5 Locations (Aggregated)
     const { data: locSalaries, error: locSalariesError } = await (supabaseAdmin
       .from('Salary')
       .select('totalComp, Location!inner(city, state)')
       .eq('roleId', jobData.id)
       .order('totalComp', { ascending: false })
-      .limit(5));
+      .limit(200));
 
     if (locSalariesError) throw new Error(`Error fetching top locations: ${locSalariesError.message}`);
 
-    const topLocations = (locSalaries as LocationSalaryRow[] | null)?.map((s) => {
-      const location = Array.isArray(s.Location) ? s.Location[0] : s.Location;
-      return {
-        location: location ? `${location.city}, ${location.state}` : 'Unknown Location',
-        total_comp: s.totalComp
-      };
+    // Aggregate by Location
+    const locationMap = new Map<string, number[]>();
+    (locSalaries as LocationSalaryRow[] | null)?.forEach((s) => {
+      const locObj = Array.isArray(s.Location) ? s.Location[0] : s.Location;
+      if (locObj) {
+        const locName = `${locObj.city}, ${locObj.state}`;
+        if (!locationMap.has(locName)) {
+          locationMap.set(locName, []);
+        }
+        locationMap.get(locName)?.push(s.totalComp);
+      }
     });
 
-    // 4. Get Bottom 5 Locations
+    const topLocations = Array.from(locationMap.entries())
+      .map(([loc, comps]) => {
+        comps.sort((a, b) => a - b);
+        const median = comps[Math.floor(comps.length / 2)];
+        return { location: loc, total_comp: median };
+      })
+      .sort((a, b) => b.total_comp - a.total_comp)
+      .slice(0, 5);
+
+    // 4. Get Bottom 5 Locations (Aggregated)
+    // We reuse the same location aggregation logic but sort ascending,
+    // however, to get the TRUE bottom, we should probably fetch from the bottom.
+    // For simplicity and performance, let's fetch bottom 200 sorted ASC.
     const { data: bottomLocSalaries, error: bottomLocSalariesError } = await (supabaseAdmin
       .from('Salary')
       .select('totalComp, Location!inner(city, state)')
       .eq('roleId', jobData.id)
-      .order('totalComp', { ascending: true })
-      .limit(5));
+      .order('totalComp', { ascending: true }) // Validation: Order ASC for bottom
+      .limit(200));
 
     if (bottomLocSalariesError) throw new Error(`Error fetching bottom locations: ${bottomLocSalariesError.message}`);
 
-    const bottomLocations = (bottomLocSalaries as LocationSalaryRow[] | null)?.map((s) => {
-      const location = Array.isArray(s.Location) ? s.Location[0] : s.Location;
-      return {
-        location: location ? `${location.city}, ${location.state}` : 'Unknown Location',
-        total_comp: s.totalComp
-      };
+    const bottomLocationMap = new Map<string, number[]>();
+    (bottomLocSalaries as LocationSalaryRow[] | null)?.forEach((s) => {
+      const locObj = Array.isArray(s.Location) ? s.Location[0] : s.Location;
+      if (locObj) {
+        const locName = `${locObj.city}, ${locObj.state}`;
+        if (!bottomLocationMap.has(locName)) {
+          bottomLocationMap.set(locName, []);
+        }
+        bottomLocationMap.get(locName)?.push(s.totalComp);
+      }
     });
+
+    const bottomLocations = Array.from(bottomLocationMap.entries())
+      .map(([loc, comps]) => {
+        comps.sort((a, b) => a - b);
+        const median = comps[Math.floor(comps.length / 2)];
+        return { location: loc, total_comp: median };
+      })
+      .sort((a, b) => a.total_comp - b.total_comp) // Sort ASC
+      .slice(0, 5);
 
     // 5. Get Salary Distribution Data
     const { data: distributionData, error: distributionError } = await (supabaseAdmin
