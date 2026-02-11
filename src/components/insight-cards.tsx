@@ -131,9 +131,9 @@ export function InsightCards({ analysis, entityName }: InsightCardsProps) {
             <Lightbulb className="h-5 w-5 text-white" />
           </div>
           <div>
-            <CardTitle className="text-xl text-slate-900">The Analyst View</CardTitle>
+            <CardTitle className="text-xl text-slate-900">Insights</CardTitle>
             <p className="text-sm text-slate-500 mt-0.5">
-              AI-generated financial insights for {entityName}
+              Dynamic, data-backed insights for {entityName}
             </p>
           </div>
         </div>
