@@ -1,5 +1,12 @@
 import { genAI } from '@/lib/geminiClient';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+import {
+  buildComparisonMetricsContextBlock,
+  buildEntityMetricsContextBlock,
+  computeAggregateMetrics,
+  type EntityMetricsScope,
+  type EntityMetricsSnapshot,
+} from '@/lib/marketStats';
 
 // ============================================================
 // Types
@@ -29,6 +36,14 @@ export interface JobAnalysis {
 }
 
 export type AnalysisResult = CompanyAnalysis | CityAnalysis | JobAnalysis;
+
+interface PromptContextSnapshot {
+  mode: 'single' | 'comparison';
+  entity?: EntityMetricsSnapshot;
+  entityA?: EntityMetricsSnapshot;
+  entityB?: EntityMetricsSnapshot;
+  contextBlock: string;
+}
 
 export interface EnrichmentJob {
   id: string;
@@ -149,7 +164,7 @@ export async function generateTimelessAnalysis(
   entityType: EntityType,
   entityName: string,
   contextData?: Record<string, unknown>
-): Promise<AnalysisResult> {
+): Promise<{ analysis: AnalysisResult; statsSnapshot?: PromptContextSnapshot }> {
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
     generationConfig: {
@@ -163,6 +178,7 @@ export async function generateTimelessAnalysis(
     .replace('{{entityName}}', entityName);
 
   let userPrompt = `ENTITY_TYPE: "${entityType}"\nENTITY_NAME: "${entityName}"\n`;
+  let statsSnapshot: PromptContextSnapshot | undefined;
 
   if (entityType === 'City' && contextData) {
     userPrompt += `\nADDITIONAL CONTEXT:\n`;
@@ -181,16 +197,59 @@ export async function generateTimelessAnalysis(
     userPrompt += `\nADDITIONAL CONTEXT: ${contextData.additionalContext}\n`;
   }
 
+  const comparisonScope = contextData?.comparison as {
+    entityA?: EntityMetricsScope;
+    entityB?: EntityMetricsScope;
+    labelA?: string;
+    labelB?: string;
+  } | undefined;
+
+  if (comparisonScope?.entityA && comparisonScope?.entityB) {
+    const [entityAStats, entityBStats] = await Promise.all([
+      computeAggregateMetrics(comparisonScope.entityA),
+      computeAggregateMetrics(comparisonScope.entityB),
+    ]);
+
+    const comparisonContext = buildComparisonMetricsContextBlock(
+      entityAStats,
+      entityBStats,
+      comparisonScope.labelA ?? comparisonScope.entityA.entityName ?? 'A',
+      comparisonScope.labelB ?? comparisonScope.entityB.entityName ?? 'B'
+    );
+
+    userPrompt += `\n${comparisonContext}\n`;
+    statsSnapshot = {
+      mode: 'comparison',
+      entityA: entityAStats,
+      entityB: entityBStats,
+      contextBlock: comparisonContext,
+    };
+  } else {
+    const inferredScope: EntityMetricsScope = {
+      ...(contextData?.metricsScope as EntityMetricsScope | undefined),
+      entityType,
+      entityName,
+      state: typeof contextData?.state === 'string' ? contextData.state : undefined,
+    };
+
+    const entityStats = await computeAggregateMetrics(inferredScope);
+    const entityContext = buildEntityMetricsContextBlock(entityStats, entityName);
+    userPrompt += `\n${entityContext}\n`;
+    statsSnapshot = {
+      mode: 'single',
+      entity: entityStats,
+      contextBlock: entityContext,
+    };
+  }
+
   userPrompt += `\nGenerate the timeless financial analysis JSON for this ${entityType}. Return ONLY valid JSON matching the schema for ENTITY_TYPE "${entityType}".`;
 
-  const result = await model.generateContent([
-    { role: 'user', parts: [{ text: systemPrompt + '\n\n---\n\n' + userPrompt }] },
-  ]);
+  const result = await model.generateContent(systemPrompt + '\n\n---\n\n' + userPrompt);
 
   const responseText = result.response.text();
   const analysis = JSON.parse(responseText) as AnalysisResult;
 
-  return analysis;
+  return { analysis, statsSnapshot };
 }
 
 // ============================================================
@@ -282,7 +341,7 @@ export async function processNextEnrichmentJob(): Promise<{
 
   try {
     // Generate analysis
-    const analysis = await generateTimelessAnalysis(
+    const { analysis, statsSnapshot } = await generateTimelessAnalysis(
       job.entityType as EntityType,
       job.entityName,
       job.contextData as Record<string, unknown> | undefined
@@ -337,7 +396,10 @@ export async function processNextEnrichmentJob(): Promise<{
       .from('EnrichmentQueue')
       .update({
         status: 'completed',
-        result: analysis,
+        result: {
+          analysis,
+          statsSnapshot: statsSnapshot || null,
+        },
         processedAt: new Date().toISOString(),
       })
       .eq('id', job.id);
@@ -348,7 +410,12 @@ export async function processNextEnrichmentJob(): Promise<{
     await supabaseAdmin
       .from(entityTable)
       .update({
-        analysis,
+        analysis: statsSnapshot
+          ? {
+            ...(analysis as Record<string, unknown>),
+            source_context_snapshot: statsSnapshot,
+          }
+          : analysis,
         analysisGeneratedAt: new Date().toISOString(),
       })
       .eq('id', job.entityId);
@@ -463,7 +530,8 @@ export async function getEnrichmentStatus(
 
   return {
     status: job.status,
-    analysis: job.result as AnalysisResult | undefined,
+    analysis: ((job.result as { analysis?: AnalysisResult } | undefined)?.analysis
+      ?? (job.result as AnalysisResult | undefined)),
   };
 }
 
