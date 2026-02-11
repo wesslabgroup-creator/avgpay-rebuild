@@ -90,36 +90,36 @@ const GUIDES = [
 ];
 
 const iconColorClasses: Record<string, string> = {
-  blue: "bg-blue-100 text-blue-700",
-  emerald: "bg-emerald-100 text-emerald-700",
-  purple: "bg-purple-100 text-purple-700",
-  indigo: "bg-indigo-100 text-indigo-700",
-  teal: "bg-teal-100 text-teal-700",
-  amber: "bg-amber-100 text-amber-700",
+  blue: "bg-info-subtle text-info",
+  emerald: "bg-primary-subtle text-primary-hover",
+  purple: "bg-accent-subtle text-accent",
+  indigo: "bg-info-subtle text-info",
+  teal: "bg-accent-subtle text-accent",
+  amber: "bg-warning-subtle text-warning",
 };
 
 const categoryColors: Record<string, string> = {
-  "Role-Specific": "bg-blue-100 text-slate-800 border-blue-200",
-  "Strategy": "bg-emerald-100 text-slate-800 border-emerald-200",
-  "Education": "bg-purple-100 text-slate-800 border-purple-200",
-  "Research": "bg-teal-100 text-slate-800 border-teal-200",
+  "Role-Specific": "bg-info-subtle text-text-primary border-info-subtle",
+  "Strategy": "bg-primary-subtle text-text-primary border-primary-subtle",
+  "Education": "bg-accent-subtle text-text-primary border-accent-subtle",
+  "Research": "bg-accent-subtle text-text-primary border-accent-subtle",
 };
 
 export default function GuidesPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-surface">
       {/* Hero */}
-      <div className="bg-slate-50 border-b border-slate-200">
+      <div className="bg-surface-subtle border-b border-border">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <div className="text-center space-y-5">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-subtle text-primary-hover text-sm font-medium">
               <Target className="w-4 h-4" />
               <span>6 Data-Driven Guides</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 leading-tight">
+            <h1 className="text-4xl sm:text-5xl font-bold text-text-primary leading-tight">
               Salary Guides That<br className="hidden sm:block" /> Actually Help You
             </h1>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-xl text-text-secondary max-w-2xl mx-auto">
               Real numbers. Real strategies. No fluff. Everything you need to negotiate 
               with confidence and maximize your career earnings.
             </p>
@@ -134,7 +134,7 @@ export default function GuidesPage() {
             const Icon = guide.icon;
             return (
               <Link key={guide.slug} href={`/guides/${guide.slug}`}>
-                <Card className="group hover:shadow-lg hover:border-emerald-300 transition-all cursor-pointer bg-white border-slate-200">
+                <Card className="group hover:shadow-lg hover:border-primary transition-all cursor-pointer bg-surface border-border">
                   <CardContent className="p-0">
                     <div className="flex flex-col sm:flex-row">
                       {/* Left: Visual */}
@@ -151,24 +151,24 @@ export default function GuidesPage() {
                           <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${categoryColors[guide.category]}`}>
                             {guide.category}
                           </span>
-                          <span className="text-xs text-slate-500 flex items-center gap-1">
+                          <span className="text-xs text-text-muted flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {guide.readTime} read
                           </span>
                         </div>
                         
                         {/* Title */}
-                        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">
+                        <h2 className="text-xl sm:text-2xl font-bold text-text-primary mb-2 group-hover:text-primary transition-colors">
                           {guide.title}
                         </h2>
                         
                         {/* Hook - the attention grabber */}
-                        <p className="text-slate-900 font-medium mb-2">
+                        <p className="text-text-primary font-medium mb-2">
                           {guide.hook}
                         </p>
                         
                         {/* Value Prop */}
-                        <p className="text-slate-600 mb-4">
+                        <p className="text-text-secondary mb-4">
                           {guide.valueProp}
                         </p>
                         
@@ -177,7 +177,7 @@ export default function GuidesPage() {
                           {guide.highlights.map((highlight) => (
                             <span 
                               key={highlight}
-                              className="text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded"
+                              className="text-xs text-text-secondary bg-surface-muted px-2 py-1 rounded"
                             >
                               {highlight}
                             </span>
@@ -186,8 +186,8 @@ export default function GuidesPage() {
                       </div>
                       
                       {/* Right: CTA */}
-                      <div className="hidden sm:flex flex-shrink-0 items-center px-6 border-l border-slate-100">
-                        <div className="text-emerald-600 flex items-center gap-1 font-medium group-hover:gap-2 transition-all">
+                      <div className="hidden sm:flex flex-shrink-0 items-center px-6 border-l border-surface-muted">
+                        <div className="text-primary flex items-center gap-1 font-medium group-hover:gap-2 transition-all">
                           <span className="text-sm">Read</span>
                           <ArrowRight className="w-4 h-4" />
                         </div>
@@ -201,8 +201,8 @@ export default function GuidesPage() {
         </div>
 
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">Popular comparison pages</h2>
-          <p className="text-slate-600 mb-6">
+          <h2 className="text-2xl font-bold text-text-primary mb-4">Popular comparison pages</h2>
+          <p className="text-text-secondary mb-6">
             Pair these guides with side-by-side compensation matchups for the most in-demand company and role combinations.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -210,10 +210,10 @@ export default function GuidesPage() {
               <Link
                 key={comparison.slug}
                 href={`/compare/${comparison.slug}`}
-                className="group rounded-xl border border-slate-200 bg-white p-4 hover:border-emerald-300 transition-colors"
+                className="group rounded-xl border border-border bg-surface p-4 hover:border-primary transition-colors"
               >
-                <p className="font-semibold text-slate-900 group-hover:text-emerald-600">{comparison.title}</p>
-                <p className="text-sm text-slate-500 mt-1">{comparison.summary}</p>
+                <p className="font-semibold text-text-primary group-hover:text-primary">{comparison.title}</p>
+                <p className="text-sm text-text-muted mt-1">{comparison.summary}</p>
               </Link>
             ))}
           </div>
@@ -221,20 +221,20 @@ export default function GuidesPage() {
         
         {/* Bottom CTA */}
         <div className="mt-16 text-center">
-          <div className="bg-slate-50 rounded-2xl p-8 sm:p-12 border border-slate-200">
+          <div className="bg-surface-subtle rounded-2xl p-8 sm:p-12 border border-border">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <DollarSign className="w-8 h-8 text-emerald-500" />
+              <DollarSign className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-3">
+            <h3 className="text-2xl font-bold text-text-primary mb-3">
               Ready to negotiate your next offer?
             </h3>
-            <p className="text-slate-600 mb-6 max-w-lg mx-auto">
+            <p className="text-text-secondary mb-6 max-w-lg mx-auto">
               Use our free Offer Analyzer to see how your compensation compares 
               to thousands of verified salaries.
             </p>
             <Link 
               href="/analyze-offer"
-              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-text-inverse font-semibold px-6 py-3 rounded-lg transition-colors"
             >
               Analyze My Offer
               <ArrowRight className="w-4 h-4" />

@@ -73,7 +73,7 @@ export default function VerifyPage() {
                 <CardHeader>
                     <CardTitle>Document Viewer</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 bg-slate-100 p-0 overflow-hidden relative">
+                <CardContent className="flex-1 bg-surface-muted p-0 overflow-hidden relative">
                     {fileUrl ? (
                         <iframe src={fileUrl} className="w-full h-full border-none" />
                     ) : (
@@ -105,7 +105,7 @@ export default function VerifyPage() {
                         <X className="mr-2 h-6 w-6" /> Reject
                     </Button>
                     <Button
-                        className="h-16 text-lg bg-emerald-600 hover:bg-emerald-700"
+                        className="h-16 text-lg bg-primary hover:bg-primary-hover"
                         onClick={() => handleAction('verified')}
                     >
                         <Check className="mr-2 h-6 w-6" /> Verify & Approve

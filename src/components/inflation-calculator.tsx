@@ -101,7 +101,7 @@ export function InflationCalculator() {
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Starting Salary</label>
                         <div className="relative">
-                            <DollarSign className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                            <DollarSign className="absolute left-3 top-3 h-4 w-4 text-text-muted" />
                             <Input
                                 type="number"
                                 className="pl-9"
@@ -143,10 +143,10 @@ export function InflationCalculator() {
                     <div className="space-y-2">
                         <label className="text-sm font-medium flex justify-between">
                             <span>Current Salary (Optional)</span>
-                            <span className="text-slate-400 font-normal">To calculate real growth</span>
+                            <span className="text-text-muted font-normal">To calculate real growth</span>
                         </label>
                         <div className="relative">
-                            <DollarSign className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                            <DollarSign className="absolute left-3 top-3 h-4 w-4 text-text-muted" />
                             <Input
                                 type="number"
                                 className="pl-9"
@@ -158,7 +158,7 @@ export function InflationCalculator() {
                     </div>
 
                     <Button
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-lg py-6"
+                        className="w-full bg-primary hover:bg-primary-hover text-lg py-6"
                         onClick={calculateInflation}
                     >
                         Calculate Impact
@@ -175,16 +175,16 @@ export function InflationCalculator() {
                             exit={{ opacity: 0, y: -20 }}
                             className="space-y-6"
                         >
-                            <Card className="bg-slate-50 border-emerald-100">
+                            <Card className="bg-surface-subtle border-primary-subtle">
                                 <CardHeader className="pb-2">
-                                    <CardTitle className="text-lg text-slate-600 font-medium">To maintain your {startYear} lifestyle, you need:</CardTitle>
+                                    <CardTitle className="text-lg text-text-secondary font-medium">To maintain your {startYear} lifestyle, you need:</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-4xl font-black text-slate-900">
+                                    <div className="text-4xl font-black text-text-primary">
                                         {formatMoney(result.adjustedSalary)}
                                     </div>
-                                    <p className="text-sm text-slate-500 mt-2">
-                                        Cumulative Inflation: <span className="font-bold text-red-500">{result.inflationRate.toFixed(1)}%</span>
+                                    <p className="text-sm text-text-muted mt-2">
+                                        Cumulative Inflation: <span className="font-bold text-error">{result.inflationRate.toFixed(1)}%</span>
                                     </p>
                                 </CardContent>
                             </Card>
@@ -194,22 +194,22 @@ export function InflationCalculator() {
                                     <CardContent className="pt-6">
                                         <div className="flex items-start gap-4">
                                             {result.purchasingPowerChange >= 0 ? (
-                                                <div className="p-3 bg-emerald-100 rounded-full">
-                                                    <TrendingUp className="h-6 w-6 text-emerald-600" />
+                                                <div className="p-3 bg-primary-subtle rounded-full">
+                                                    <TrendingUp className="h-6 w-6 text-primary" />
                                                 </div>
                                             ) : (
-                                                <div className="p-3 bg-red-100 rounded-full">
-                                                    <TrendingDown className="h-6 w-6 text-red-600" />
+                                                <div className="p-3 bg-error-subtle rounded-full">
+                                                    <TrendingDown className="h-6 w-6 text-error" />
                                                 </div>
                                             )}
                                             <div>
-                                                <h3 className="text-xl font-bold text-slate-900">
+                                                <h3 className="text-xl font-bold text-text-primary">
                                                     {result.purchasingPowerChange >= 0 ? "You're Beating Inflation" : "You've Taken a Pay Cut"}
                                                 </h3>
-                                                <p className="text-slate-600 mt-1">
+                                                <p className="text-text-secondary mt-1">
                                                     Your real purchasing power has
                                                     {result.purchasingPowerChange >= 0 ? ' increased ' : ' decreased '}
-                                                    by <span className={`font-bold ${result.purchasingPowerChange >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                                                    by <span className={`font-bold ${result.purchasingPowerChange >= 0 ? 'text-primary' : 'text-error'}`}>
                                                         {Math.abs(result.purchasingPowerChange).toFixed(1)}%
                                                     </span>
                                                 </p>
@@ -219,12 +219,12 @@ export function InflationCalculator() {
                                 </Card>
                             )}
 
-                            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                            <div className="bg-info-subtle p-6 rounded-xl border border-info-subtle">
                                 <h4 className="font-semibold text-blue-900 flex items-center gap-2 mb-2">
                                     <AlertCircle className="h-5 w-5" />
                                     Negotiation Tip
                                 </h4>
-                                <p className="text-blue-800 text-sm leading-relaxed">
+                                <p className="text-info-foreground text-sm leading-relaxed">
                                     If your salary hasn&apos;t kept up with inflation, use this data in your next review.
                                     &quot;Based on CPI data, a salary of {formatMoney(result.adjustedSalary)} is required just to match my {startYear} compensation in real terms.&quot;
                                 </p>
@@ -232,9 +232,9 @@ export function InflationCalculator() {
 
                         </motion.div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                        <div className="h-full flex flex-col items-center justify-center p-8 text-center text-text-muted border-2 border-dashed border-border rounded-xl bg-surface-subtle/50">
                             <TrendingUp className="h-12 w-12 mb-4 opacity-50" />
-                            <h3 className="text-lg font-medium text-slate-600">No calculation yet</h3>
+                            <h3 className="text-lg font-medium text-text-secondary">No calculation yet</h3>
                             <p className="max-w-xs mx-auto mt-2">Enter your salary details to see the impact of inflation.</p>
                         </div>
                     )}

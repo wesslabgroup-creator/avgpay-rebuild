@@ -64,9 +64,9 @@ const GuideIconCard = ({ icon: Icon, title, description, iconClassName }: GuideI
     <CardContent className="p-6">
       <div className="mb-3 flex items-center">
         <Icon className={`mr-2 h-6 w-6 ${iconClassName}`} />
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
       </div>
-      <p className="text-gray-700">{description}</p>
+      <p className="text-text-secondary">{description}</p>
     </CardContent>
   </Card>
 );
@@ -84,17 +84,17 @@ export const GuideHero = ({
 
   return (
     <>
-      <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">{title}</h1>
-      <p className="mb-8 text-lg text-gray-600">{description}</p>
+      <h1 className="mb-4 text-4xl font-bold text-text-primary sm:text-5xl lg:text-6xl">{title}</h1>
+      <p className="mb-8 text-lg text-text-muted">{description}</p>
 
       <div className="mb-12 grid gap-8 md:grid-cols-2">
         <Card>
           <CardContent className="p-6">
             <div className="mb-3 flex items-center">
-              <LearnIcon className="mr-2 h-6 w-6 text-blue-600" />
-              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
+              <LearnIcon className="mr-2 h-6 w-6 text-info" />
+              <h3 className="text-xl font-semibold text-text-primary">What You&apos;ll Learn</h3>
             </div>
-            <ul className="space-y-2 text-gray-700">
+            <ul className="space-y-2 text-text-secondary">
               {learnItems.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -103,12 +103,12 @@ export const GuideHero = ({
         </Card>
 
         <Card>
-          <CardContent className="border border-blue-200 bg-blue-50 p-6 shadow-inner">
+          <CardContent className="border border-info-subtle bg-info-subtle p-6 shadow-inner">
             <div className="mb-3 flex items-center">
-              <SummaryIcon className="mr-2 h-6 w-6 text-blue-600" />
-              <h3 className="text-xl font-semibold text-blue-800">Executive Summary</h3>
+              <SummaryIcon className="mr-2 h-6 w-6 text-info" />
+              <h3 className="text-xl font-semibold text-info-foreground">Executive Summary</h3>
             </div>
-            <p className="text-gray-800">{summary}</p>
+            <p className="text-text-primary">{summary}</p>
           </CardContent>
         </Card>
       </div>
@@ -118,7 +118,7 @@ export const GuideHero = ({
 
 export const GuideKeyTakeaways = ({ title, takeaways }: GuideKeyTakeawaysProps) => (
   <section className="mb-12">
-    <h2 className="mb-6 text-3xl font-bold text-gray-900">{title}</h2>
+    <h2 className="mb-6 text-3xl font-bold text-text-primary">{title}</h2>
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {takeaways.map((takeaway) => (
         <GuideIconCard key={takeaway.title} {...takeaway} />
@@ -129,7 +129,7 @@ export const GuideKeyTakeaways = ({ title, takeaways }: GuideKeyTakeawaysProps) 
 
 export const GuideFaqSection = ({ faqs }: GuideFaqSectionProps) => (
   <section className="mb-12">
-    <h2 className="mb-6 text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
+    <h2 className="mb-6 text-3xl font-bold text-text-primary">Frequently Asked Questions</h2>
     {faqs.map((faq) => (
       <ExpandableFAQ key={faq.question} question={faq.question} answer={faq.answer} />
     ))}
@@ -141,14 +141,14 @@ export const GuideResourceLinks = ({
   description = "Use these pages to pressure-test your assumptions with real market data.",
   links,
 }: GuideResourceLinksProps) => (
-  <section className="mb-12 rounded-lg border border-gray-200 bg-white p-6">
-    <h2 className="mb-3 text-2xl font-bold text-gray-900">{title}</h2>
-    <p className="mb-4 text-gray-700">{description}</p>
+  <section className="mb-12 rounded-lg border border-border bg-surface p-6">
+    <h2 className="mb-3 text-2xl font-bold text-text-primary">{title}</h2>
+    <p className="mb-4 text-text-secondary">{description}</p>
     <div className="grid gap-3 sm:grid-cols-2">
       {links.map((link) => (
-        <Link key={link.href} href={link.href} className="rounded-md border border-gray-200 p-4 transition-colors hover:border-blue-400 hover:bg-blue-50">
-          <p className="font-semibold text-blue-700">{link.label}</p>
-          <p className="mt-1 text-sm text-gray-700">{link.description}</p>
+        <Link key={link.href} href={link.href} className="rounded-md border border-border p-4 transition-colors hover:border-info hover:bg-info-subtle">
+          <p className="font-semibold text-info">{link.label}</p>
+          <p className="mt-1 text-sm text-text-secondary">{link.description}</p>
         </Link>
       ))}
     </div>
@@ -156,9 +156,9 @@ export const GuideResourceLinks = ({
 );
 
 export const GuideCtaSection = ({ title, description, ctaLabel, ctaHref }: GuideCtaSectionProps) => (
-  <section className="rounded-lg bg-gray-50 py-12 text-center">
-    <h2 className="mb-6 text-3xl font-bold text-gray-900">{title}</h2>
-    <p className="mb-8 text-lg text-gray-700">{description}</p>
+  <section className="rounded-lg bg-surface-subtle py-12 text-center">
+    <h2 className="mb-6 text-3xl font-bold text-text-primary">{title}</h2>
+    <p className="mb-8 text-lg text-text-secondary">{description}</p>
     <Link href={ctaHref}>
       <Button className="group px-8 py-3 text-lg">
         {ctaLabel} <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -180,14 +180,14 @@ const guideLinks = [
 ];
 
 export const GuideFooterLinks = ({ currentGuide }: GuideFooterLinksProps) => (
-  <footer className="mt-16 text-center text-sm text-gray-500">
+  <footer className="mt-16 text-center text-sm text-text-muted">
     <p>© 2026 AvgPay. All rights reserved.</p>
     <div className="mt-2 flex flex-wrap justify-center gap-2">
       {guideLinks.map((link) => (
         <Link
           key={link.href}
           href={link.href}
-          className={link.href === currentGuide ? "font-semibold text-blue-600" : "hover:underline"}
+          className={link.href === currentGuide ? "font-semibold text-info" : "hover:underline"}
         >
           {link.label}
         </Link>

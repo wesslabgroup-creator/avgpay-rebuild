@@ -77,10 +77,10 @@ export default async function DashboardPage() {
                         <CardDescription>Complete these tasks to unlock full access.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex items-center p-4 border rounded-lg bg-slate-50">
+                        <div className="flex items-center p-4 border rounded-lg bg-surface-subtle">
                             <div className="flex-1">
                                 <h4 className="font-semibold">Verify your offer</h4>
-                                <p className="text-sm text-slate-600">Upload a redacted offer letter to get the &quot;Verified&quot; badge and see deep-tier data.</p>
+                                <p className="text-sm text-text-secondary">Upload a redacted offer letter to get the &quot;Verified&quot; badge and see deep-tier data.</p>
                             </div>
                             <Link href="/submit">
                                 <Button>Upload Offer</Button>

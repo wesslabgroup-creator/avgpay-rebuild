@@ -8,12 +8,12 @@ export const metadata: Metadata = {
 
 export default function CompaniesPage() {
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-surface-subtle">
       <div className="px-6 py-12">
         <div className="max-w-5xl mx-auto space-y-8">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold text-slate-900">Companies</h1>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <h1 className="text-4xl font-bold text-text-primary">Companies</h1>
+            <p className="text-xl text-text-secondary max-w-2xl mx-auto">
               Discover salary insights across leading technology companies. Search to find specific employers.
             </p>
           </div>

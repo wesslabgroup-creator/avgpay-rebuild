@@ -71,7 +71,7 @@ export function HeroSearch() {
   return (
     <div className="relative w-full max-w-2xl mx-auto">
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
         <input
           ref={inputRef}
           type="text"
@@ -82,12 +82,12 @@ export function HeroSearch() {
           }}
           onFocus={() => setIsOpen(true)}
           placeholder="Search job titles or companies..."
-          className="w-full pl-12 pr-12 py-4 text-lg bg-white border-2 border-slate-200 rounded-2xl focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all shadow-lg"
+          className="w-full pl-12 pr-12 py-4 text-lg bg-surface border-2 border-border rounded-2xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-ring/10 transition-all shadow-lg"
         />
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-secondary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -96,7 +96,7 @@ export function HeroSearch() {
 
       {/* Suggestions Dropdown */}
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-surface rounded-2xl shadow-xl border border-border overflow-hidden z-50">
           {suggestions.map((suggestion, index) => (
             <Link
               key={`${suggestion.type}-${index}`}
@@ -106,16 +106,16 @@ export function HeroSearch() {
                   : `/companies/${encodeURIComponent(suggestion.value)}`
               }
               onClick={() => handleSelect(suggestion)}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-surface-subtle transition-colors border-b border-surface-muted last:border-b-0"
             >
               {suggestion.type === "role" ? (
-                <Briefcase className="w-4 h-4 text-emerald-500" />
+                <Briefcase className="w-4 h-4 text-primary" />
               ) : (
-                <Building2 className="w-4 h-4 text-blue-500" />
+                <Building2 className="w-4 h-4 text-info" />
               )}
               <div>
-                <span className="font-medium text-slate-900">{suggestion.display}</span>
-                <span className="ml-2 text-xs text-slate-400 capitalize">{suggestion.type}</span>
+                <span className="font-medium text-text-primary">{suggestion.display}</span>
+                <span className="ml-2 text-xs text-text-muted capitalize">{suggestion.type}</span>
               </div>
             </Link>
           ))}
@@ -124,8 +124,8 @@ export function HeroSearch() {
 
       {/* Quick Links */}
       {isOpen && query.length === 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden z-50 p-4">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Popular Searches</p>
+        <div className="absolute top-full left-0 right-0 mt-2 bg-surface rounded-2xl shadow-xl border border-border overflow-hidden z-50 p-4">
+          <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Popular Searches</p>
           <div className="flex flex-wrap gap-2">
             {["Software Engineer", "Product Manager", "Data Scientist", "Google", "Meta", "Amazon"].map((item) => (
               <button
@@ -134,7 +134,7 @@ export function HeroSearch() {
                   setQuery(item);
                   setIsOpen(false);
                 }}
-                className="px-3 py-1.5 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition-colors"
+                className="px-3 py-1.5 text-sm bg-surface-muted hover:bg-surface-muted text-text-secondary rounded-full transition-colors"
               >
                 {item}
               </button>

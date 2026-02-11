@@ -24,7 +24,7 @@ export function EquityChart({ data }: EquityChartProps) {
         new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
 
     return (
-        <div className="h-[400px] w-full bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+        <div className="h-[400px] w-full bg-surface rounded-xl border border-border p-4 shadow-sm">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                     data={data}

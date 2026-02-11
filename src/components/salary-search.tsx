@@ -70,19 +70,19 @@ export function SalarySearch({ onResultsChange }: SalarySearchProps) {
     <div className="space-y-6">
       {/* Search Input */}
       <div className="relative max-w-xl mx-auto">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
         <input
           ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search job titles (e.g., Software Engineer, Product Manager)..."
-          className="w-full pl-12 pr-12 py-4 text-lg bg-white border-2 border-slate-200 rounded-2xl focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all shadow-sm"
+          className="w-full pl-12 pr-12 py-4 text-lg bg-surface border-2 border-border rounded-2xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-ring/10 transition-all shadow-sm"
         />
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-secondary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -91,7 +91,7 @@ export function SalarySearch({ onResultsChange }: SalarySearchProps) {
 
       {/* Results Count */}
       {!isLoading && (
-        <p className="text-center text-sm text-slate-500">
+        <p className="text-center text-sm text-text-muted">
           Showing {filteredJobs.length} of {allJobs.length} job titles
         </p>
       )}
@@ -102,7 +102,7 @@ export function SalarySearch({ onResultsChange }: SalarySearchProps) {
           <button
             key={term}
             onClick={() => setQuery(term)}
-            className="px-3 py-1.5 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition-colors"
+            className="px-3 py-1.5 text-sm bg-surface-muted hover:bg-surface-muted text-text-secondary rounded-full transition-colors"
           >
             {term}
           </button>
@@ -112,39 +112,39 @@ export function SalarySearch({ onResultsChange }: SalarySearchProps) {
       {/* Results Table */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-500 border-t-transparent mx-auto"></div>
-          <p className="text-slate-500 mt-4">Loading salaries...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto"></div>
+          <p className="text-text-muted mt-4">Loading salaries...</p>
         </div>
       ) : filteredJobs.length > 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="bg-surface rounded-xl border border-border overflow-hidden">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-surface-subtle border-b border-border">
               <tr>
-                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Job Title</th>
-                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Range</th>
-                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Median</th>
-                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Data Points</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Job Title</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Range</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Median</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-text-secondary">Data Points</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-border">
               {filteredJobs.map((job, index) => (
-                <tr key={index} className="hover:bg-slate-50 transition-colors">
+                <tr key={index} className="hover:bg-surface-subtle transition-colors">
                   <td className="px-6 py-4">
                     <Link
                       href={`/jobs/${encodeURIComponent(job.groupKey)}`}
-                      className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                      className="flex items-center gap-2 text-primary hover:text-primary-hover font-medium transition-colors"
                     >
                       <Briefcase className="w-4 h-4" />
                       {job.groupKey}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-slate-600">
+                  <td className="px-6 py-4 text-text-secondary">
                     {formatCurrency(job.minComp)} - {formatCurrency(job.maxComp)}
                   </td>
-                  <td className="px-6 py-4 font-semibold text-slate-900">
+                  <td className="px-6 py-4 font-semibold text-text-primary">
                     {formatCurrency(job.medianTotalComp)}
                   </td>
-                  <td className="px-6 py-4 text-slate-500">
+                  <td className="px-6 py-4 text-text-muted">
                     {job.count.toLocaleString()}
                   </td>
                 </tr>
@@ -154,7 +154,7 @@ export function SalarySearch({ onResultsChange }: SalarySearchProps) {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-slate-500">No job titles found matching &quot;{query}&quot;</p>
+          <p className="text-text-muted">No job titles found matching &quot;{query}&quot;</p>
         </div>
       )}
     </div>

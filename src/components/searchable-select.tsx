@@ -61,17 +61,17 @@ export function SearchableSelect({
 
   return (
     <div ref={containerRef} className="space-y-2">
-      <label className="block text-sm font-medium text-slate-700">
+      <label className="block text-sm font-medium text-text-secondary">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-error ml-1">*</span>}
       </label>
       <div className="relative">
         {value ? (
-          <div className="flex items-center justify-between w-full px-4 py-3 bg-white border border-slate-200 rounded-xl">
-            <span className="text-slate-900">{value}</span>
+          <div className="flex items-center justify-between w-full px-4 py-3 bg-surface border border-border rounded-xl">
+            <span className="text-text-primary">{value}</span>
             <button
               onClick={clearSelection}
-              className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
+              className="p-1 text-text-muted hover:text-text-secondary transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -79,22 +79,22 @@ export function SearchableSelect({
         ) : (
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center justify-between w-full px-4 py-3 bg-white border border-slate-200 rounded-xl hover:border-emerald-500 transition-colors text-left"
+            className="flex items-center justify-between w-full px-4 py-3 bg-surface border border-border rounded-xl hover:border-primary transition-colors text-left"
           >
-            <span className="text-slate-400">{placeholder}</span>
-            <Search className="w-4 h-4 text-slate-400" />
+            <span className="text-text-muted">{placeholder}</span>
+            <Search className="w-4 h-4 text-text-muted" />
           </button>
         )}
 
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
-            <div className="p-2 border-b border-slate-100">
+          <div className="absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-xl shadow-lg z-50 overflow-hidden">
+            <div className="p-2 border-b border-surface-muted">
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Type to search..."
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 bg-surface-subtle border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
                 autoFocus
               />
             </div>
@@ -104,13 +104,13 @@ export function SearchableSelect({
                   <button
                     key={option}
                     onClick={() => handleSelect(option)}
-                    className="w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors text-slate-700"
+                    className="w-full text-left px-4 py-2.5 hover:bg-surface-subtle transition-colors text-text-secondary"
                   >
                     {option}
                   </button>
                 ))
               ) : (
-                <div className="px-4 py-3 text-slate-400 text-sm">
+                <div className="px-4 py-3 text-text-muted text-sm">
                   No matches found
                 </div>
               )}

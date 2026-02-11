@@ -56,21 +56,21 @@ const heroLearnItems = [
 const takeaways = [
   {
     icon: DollarSign,
-    iconClassName: "text-green-600",
+    iconClassName: "text-success",
     title: "Value & Risk",
     description:
       "Equity's value tied to company performance; RSUs offer more predictable value than options.",
   },
   {
     icon: Star,
-    iconClassName: "text-yellow-600",
+    iconClassName: "text-warning",
     title: "Vesting Schedules",
     description:
       "Understand vests to know when your equity becomes truly yours. Plan around cliffs and grant dates.",
   },
   {
     icon: Percent,
-    iconClassName: "text-purple-600",
+    iconClassName: "text-accent",
     title: "Tax Implications",
     description:
       "Be aware of tax events (exercise, vesting) and consult professionals for optimal tax strategies.",
@@ -138,12 +138,12 @@ const EquityPage = () => {
       />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Types of Equity Compensation</h2>
-        <p className="mb-4 text-gray-700">
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Types of Equity Compensation</h2>
+        <p className="mb-4 text-text-secondary">
           These rows summarize evidence-backed equity mechanics and tax treatment from IRS guidance plus compensation benchmark studies.
         </p>
         <DataTable headers={equityHeaders} rows={equityRows} />
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-text-muted">
           Methodology: We combined statutory tax rules (IRS) with startup/public-company benchmark ranges and intentionally separated tax facts from market-range estimates.
         </p>
         <div className="mt-4 flex justify-center">
@@ -158,29 +158,29 @@ const EquityPage = () => {
       <GuideKeyTakeaways title="Key Takeaways for Equity" takeaways={takeaways} />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Quick Wins</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex items-start">
-            <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Lightbulb className="h-5 w-5 text-warning mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Read the Fine Print:</strong> Always understand the specific terms of your equity grant, including strike price, FMV, and expiration.
             </p>
           </div>
           <div className="flex items-start">
-            <Copy className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Copy className="h-5 w-5 text-info mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Track Your Vesting:</strong> Use a spreadsheet or app to monitor your vesting schedule and upcoming vesting dates.
             </p>
           </div>
           <div className="flex items-start">
-            <Search className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Search className="h-5 w-5 text-success mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Research Company Valuation:</strong> For options, understanding the company&apos;s current valuation and growth potential is crucial for decision-making.
             </p>
           </div>
           <div className="flex items-start">
-            <DollarSign className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <DollarSign className="h-5 w-5 text-error mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Consult Experts:</strong> Consider consulting with a financial advisor or tax professional experienced in equity compensation.
             </p>
           </div>
@@ -191,11 +191,11 @@ const EquityPage = () => {
 
       <GuideResourceLinks links={resourceLinks} />
 
-      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
-        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
-        <p className="text-gray-700">Updated on February 11, 2026. Tax references are refreshed after each IRS filing-season update and benchmark ranges are reviewed quarterly.</p>
-        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
-        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+      <section className="mb-12 rounded-lg border border-border bg-surface-subtle p-6">
+        <h2 className="mb-3 text-2xl font-bold text-text-primary">Last updated</h2>
+        <p className="text-text-secondary">Updated on February 11, 2026. Tax references are refreshed after each IRS filing-season update and benchmark ranges are reviewed quarterly.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-text-primary">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-text-secondary">
           <li>IRS Publication 525, Topic 427, and Form 3921 instructions for option/RSU taxation rules.</li>
           <li>Carta startup option benchmark reports (2025) for grant-size distributions.</li>
           <li>SEC compensation disclosures for public-company RSU practices.</li>

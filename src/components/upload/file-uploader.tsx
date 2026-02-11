@@ -90,13 +90,13 @@ export function FileUploader() {
 
     if (success) {
         return (
-            <div className="text-center space-y-4 p-6 border rounded-lg bg-emerald-50 border-emerald-100">
-                <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                    <Check className="w-6 h-6 text-emerald-600" />
+            <div className="text-center space-y-4 p-6 border rounded-lg bg-primary-subtle border-primary-subtle">
+                <div className="mx-auto w-12 h-12 bg-primary-subtle rounded-full flex items-center justify-center">
+                    <Check className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-medium text-emerald-900">Upload Successful!</h3>
-                <p className="text-emerald-700">Your offer has been submitted for verification. Check your dashboard for updates.</p>
-                <Button onClick={() => setSuccess(false)} variant="outline" className="border-emerald-200 text-emerald-700 hover:bg-emerald-100">
+                <p className="text-primary-hover">Your offer has been submitted for verification. Check your dashboard for updates.</p>
+                <Button onClick={() => setSuccess(false)} variant="outline" className="border-primary-subtle text-primary-hover hover:bg-primary-subtle">
                     Upload Another
                 </Button>
             </div>
@@ -106,7 +106,7 @@ export function FileUploader() {
     return (
         <div className="space-y-6">
             <div
-                className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${file ? 'border-emerald-500 bg-emerald-50' : 'border-slate-300 hover:border-slate-400 hover:bg-slate-50'}`}
+                className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${file ? 'border-primary bg-primary-subtle' : 'border-border hover:border-border hover:bg-surface-subtle'}`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onClick={() => document.getElementById('file-input')?.click()}
@@ -121,18 +121,18 @@ export function FileUploader() {
 
                 {file ? (
                     <div className="flex flex-col items-center space-y-2">
-                        <FileText className="w-10 h-10 text-emerald-600" />
-                        <p className="font-medium text-slate-900">{file.name}</p>
-                        <p className="text-sm text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                        <p className="text-xs text-emerald-600 font-medium">Click to change</p>
+                        <FileText className="w-10 h-10 text-primary" />
+                        <p className="font-medium text-text-primary">{file.name}</p>
+                        <p className="text-sm text-text-muted">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        <p className="text-xs text-primary font-medium">Click to change</p>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center space-y-2">
-                        <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-2">
-                            <Upload className="w-6 h-6 text-slate-500" />
+                        <div className="w-12 h-12 bg-surface-muted rounded-full flex items-center justify-center mb-2">
+                            <Upload className="w-6 h-6 text-text-muted" />
                         </div>
-                        <p className="font-medium text-slate-900">Click to upload or drag and drop</p>
-                        <p className="text-sm text-slate-500">PDF, PNG, JPG (max 10MB)</p>
+                        <p className="font-medium text-text-primary">Click to upload or drag and drop</p>
+                        <p className="text-sm text-text-muted">PDF, PNG, JPG (max 10MB)</p>
                     </div>
                 )}
             </div>
@@ -159,7 +159,7 @@ export function FileUploader() {
                 )}
             </Button>
 
-            <p className="text-xs text-center text-slate-500">
+            <p className="text-xs text-center text-text-muted">
                 Your document is encrypted and only visible to our verification team.
                 Please redact sensitive info (SSN, Bank Info) before uploading.
             </p>

@@ -32,14 +32,14 @@ export function SubmissionsList() {
     }, [supabase]);
 
     if (loading) {
-        return <div className="flex justify-center p-8"><Loader2 className="animate-spin text-slate-400" /></div>;
+        return <div className="flex justify-center p-8"><Loader2 className="animate-spin text-text-muted" /></div>;
     }
 
     if (submissions.length === 0) {
         return (
-            <div className="text-center p-8 border rounded-lg bg-slate-50 border-dashed">
-                <FileText className="mx-auto h-8 w-8 text-slate-400 mb-2" />
-                <p className="text-sm text-slate-500">No documents uploaded yet.</p>
+            <div className="text-center p-8 border rounded-lg bg-surface-subtle border-dashed">
+                <FileText className="mx-auto h-8 w-8 text-text-muted mb-2" />
+                <p className="text-sm text-text-muted">No documents uploaded yet.</p>
             </div>
         );
     }
@@ -47,14 +47,14 @@ export function SubmissionsList() {
     return (
         <div className="space-y-4">
             {submissions.map((sub) => (
-                <div key={sub.id} className="flex items-center justify-between p-4 bg-white border rounded-lg shadow-sm">
+                <div key={sub.id} className="flex items-center justify-between p-4 bg-surface border rounded-lg shadow-sm">
                     <div className="flex items-center space-x-4">
-                        <div className="bg-slate-100 p-2 rounded">
-                            <FileText className="h-5 w-5 text-slate-600" />
+                        <div className="bg-surface-muted p-2 rounded">
+                            <FileText className="h-5 w-5 text-text-secondary" />
                         </div>
                         <div>
-                            <p className="font-medium text-slate-900 truncate max-w-[200px]">{sub.file_path.split('/').pop()}</p>
-                            <div className="flex items-center text-xs text-slate-500 mt-1">
+                            <p className="font-medium text-text-primary truncate max-w-[200px]">{sub.file_path.split('/').pop()}</p>
+                            <div className="flex items-center text-xs text-text-muted mt-1">
                                 <Calendar className="h-3 w-3 mr-1" />
                                 {sub.created_at.split('T')[0]}
                             </div>

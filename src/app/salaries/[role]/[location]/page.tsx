@@ -115,7 +115,7 @@ export default async function RoleLocationPage({ params }: PageParams) {
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-surface">
       <ArticleSchema
         headline={`${role} Salary in ${location}`}
         datePublished={new Date().toISOString().split('T')[0]}
@@ -124,18 +124,18 @@ export default async function RoleLocationPage({ params }: PageParams) {
       />
       <FAQSchema items={faqItems} id="faq-role-location" />
 
-      <div className="bg-slate-50 border-b border-slate-200">
+      <div className="bg-surface-subtle border-b border-border">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center text-sm text-slate-500">
-            <Link href="/" className="hover:text-slate-900">
+          <div className="flex items-center text-sm text-text-muted">
+            <Link href="/" className="hover:text-text-primary">
               Home
             </Link>
             <span className="mx-2">/</span>
-            <Link href="/salaries" className="hover:text-slate-900">
+            <Link href="/salaries" className="hover:text-text-primary">
               Salaries
             </Link>
             <span className="mx-2">/</span>
-            <span className="text-slate-900 font-medium">
+            <span className="text-text-primary font-medium">
               {role} in {location}
             </span>
           </div>
@@ -146,66 +146,66 @@ export default async function RoleLocationPage({ params }: PageParams) {
         <div className="grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-12">
             <div>
-              <h1 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">
-                {role} Salary in <span className="text-emerald-600 block sm:inline">{location}</span>
+              <h1 className="text-4xl font-black text-text-primary mb-4 tracking-tight">
+                {role} Salary in <span className="text-primary block sm:inline">{location}</span>
               </h1>
-              <p className="text-xl text-slate-600 leading-relaxed">
+              <p className="text-xl text-text-secondary leading-relaxed">
                 Market benchmarks for {role} professionals in the {location} area. Data reflects total compensation
                 including base salary, stock grants, and bonuses.
               </p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
-              <Card className="bg-emerald-50 border-emerald-100">
+              <Card className="bg-primary-subtle border-primary-subtle">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-emerald-100 rounded-lg">
-                      <TrendingUp className="w-5 h-5 text-emerald-600" />
+                    <div className="p-2 bg-primary-subtle rounded-lg">
+                      <TrendingUp className="w-5 h-5 text-primary" />
                     </div>
                     <span className="font-semibold text-emerald-900">Market Median (Top Tier)</span>
                   </div>
-                  <div className="text-3xl font-black text-slate-900">{formatMoney(avgMedian)}</div>
-                  <p className="text-sm text-emerald-700 mt-1">Total Yearly Compensation</p>
+                  <div className="text-3xl font-black text-text-primary">{formatMoney(avgMedian)}</div>
+                  <p className="text-sm text-primary-hover mt-1">Total Yearly Compensation</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-blue-50 rounded-lg">
-                      <MapPin className="w-5 h-5 text-blue-600" />
+                    <div className="p-2 bg-info-subtle rounded-lg">
+                      <MapPin className="w-5 h-5 text-info" />
                     </div>
-                    <span className="font-semibold text-slate-700">Location Adjustment</span>
+                    <span className="font-semibold text-text-secondary">Location Adjustment</span>
                   </div>
-                  <div className="text-3xl font-bold text-slate-900">100%</div>
-                  <p className="text-sm text-slate-500 mt-1">Cost of Living Factor (Base)</p>
+                  <div className="text-3xl font-bold text-text-primary">100%</div>
+                  <p className="text-sm text-text-muted mt-1">Cost of Living Factor (Base)</p>
                 </CardContent>
               </Card>
             </div>
 
             <section>
-              <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                <Building2 className="w-6 h-6 text-slate-400" />
+              <h2 className="text-2xl font-bold text-text-primary mb-6 flex items-center gap-2">
+                <Building2 className="w-6 h-6 text-text-muted" />
                 Top Companies for {role}s
               </h2>
               <div className="space-y-4">
                 {validData.map((d) => (
                   <div
                     key={d.company}
-                    className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-emerald-200 hover:shadow-sm transition-all"
+                    className="flex items-center justify-between p-4 bg-surface border border-border rounded-xl hover:border-primary-subtle hover:shadow-sm transition-all"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500">
+                      <div className="w-10 h-10 rounded-full bg-surface-muted flex items-center justify-center font-bold text-text-muted">
                         {d.company[0]}
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-900">{d.company}</h3>
-                        <p className="text-xs text-slate-500">Senior Level Estimate</p>
+                        <h3 className="font-bold text-text-primary">{d.company}</h3>
+                        <p className="text-xs text-text-muted">Senior Level Estimate</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-slate-900">{formatMoney(d.data.median)}</div>
-                      <div className="text-xs text-emerald-600 font-medium">Top Tier</div>
+                      <div className="font-bold text-text-primary">{formatMoney(d.data.median)}</div>
+                      <div className="text-xs text-primary font-medium">Top Tier</div>
                     </div>
                   </div>
                 ))}
@@ -213,14 +213,14 @@ export default async function RoleLocationPage({ params }: PageParams) {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-2xl font-bold text-slate-900">Nearby Markets</h2>
-              <p className="text-slate-600">Compare pay momentum in nearby metros where teams hire for similar scopes.</p>
+              <h2 className="text-2xl font-bold text-text-primary">Nearby Markets</h2>
+              <p className="text-text-secondary">Compare pay momentum in nearby metros where teams hire for similar scopes.</p>
               <div className="grid sm:grid-cols-2 gap-3">
                 {nearbyMarkets.map((market) => (
                   <Link
                     key={market}
                     href={`/salaries/${slugify(role)}/${slugify(market)}`}
-                    className="rounded-lg border border-slate-200 px-4 py-3 text-slate-700 hover:border-emerald-300 hover:text-emerald-700 transition"
+                    className="rounded-lg border border-border px-4 py-3 text-text-secondary hover:border-primary hover:text-primary-hover transition"
                   >
                     {role} salary in {market}
                   </Link>
@@ -229,70 +229,70 @@ export default async function RoleLocationPage({ params }: PageParams) {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-2xl font-bold text-slate-900">Role Comparison in {location}</h2>
+              <h2 className="text-2xl font-bold text-text-primary">Role Comparison in {location}</h2>
               <div className="grid gap-3">
                 {roleComparisons.map((comparison) => (
-                  <div key={comparison.role} className="rounded-lg border border-slate-200 p-4 flex justify-between items-center">
+                  <div key={comparison.role} className="rounded-lg border border-border p-4 flex justify-between items-center">
                     <div>
-                      <p className="font-semibold text-slate-900">{comparison.role}</p>
-                      <p className="text-sm text-slate-500">Senior median benchmark</p>
+                      <p className="font-semibold text-text-primary">{comparison.role}</p>
+                      <p className="text-sm text-text-muted">Senior median benchmark</p>
                     </div>
-                    <p className="text-lg font-bold text-slate-900">{formatMoney(comparison.data.median)}</p>
+                    <p className="text-lg font-bold text-text-primary">{formatMoney(comparison.data.median)}</p>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-slate-900">Negotiation Tips for {role}s</h2>
-              <ul className="space-y-2 text-slate-700 list-disc pl-5">
+            <section className="rounded-2xl border border-border bg-surface-subtle p-6 space-y-4">
+              <h2 className="text-2xl font-bold text-text-primary">Negotiation Tips for {role}s</h2>
+              <ul className="space-y-2 text-text-secondary list-disc pl-5">
                 <li>Lead with the market median and back it with location data to anchor expectations.</li>
                 <li>Negotiate the full comp stack: base, annual bonus, equity refresh, and sign-on.</li>
                 <li>Reference scope and impact examples to justify percentile movement above the median.</li>
               </ul>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-slate-900">Data Confidence & Methodology</h2>
+            <section className="rounded-2xl border border-border p-6 space-y-4">
+              <h2 className="text-2xl font-bold text-text-primary">Data Confidence & Methodology</h2>
               <div className="grid sm:grid-cols-3 gap-4 text-sm">
-                <div className="rounded-lg bg-slate-50 p-4 border border-slate-200">
-                  <p className="text-slate-500">Sample size</p>
-                  <p className="text-2xl font-bold text-slate-900">{sampleSize}</p>
+                <div className="rounded-lg bg-surface-subtle p-4 border border-border">
+                  <p className="text-text-muted">Sample size</p>
+                  <p className="text-2xl font-bold text-text-primary">{sampleSize}</p>
                 </div>
-                <div className="rounded-lg bg-slate-50 p-4 border border-slate-200 sm:col-span-2">
-                  <p className="text-slate-500 mb-2">Source split</p>
+                <div className="rounded-lg bg-surface-subtle p-4 border border-border sm:col-span-2">
+                  <p className="text-text-muted mb-2">Source split</p>
                   <div className="space-y-1">
                     {sourceSplit.map((source) => (
-                      <p key={source.label} className="text-slate-700">
+                      <p key={source.label} className="text-text-secondary">
                         {source.label}: <span className="font-semibold">{source.value}%</span>
                       </p>
                     ))}
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-slate-500">Last updated: {lastUpdated}</p>
+              <p className="text-sm text-text-muted">Last updated: {lastUpdated}</p>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-slate-900">Frequently Asked Questions</h2>
+            <section className="rounded-2xl border border-border p-6 space-y-4">
+              <h2 className="text-2xl font-bold text-text-primary">Frequently Asked Questions</h2>
               <div className="space-y-4">
                 {faqItems.map((faq) => (
                   <div key={faq.question}>
-                    <h3 className="font-semibold text-slate-900">{faq.question}</h3>
-                    <p className="text-slate-600 mt-1">{faq.answer}</p>
+                    <h3 className="font-semibold text-text-primary">{faq.question}</h3>
+                    <p className="text-text-secondary mt-1">{faq.answer}</p>
                   </div>
                 ))}
               </div>
             </section>
 
-            <div className="bg-slate-900 rounded-2xl p-8 text-white text-center">
+            <div className="bg-secondary rounded-2xl p-8 text-text-inverse text-center">
               <h2 className="text-2xl font-bold mb-4">Are you paid fairly?</h2>
-              <p className="text-slate-300 mb-8 max-w-lg mx-auto">
+              <p className="text-text-muted mb-8 max-w-lg mx-auto">
                 Stop guessing. Upload your offer letter or enter your details to get a personalized compensation
                 analysis for {role} roles.
               </p>
               <Link href="/analyze-offer">
-                <Button size="lg" className="bg-emerald-500 hover:bg-emerald-400 text-white border-0">
+                <Button size="lg" className="bg-primary-subtle0 hover:bg-primary text-text-inverse border-0">
                   Analyze My Pay <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
@@ -300,8 +300,8 @@ export default async function RoleLocationPage({ params }: PageParams) {
           </div>
 
           <div className="space-y-8">
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 sticky top-24">
-              <h3 className="font-bold text-slate-900 mb-4">Related Locations</h3>
+            <div className="bg-surface-subtle p-6 rounded-xl border border-border sticky top-24">
+              <h3 className="font-bold text-text-primary mb-4">Related Locations</h3>
               <ul className="space-y-2">
                 {LOCATIONS.filter((l) => l !== location)
                   .slice(0, 5)
@@ -309,7 +309,7 @@ export default async function RoleLocationPage({ params }: PageParams) {
                     <li key={l}>
                       <Link
                         href={`/salaries/${slugify(role)}/${slugify(l)}`}
-                        className="text-slate-600 hover:text-emerald-600 hover:underline block py-1"
+                        className="text-text-secondary hover:text-primary hover:underline block py-1"
                       >
                         {role} in {l}
                       </Link>
@@ -317,13 +317,13 @@ export default async function RoleLocationPage({ params }: PageParams) {
                   ))}
               </ul>
 
-              <h3 className="font-bold text-slate-900 mt-8 mb-4">Related Roles in {location}</h3>
+              <h3 className="font-bold text-text-primary mt-8 mb-4">Related Roles in {location}</h3>
               <ul className="space-y-2">
                 {relatedRoles.map((r) => (
                   <li key={r}>
                     <Link
                       href={`/salaries/${slugify(r)}/${slugify(location)}`}
-                      className="text-slate-600 hover:text-emerald-600 hover:underline block py-1"
+                      className="text-text-secondary hover:text-primary hover:underline block py-1"
                     >
                       {r} in {location}
                     </Link>
@@ -331,13 +331,13 @@ export default async function RoleLocationPage({ params }: PageParams) {
                 ))}
               </ul>
 
-              <h3 className="font-bold text-slate-900 mt-8 mb-4">Similar Companies</h3>
+              <h3 className="font-bold text-text-primary mt-8 mb-4">Similar Companies</h3>
               <ul className="space-y-2">
                 {COMPANIES.slice(0, 5).map((company) => (
                   <li key={company}>
                     <Link
                       href={`/${encodeURIComponent(company)}/${encodeURIComponent(role)}/${encodeURIComponent(location.replace(', ', '-'))}`}
-                      className="text-slate-600 hover:text-emerald-600 hover:underline block py-1"
+                      className="text-text-secondary hover:text-primary hover:underline block py-1"
                     >
                       {role} at {company}
                     </Link>
@@ -345,20 +345,20 @@ export default async function RoleLocationPage({ params }: PageParams) {
                 ))}
               </ul>
 
-              <h3 className="font-bold text-slate-900 mt-8 mb-4">Relevant Tools</h3>
+              <h3 className="font-bold text-text-primary mt-8 mb-4">Relevant Tools</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/analyze-offer" className="text-slate-600 hover:text-emerald-600 hover:underline block py-1">
+                  <Link href="/analyze-offer" className="text-text-secondary hover:text-primary hover:underline block py-1">
                     Offer Analyzer
                   </Link>
                 </li>
                 <li>
-                  <Link href="/guides" className="text-slate-600 hover:text-emerald-600 hover:underline block py-1">
+                  <Link href="/guides" className="text-text-secondary hover:text-primary hover:underline block py-1">
                     Negotiation Guides
                   </Link>
                 </li>
                 <li>
-                  <Link href="/#analyzer" className="text-slate-600 hover:text-emerald-600 hover:underline block py-1">
+                  <Link href="/#analyzer" className="text-text-secondary hover:text-primary hover:underline block py-1">
                     Compensation Benchmark Tool
                   </Link>
                 </li>

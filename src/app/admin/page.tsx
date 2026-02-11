@@ -63,15 +63,15 @@ export default async function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                         {submissions?.length === 0 ? (
-                            <p className="text-slate-500">No pending submissions.</p>
+                            <p className="text-text-muted">No pending submissions.</p>
                         ) : (
                             <div className="space-y-4">
                                 {((submissions || []) as unknown as Submission[]).map((sub: Submission) => (
                                     <div key={sub.id} className="flex items-center justify-between p-4 border rounded-lg">
                                         <div>
                                             <p className="font-medium">{sub.id}</p>
-                                            <p className="text-sm text-slate-500">User: {sub.user_id}</p>
-                                            <p className="text-xs text-slate-400">Submitted: {sub.created_at.split('T')[0]}</p>
+                                            <p className="text-sm text-text-muted">User: {sub.user_id}</p>
+                                            <p className="text-xs text-text-muted">Submitted: {sub.created_at.split('T')[0]}</p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Link href={`/admin/verify/${sub.id}`}>

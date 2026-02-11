@@ -91,7 +91,7 @@ function SimulatorContent() {
                     <div className="space-y-4">
                         <div className="flex justify-between">
                             <Label>Initial Grant Value</Label>
-                            <span className="font-mono font-medium text-slate-700">
+                            <span className="font-mono font-medium text-text-secondary">
                                 ${grantValue.toLocaleString()}
                             </span>
                         </div>
@@ -109,7 +109,7 @@ function SimulatorContent() {
                     <div className="space-y-4">
                         <div className="flex justify-between">
                             <Label>Annual Growth Rate</Label>
-                            <span className={`font-mono font-medium ${growthRate >= 20 ? 'text-emerald-600' : 'text-slate-700'}`}>
+                            <span className={`font-mono font-medium ${growthRate >= 20 ? 'text-primary' : 'text-text-secondary'}`}>
                                 {growthRate}%
                             </span>
                         </div>
@@ -127,15 +127,15 @@ function SimulatorContent() {
                         </div>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-100">
-                        <div className="bg-slate-50 p-4 rounded-lg space-y-2">
+                    <div className="pt-4 border-t border-surface-muted">
+                        <div className="bg-surface-subtle p-4 rounded-lg space-y-2">
                             <div className="flex justify-between items-center text-sm">
-                                <span className="text-slate-600">Proj. 4-Year Value</span>
-                                <span className="font-bold text-emerald-600 text-lg">${finalValue.toLocaleString()}</span>
+                                <span className="text-text-secondary">Proj. 4-Year Value</span>
+                                <span className="font-bold text-primary text-lg">${finalValue.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between items-center text-sm">
-                                <span className="text-slate-600">Multiplier</span>
-                                <span className="font-medium text-slate-900">{growthMultiplier}x</span>
+                                <span className="text-text-secondary">Multiplier</span>
+                                <span className="font-medium text-text-primary">{growthMultiplier}x</span>
                             </div>
                         </div>
                     </div>
@@ -149,7 +149,7 @@ function SimulatorContent() {
 
             {/* Chart */}
             <div className="lg:col-span-2 space-y-6">
-                <Card className="border-emerald-100 shadow-md">
+                <Card className="border-primary-subtle shadow-md">
                     <CardHeader>
                         <CardTitle>Projected Value Over Time</CardTitle>
                     </CardHeader>
@@ -174,7 +174,7 @@ function SimulatorContent() {
                             <CardTitle className="text-sm font-medium text-muted-foreground">Unvested Potential (Year 4)</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-emerald-600">
+                            <div className="text-2xl font-bold text-primary">
                                 ${finalValue.toLocaleString()}
                             </div>
                             <p className="text-xs text-muted-foreground">If you stay 4 years</p>
@@ -188,17 +188,17 @@ function SimulatorContent() {
 
 export default function EquitySimulatorPage() {
     return (
-        <main className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6">
+        <main className="min-h-screen bg-surface-subtle py-12 px-4 sm:px-6">
             <div className="max-w-6xl mx-auto space-y-8">
                 <div className="text-center space-y-4 mb-12">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-800 text-sm font-medium">
                         <TrendingUp className="w-4 h-4" />
                         Startup Equity Calculator
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">
+                    <h1 className="text-4xl md:text-5xl font-bold text-text-primary tracking-tight">
                         Equity Growth Simulator
                     </h1>
-                    <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                    <p className="text-xl text-text-secondary max-w-2xl mx-auto">
                         Visualize what your stock options or RSUs could be worth if the company grows.
                     </p>
                 </div>

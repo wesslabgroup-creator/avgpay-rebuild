@@ -171,30 +171,30 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
       case "A": return {
         title: "Excellent Offer!",
         text: "You are well above market rate. Strong position to negotiate from.",
-        color: "text-green-600",
-        bgColor: "bg-green-50",
-        icon: <TrendingUp className="w-8 h-8 text-green-600" />
+        color: "text-success",
+        bgColor: "bg-success-subtle",
+        icon: <TrendingUp className="w-8 h-8 text-success" />
       };
       case "B": return {
         title: "Solid Market Rate",
         text: "This is a fair offer, with some room to push for more.",
-        color: "text-emerald-600",
-        bgColor: "bg-emerald-50",
-        icon: <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+        color: "text-primary",
+        bgColor: "bg-primary-subtle",
+        icon: <CheckCircle2 className="w-8 h-8 text-primary" />
       };
       case "C": return {
         title: "Below Average",
         text: "Consider negotiating – you deserve more based on market data.",
-        color: "text-yellow-600",
-        bgColor: "bg-yellow-50",
-        icon: <Minus className="w-8 h-8 text-yellow-600" />
+        color: "text-warning",
+        bgColor: "bg-warning-subtle",
+        icon: <Minus className="w-8 h-8 text-warning" />
       };
       default: return {
         title: "Lowball Offer",
         text: "This offer is significantly below market rate. Strong grounds to negotiate.",
-        color: "text-red-600",
-        bgColor: "bg-red-50",
-        icon: <TrendingDown className="w-8 h-8 text-red-600" />
+        color: "text-error",
+        bgColor: "bg-error-subtle",
+        icon: <TrendingDown className="w-8 h-8 text-error" />
       };
     }
   };
@@ -203,11 +203,11 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
 
   if (step === "analyzing") {
     return (
-      <Card className="w-full max-w-2xl mx-auto bg-white border-slate-200 shadow-lg">
+      <Card className="w-full max-w-2xl mx-auto bg-surface border-border shadow-lg">
         <CardContent className="p-12 flex flex-col items-center justify-center">
-          <Loader2 className="w-16 h-16 text-emerald-500 animate-spin mb-6" />
-          <p className="text-xl font-semibold text-slate-700">Analyzing your offer...</p>
-          <p className="text-sm text-slate-500 mt-2">Comparing against verified market data</p>
+          <Loader2 className="w-16 h-16 text-primary animate-spin mb-6" />
+          <p className="text-xl font-semibold text-text-secondary">Analyzing your offer...</p>
+          <p className="text-sm text-text-muted mt-2">Comparing against verified market data</p>
         </CardContent>
       </Card>
     );
@@ -217,48 +217,48 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
     const feedback = getFeedback(result.grade);
     const matchedComparison = getBestComparisonMatch(formData.company, formData.role);
     return (
-      <Card className="w-full max-w-2xl mx-auto bg-white border-slate-200 shadow-lg overflow-hidden">
-        <div className={`p-6 ${feedback.bgColor} border-b border-slate-200`}>
+      <Card className="w-full max-w-2xl mx-auto bg-surface border-border shadow-lg overflow-hidden">
+        <div className={`p-6 ${feedback.bgColor} border-b border-border`}>
           <div className="flex items-center gap-4">
             {feedback.icon}
             <div>
               <h2 className={`text-2xl font-bold ${feedback.color}`}>{feedback.title}</h2>
-              <p className="text-slate-600 mt-1">{feedback.text}</p>
+              <p className="text-text-secondary mt-1">{feedback.text}</p>
             </div>
           </div>
         </div>
 
         <CardContent className="p-8 space-y-6">
           <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="p-4 bg-slate-50 rounded-xl">
-              <p className="text-sm text-slate-500 mb-1">Your Total</p>
-              <p className="text-2xl font-bold text-emerald-700">{formatCurrency(result.yourTotal)}</p>
+            <div className="p-4 bg-surface-subtle rounded-xl">
+              <p className="text-sm text-text-muted mb-1">Your Total</p>
+              <p className="text-2xl font-bold text-primary-hover">{formatCurrency(result.yourTotal)}</p>
             </div>
-            <div className="p-4 bg-slate-50 rounded-xl">
-              <p className="text-sm text-slate-500 mb-1">Market Median</p>
-              <p className="text-2xl font-bold text-slate-800">{formatCurrency(result.marketMedian)}</p>
+            <div className="p-4 bg-surface-subtle rounded-xl">
+              <p className="text-sm text-text-muted mb-1">Market Median</p>
+              <p className="text-2xl font-bold text-text-primary">{formatCurrency(result.marketMedian)}</p>
             </div>
-            <div className="p-4 bg-slate-50 rounded-xl">
-              <p className="text-sm text-slate-500 mb-1">Your Grade</p>
+            <div className="p-4 bg-surface-subtle rounded-xl">
+              <p className="text-sm text-text-muted mb-1">Your Grade</p>
               <p className={`text-3xl font-black ${feedback.color}`}>{result.grade}</p>
             </div>
           </div>
 
-          <div className="text-center text-sm text-slate-500">
-            <p>Based on <span className="font-semibold text-slate-700">{result.count.toLocaleString()}</span> verified salaries</p>
+          <div className="text-center text-sm text-text-muted">
+            <p>Based on <span className="font-semibold text-text-secondary">{result.count.toLocaleString()}</span> verified salaries</p>
           </div>
 
           {matchedComparison && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-              <p className="text-sm font-semibold text-slate-900">
+            <div className="rounded-xl border border-primary-subtle bg-primary-subtle p-4">
+              <p className="text-sm font-semibold text-text-primary">
                 Want a direct peer benchmark for this offer?
               </p>
-              <p className="text-sm text-slate-600 mt-1">
+              <p className="text-sm text-text-secondary mt-1">
                 Explore {matchedComparison.title} for negotiation angles, FAQs, and side-by-side context.
               </p>
               <Link
                 href={`/compare/${matchedComparison.slug}`}
-                className="inline-flex mt-3 text-sm font-semibold text-emerald-700 hover:text-emerald-600"
+                className="inline-flex mt-3 text-sm font-semibold text-primary-hover hover:text-primary"
               >
                 Open comparison page →
               </Link>
@@ -267,7 +267,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
 
           <Button
             onClick={() => setStep("form")}
-            className="w-full bg-emerald-600 hover:bg-emerald-700"
+            className="w-full bg-primary hover:bg-primary-hover"
           >
             Analyze Another
           </Button>
@@ -277,12 +277,12 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-white border-slate-200 shadow-lg">
+    <Card className="w-full max-w-2xl mx-auto bg-surface border-border shadow-lg">
       <CardHeader>
-        <CardTitle className="text-2xl text-slate-900">
+        <CardTitle className="text-2xl text-text-primary">
           {mode === "offer" ? "Compare Your Offer" : "Check Your Market Value"}
         </CardTitle>
-        <CardDescription className="text-slate-500">
+        <CardDescription className="text-text-muted">
           {mode === "offer"
             ? "Enter your compensation details to see how you stack up"
             : "Enter your details to discover your market worth"}
@@ -328,8 +328,8 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
-                Base Salary <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-text-secondary">
+                Base Salary <span className="text-error">*</span>
               </label>
               <Input
                 type="number"
@@ -341,7 +341,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">Equity (4-year)</label>
+              <label className="block text-sm font-medium text-text-secondary">Equity (4-year)</label>
               <Input
                 type="number"
                 placeholder="e.g., 200000"
@@ -351,7 +351,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">Annual Bonus</label>
+              <label className="block text-sm font-medium text-text-secondary">Annual Bonus</label>
               <Input
                 type="number"
                 placeholder="e.g., 20000"
@@ -365,12 +365,12 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
           <Button
             type="submit"
             disabled={isLoading || !formData.role || !formData.location || !formData.baseSalary || !formData.company}
-            className="w-full py-6 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300"
+            className="w-full py-6 text-lg font-semibold bg-primary hover:bg-primary-hover disabled:bg-surface-muted"
           >
             {isLoading ? "Analyzing..." : mode === "offer" ? "Analyze My Offer" : "Check My Value"}
           </Button>
 
-          <p className="text-xs text-slate-400 text-center">
+          <p className="text-xs text-text-muted text-center">
             Your data helps improve our benchmarks. Analysis is instant and private.
           </p>
         </form>

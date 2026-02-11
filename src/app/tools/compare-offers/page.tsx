@@ -93,18 +93,18 @@ export default function CompareOffersPage() {
   const formatCurrency = (n: number) => `$${(n / 1000).toFixed(0)}k`;
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-24 pb-12">
+    <main className="min-h-screen bg-surface-subtle pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="text-center space-y-4 mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-subtle0/10 border border-primary/20 text-primary-hover text-sm font-medium">
             <Award className="w-4 h-4" />
             Compare Side-by-Side
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-black text-text-primary tracking-tight">
             Compare Job Offers
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-xl text-text-secondary max-w-2xl mx-auto">
             Make data-driven decisions by comparing compensation packages side-by-side
           </p>
         </div>
@@ -116,8 +116,8 @@ export default function CompareOffersPage() {
               <Card
                 key={offer.id}
                 className={`flex-1 min-w-[300px] ${calculateTC(offer) === highestTC && calculateTC(offer) > 0
-                    ? "border-2 border-emerald-500 shadow-lg"
-                    : "border-slate-200"
+                    ? "border-2 border-primary shadow-lg"
+                    : "border-border"
                   }`}
               >
                 <CardHeader className="pb-3">
@@ -128,14 +128,14 @@ export default function CompareOffersPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => removeOffer(offer.id)}
-                        className="h-8 w-8 p-0 text-slate-400 hover:text-red-600"
+                        className="h-8 w-8 p-0 text-text-muted hover:text-error"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     )}
                   </div>
                   {calculateTC(offer) === highestTC && calculateTC(offer) > 0 && (
-                    <div className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                    <div className="text-xs font-semibold text-primary flex items-center gap-1">
                       <TrendingUp className="w-3 h-3" />
                       Highest Total Comp
                     </div>
@@ -144,7 +144,7 @@ export default function CompareOffersPage() {
                 <CardContent className="space-y-4">
                   {/* Company & Role */}
                   <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-600">Company</label>
+                    <label className="text-xs font-medium text-text-secondary">Company</label>
                     <Input
                       type="text"
                       placeholder="e.g., Google"
@@ -154,7 +154,7 @@ export default function CompareOffersPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-600">Role</label>
+                    <label className="text-xs font-medium text-text-secondary">Role</label>
                     <Input
                       type="text"
                       placeholder="e.g., Software Engineer"
@@ -164,7 +164,7 @@ export default function CompareOffersPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs font-medium text-slate-600">Location</label>
+                    <label className="text-xs font-medium text-text-secondary">Location</label>
                     <Input
                       type="text"
                       placeholder="e.g., San Francisco, CA"
@@ -174,12 +174,12 @@ export default function CompareOffersPage() {
                   </div>
 
                   {/* Compensation */}
-                  <div className="pt-4 border-t border-slate-200 space-y-3">
+                  <div className="pt-4 border-t border-border space-y-3">
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-slate-600">
+                      <label className="text-xs font-medium text-text-secondary">
                         Base Salary
                         {offer.baseSalary === getHighestValue("baseSalary") && offer.baseSalary > 0 && (
-                          <span className="ml-2 text-emerald-600">🏆</span>
+                          <span className="ml-2 text-primary">🏆</span>
                         )}
                       </label>
                       <Input
@@ -193,10 +193,10 @@ export default function CompareOffersPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-slate-600">
+                      <label className="text-xs font-medium text-text-secondary">
                         Equity (4-year)
                         {offer.equity === getHighestValue("equity") && offer.equity > 0 && (
-                          <span className="ml-2 text-emerald-600">🏆</span>
+                          <span className="ml-2 text-primary">🏆</span>
                         )}
                       </label>
                       <Input
@@ -210,10 +210,10 @@ export default function CompareOffersPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-slate-600">
+                      <label className="text-xs font-medium text-text-secondary">
                         Annual Bonus
                         {offer.bonus === getHighestValue("bonus") && offer.bonus > 0 && (
-                          <span className="ml-2 text-emerald-600">🏆</span>
+                          <span className="ml-2 text-primary">🏆</span>
                         )}
                       </label>
                       <Input
@@ -227,11 +227,11 @@ export default function CompareOffersPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-slate-600">
+                      <label className="text-xs font-medium text-text-secondary">
                         Signing Bonus
                         {offer.signingBonus === getHighestValue("signingBonus") &&
                           offer.signingBonus > 0 && (
-                            <span className="ml-2 text-emerald-600">🏆</span>
+                            <span className="ml-2 text-primary">🏆</span>
                           )}
                       </label>
                       <Input
@@ -246,16 +246,16 @@ export default function CompareOffersPage() {
                   </div>
 
                   {/* Summary */}
-                  <div className="pt-4 border-t border-slate-200 space-y-2">
+                  <div className="pt-4 border-t border-border space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-slate-600">Total Comp (TC)</span>
-                      <span className="text-lg font-bold text-slate-900">
+                      <span className="text-sm text-text-secondary">Total Comp (TC)</span>
+                      <span className="text-lg font-bold text-text-primary">
                         {formatCurrency(calculateTC(offer))}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500">Year 1 Total</span>
-                      <span className="text-sm font-semibold text-emerald-600">
+                      <span className="text-xs text-text-muted">Year 1 Total</span>
+                      <span className="text-sm font-semibold text-primary">
                         {formatCurrency(calculateYear1Total(offer))}
                       </span>
                     </div>
@@ -272,7 +272,7 @@ export default function CompareOffersPage() {
             <Button
               onClick={addOffer}
               variant="outline"
-              className="border-2 border-dashed border-slate-300 hover:border-emerald-500"
+              className="border-2 border-dashed border-border hover:border-primary"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Another Offer
@@ -282,85 +282,85 @@ export default function CompareOffersPage() {
 
         {/* Summary Stats */}
         <div className="mt-12 grid md:grid-cols-3 gap-6">
-          <Card className="bg-emerald-50 border-emerald-200">
+          <Card className="bg-primary-subtle border-primary-subtle">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-emerald-700">Highest TC (Annual)</CardTitle>
+              <CardTitle className="text-sm text-primary-hover">Highest TC (Annual)</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-black text-emerald-600">
+              <p className="text-3xl font-black text-primary">
                 {formatCurrency(highestTC)}
               </p>
-              <p className="text-xs text-emerald-600 mt-1">
+              <p className="text-xs text-primary mt-1">
                 {offers.find((o) => calculateTC(o) === highestTC)?.companyName || "N/A"}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-blue-50 border-blue-200">
+          <Card className="bg-info-subtle border-info-subtle">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-blue-700">Highest Year 1</CardTitle>
+              <CardTitle className="text-sm text-info">Highest Year 1</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-black text-blue-600">
+              <p className="text-3xl font-black text-info">
                 {formatCurrency(highestYear1)}
               </p>
-              <p className="text-xs text-blue-600 mt-1">
+              <p className="text-xs text-info mt-1">
                 {offers.find((o) => calculateYear1Total(o) === highestYear1)?.companyName || "N/A"}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-50 border-slate-200">
+          <Card className="bg-surface-subtle border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-slate-700">Offers Compared</CardTitle>
+              <CardTitle className="text-sm text-text-secondary">Offers Compared</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-black text-slate-900">{offers.length}</p>
-              <p className="text-xs text-slate-600 mt-1">Side-by-side analysis</p>
+              <p className="text-3xl font-black text-text-primary">{offers.length}</p>
+              <p className="text-xs text-text-secondary mt-1">Side-by-side analysis</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Tips */}
-        <Card className="mt-12 bg-white border-slate-200">
+        <Card className="mt-12 bg-surface border-border">
           <CardHeader>
             <CardTitle>Comparison Tips</CardTitle>
             <CardDescription>Consider these factors beyond raw numbers</CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="grid md:grid-cols-2 gap-4 text-sm text-slate-700">
+            <ul className="grid md:grid-cols-2 gap-4 text-sm text-text-secondary">
               <li className="flex items-start gap-2">
-                <span className="text-emerald-600 mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>
                   <strong>Equity Type:</strong> RSUs vs stock options have different risk profiles
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-600 mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>
                   <strong>Vesting Schedule:</strong> 4-year vest with 1-year cliff is standard
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-600 mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>
                   <strong>Cost of Living:</strong> Adjust for location differences
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-600 mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>
                   <strong>Growth Potential:</strong> Startups vs Big Tech have different trajectories
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-600 mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>
                   <strong>Benefits:</strong> Healthcare, 401k match, PTO can add significant value
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-emerald-600 mt-1">•</span>
+                <span className="text-primary mt-1">•</span>
                 <span>
                   <strong>Work-Life Balance:</strong> Quality of life matters beyond compensation
                 </span>

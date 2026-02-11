@@ -56,21 +56,21 @@ const heroLearnItems = [
 const takeaways = [
   {
     icon: DollarSign,
-    iconClassName: "text-green-600",
+    iconClassName: "text-success",
     title: "Research is Paramount",
     description:
       "Know your worth. Thorough research into market rates and company compensation practices is your strongest asset.",
   },
   {
     icon: Handshake,
-    iconClassName: "text-yellow-600",
+    iconClassName: "text-warning",
     title: "Practice Your Pitch",
     description:
       "Rehearse your talking points both mentally and out loud to build confidence and clarity.",
   },
   {
     icon: Gavel,
-    iconClassName: "text-purple-600",
+    iconClassName: "text-accent",
     title: "Focus on Total Compensation",
     description:
       "Consider base salary, bonus potential, equity, benefits, and professional development opportunities.",
@@ -138,12 +138,12 @@ const NegotiationPage = () => {
       />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Factors Influencing Your Negotiation Power</h2>
-        <p className="mb-4 text-gray-700">
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Factors Influencing Your Negotiation Power</h2>
+        <p className="mb-4 text-text-secondary">
           This table replaces generic advice with findings from compensation and recruiting datasets on what most changes outcomes.
         </p>
         <DataTable headers={negotiationHeaders} rows={negotiationRows} />
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-text-muted">
           Methodology: We prioritized studies with explicit sample sizes and converted qualitative findings into a simple impact rubric (strong / moderate).
         </p>
         <div className="mt-4 flex justify-center">
@@ -158,29 +158,29 @@ const NegotiationPage = () => {
       <GuideKeyTakeaways title="Key Takeaways for Negotiation" takeaways={takeaways} />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Quick Wins</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex items-start">
-            <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Lightbulb className="h-5 w-5 text-warning mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Be Confident, Not Demanding:</strong> Present your case with data and assertiveness, but maintain professionalism.
             </p>
           </div>
           <div className="flex items-start">
-            <Copy className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Copy className="h-5 w-5 text-info mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Ask for Time to Consider:</strong> It&apos;s okay to ask for 24-48 hours to review an offer carefully.
             </p>
           </div>
           <div className="flex items-start">
-            <Search className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Search className="h-5 w-5 text-success mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Identify Your Priorities:</strong> Know what aspects of compensation are most important to you before you start negotiating.
             </p>
           </div>
           <div className="flex items-start">
-            <HeartHandshake className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <HeartHandshake className="h-5 w-5 text-error mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Build Rapport:</strong> Negotiation is a conversation. Aim for a win-win outcome that benefits both you and the employer.
             </p>
           </div>
@@ -191,11 +191,11 @@ const NegotiationPage = () => {
 
       <GuideResourceLinks links={resourceLinks} />
 
-      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
-        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
-        <p className="text-gray-700">Updated on February 11, 2026. Negotiation outcome data is reviewed biannually because employer market conditions can shift quickly.</p>
-        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
-        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+      <section className="mb-12 rounded-lg border border-border bg-surface-subtle p-6">
+        <h2 className="mb-3 text-2xl font-bold text-text-primary">Last updated</h2>
+        <p className="text-text-secondary">Updated on February 11, 2026. Negotiation outcome data is reviewed biannually because employer market conditions can shift quickly.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-text-primary">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-text-secondary">
           <li>Hired salary negotiation survey research (2024).</li>
           <li>Pave and Levels.fyi compensation dispersion analyses (2025).</li>
           <li>Public-company proxy statements for bonus/equity negotiation flexibility signals.</li>

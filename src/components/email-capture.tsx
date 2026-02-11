@@ -67,7 +67,7 @@ export function EmailCapture({ type, buttonText, placeholder = "Enter your email
         <Button
           type="submit"
           disabled={status === "loading" || status === "success"}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50"
+          className="w-full bg-primary hover:bg-primary-hover disabled:opacity-50"
         >
           {status === "loading" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {status === "success" && <CheckCircle2 className="mr-2 h-4 w-4" />}
@@ -76,7 +76,7 @@ export function EmailCapture({ type, buttonText, placeholder = "Enter your email
       </div>
 
       {message && (
-        <div className={`flex items-center gap-2 text-sm ${status === "success" ? "text-emerald-600" : "text-red-600"
+        <div className={`flex items-center gap-2 text-sm ${status === "success" ? "text-primary" : "text-error"
           }`}>
           {status === "success" ? (
             <CheckCircle2 className="h-4 w-4" />
@@ -87,7 +87,7 @@ export function EmailCapture({ type, buttonText, placeholder = "Enter your email
         </div>
       )}
 
-      <p className="text-xs text-slate-400 mt-3">
+      <p className="text-xs text-text-muted mt-3">
         No spam. Unsubscribe anytime.
       </p>
     </form>

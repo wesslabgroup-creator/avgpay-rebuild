@@ -57,9 +57,9 @@ const heroLearnItems = [
 ];
 
 const takeaways = [
-  { icon: DollarSign, iconClassName: "text-green-600", title: "Base Salary Growth", description: "Base salaries continue to rise, especially for mid to senior levels and in high-demand tech hubs." },
-  { icon: Star, iconClassName: "text-yellow-600", title: "Equity's Enduring Value", description: "Equity (RSUs and stock options) remains a significant component of total compensation, particularly in public tech companies." },
-  { icon: TrendingUp, iconClassName: "text-purple-600", title: "Performance Bonuses", description: "Performance-driven bonuses are crucial, often tied to individual and company success, contributing significantly to total earnings." },
+  { icon: DollarSign, iconClassName: "text-success", title: "Base Salary Growth", description: "Base salaries continue to rise, especially for mid to senior levels and in high-demand tech hubs." },
+  { icon: Star, iconClassName: "text-warning", title: "Equity's Enduring Value", description: "Equity (RSUs and stock options) remains a significant component of total compensation, particularly in public tech companies." },
+  { icon: TrendingUp, iconClassName: "text-accent", title: "Performance Bonuses", description: "Performance-driven bonuses are crucial, often tied to individual and company success, contributing significantly to total earnings." },
 ];
 
 const resourceLinks = [
@@ -121,12 +121,12 @@ const SWCompensationPage = () => {
       />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Compensation Breakdown</h2>
-        <p className="mb-4 text-gray-700">
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Compensation Breakdown</h2>
+        <p className="mb-4 text-text-secondary">
           The table below uses sourced medians (not placeholders) from Levels.fyi&apos;s US 2025 self-reported compensation dataset. We annualized equity using each submission&apos;s grant cadence and show rounded medians by leveling bucket.
         </p>
         <DataTable headers={compensationHeaders} rows={compensationRows} />
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-text-muted">
           Methodology: We grouped submissions into common level bands (L3-L6 equivalents), used US-only entries, excluded incomplete submissions, and rounded to the nearest $1,000 to reduce noise from outliers.
         </p>
         <div className="mt-4 flex justify-center">
@@ -141,29 +141,29 @@ const SWCompensationPage = () => {
       <GuideKeyTakeaways title="Key Takeaways" takeaways={takeaways} />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Quick Wins</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex items-start">
-            <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Lightbulb className="h-5 w-5 text-warning mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Negotiate Total Compensation:</strong> Don&apos;t just focus on base salary; consider bonuses, equity, and benefits holistically.
             </p>
           </div>
           <div className="flex items-start">
-            <Gavel className="h-5 w-5 text-gray-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Gavel className="h-5 w-5 text-text-muted mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Leverage Market Data:</strong> Use resources like AvgPay to understand your worth and negotiate from a position of strength.
             </p>
           </div>
           <div className="flex items-start">
-            <Copy className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Copy className="h-5 w-5 text-info mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Research Company Bands:</strong> Understand the typical compensation bands for your role and level at target companies.
             </p>
           </div>
           <div className="flex items-start">
-            <DollarSign className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <DollarSign className="h-5 w-5 text-success mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Understand Vesting Schedules:</strong> Know how your equity vests and its total potential value over time—essential for long-term planning.
             </p>
           </div>
@@ -174,11 +174,11 @@ const SWCompensationPage = () => {
 
       <GuideResourceLinks links={resourceLinks} />
 
-      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
-        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
-        <p className="text-gray-700">Updated on February 11, 2026. We review salary, bonus, and equity benchmarks quarterly and refresh sooner if market medians move materially.</p>
-        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
-        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+      <section className="mb-12 rounded-lg border border-border bg-surface-subtle p-6">
+        <h2 className="mb-3 text-2xl font-bold text-text-primary">Last updated</h2>
+        <p className="text-text-secondary">Updated on February 11, 2026. We review salary, bonus, and equity benchmarks quarterly and refresh sooner if market medians move materially.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-text-primary">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-text-secondary">
           <li>Levels.fyi, US Software Engineer compensation submissions (2025 snapshot, accessed Feb 2026).</li>
           <li>U.S. Bureau of Labor Statistics (OEWS), Software Developers wage distribution used for directional validation.</li>
         </ul>

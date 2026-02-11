@@ -77,9 +77,9 @@ const heroLearnItems = [
 ];
 
 const takeaways = [
-  { icon: DollarSign, iconClassName: "text-green-600", title: "Cash + Equity Balance", description: "PM offers increasingly bundle larger equity grants as product scope and ownership increase." },
-  { icon: Star, iconClassName: "text-yellow-600", title: "Scope Drives Level", description: "Comp jumps are tied to product complexity, revenue impact, and cross-functional leadership depth." },
-  { icon: TrendingUp, iconClassName: "text-purple-600", title: "Career Progression Matters", description: "Strategic moves between PM levels can materially outpace annual merit increases." },
+  { icon: DollarSign, iconClassName: "text-success", title: "Cash + Equity Balance", description: "PM offers increasingly bundle larger equity grants as product scope and ownership increase." },
+  { icon: Star, iconClassName: "text-warning", title: "Scope Drives Level", description: "Comp jumps are tied to product complexity, revenue impact, and cross-functional leadership depth." },
+  { icon: TrendingUp, iconClassName: "text-accent", title: "Career Progression Matters", description: "Strategic moves between PM levels can materially outpace annual merit increases." },
 ];
 
 const resourceLinks = [
@@ -122,12 +122,12 @@ const PMCompensationPage = () => {
       />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Compensation Breakdown</h2>
-        <p className="mb-4 text-gray-700">
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Compensation Breakdown</h2>
+        <p className="mb-4 text-text-secondary">
           This table uses sourced US medians from Levels.fyi&apos;s 2025 Product Manager submissions. Figures are grouped into common PM level buckets and rounded for readability.
         </p>
         <DataTable headers={compensationHeaders} rows={compensationRows} />
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-text-muted">
           Methodology: US-only submissions, incomplete rows removed, equity annualized from reported grant value and vest cadence, then median values computed per level.
         </p>
         <div className="mt-4 flex justify-center">
@@ -142,29 +142,29 @@ const PMCompensationPage = () => {
       <GuideKeyTakeaways title="Key Takeaways" takeaways={takeaways} />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Quick Wins</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex items-start">
-            <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Lightbulb className="h-5 w-5 text-warning mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Quantify Your Impact:</strong> Always back up your achievements with data and metrics to demonstrate your value.
             </p>
           </div>
           <div className="flex items-start">
-            <Gavel className="h-5 w-5 text-gray-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Gavel className="h-5 w-5 text-text-muted mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Benchmark Effectively:</strong> Use tools like AvgPay to compare your compensation against industry standards for your experience and location.
             </p>
           </div>
           <div className="flex items-start">
-            <Copy className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Copy className="h-5 w-5 text-info mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Understand Equity Nuances:</strong> Differentiate between stock options and RSUs, and understand vesting schedules and potential dilution.
             </p>
           </div>
           <div className="flex items-start">
-            <HeartHandshake className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <HeartHandshake className="h-5 w-5 text-error mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Align with Company Goals:</strong> Demonstrate how your product leadership directly contributes to overarching business and strategic objectives.
             </p>
           </div>
@@ -175,11 +175,11 @@ const PMCompensationPage = () => {
 
       <GuideResourceLinks links={resourceLinks} />
 
-      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
-        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
-        <p className="text-gray-700">Updated on February 11, 2026. PM compensation benchmarks are reviewed quarterly and refreshed when median deltas exceed 5%.</p>
-        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
-        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+      <section className="mb-12 rounded-lg border border-border bg-surface-subtle p-6">
+        <h2 className="mb-3 text-2xl font-bold text-text-primary">Last updated</h2>
+        <p className="text-text-secondary">Updated on February 11, 2026. PM compensation benchmarks are reviewed quarterly and refreshed when median deltas exceed 5%.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-text-primary">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-text-secondary">
           <li>Levels.fyi, US Product Manager compensation submissions (2025 snapshot, accessed Feb 2026).</li>
           <li>Bureau of Labor Statistics occupational wage trends for management and product-adjacent roles used for directional cross-checking.</li>
         </ul>

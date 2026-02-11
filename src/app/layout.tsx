@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased bg-white text-slate-900 pt-20`}>
+      <body className={`${inter.className} antialiased bg-surface text-text-primary pt-20`}>
         <CSPostHogProvider>
           <OrganizationSchema />
           <Navigation />

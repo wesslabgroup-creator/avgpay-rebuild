@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 
 export default function SalariesPage() {
   return (
-    <main className="min-h-screen bg-slate-50 pt-24 pb-12">
+    <main className="min-h-screen bg-surface-subtle pt-24 pb-12">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center space-y-4 mb-10">
-          <h1 className="text-4xl font-bold text-slate-900">Tech Salaries</h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold text-text-primary">Tech Salaries</h1>
+          <p className="text-xl text-text-secondary max-w-2xl mx-auto">
             Search job titles to see real salary data. All data aggregated from BLS, H-1B filings, and state pay transparency laws.
           </p>
         </div>
@@ -21,8 +21,8 @@ export default function SalariesPage() {
         <SalarySearch />
 
         {/* Popular Reports Section */}
-        <div className="mt-16 border-t border-slate-200 pt-16">
-          <h2 className="text-2xl font-bold text-slate-900 mb-8">Popular Salary Reports</h2>
+        <div className="mt-16 border-t border-border pt-16">
+          <h2 className="text-2xl font-bold text-text-primary mb-8">Popular Salary Reports</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { role: "Software Engineer", location: "San Francisco, CA" },
@@ -36,11 +36,11 @@ export default function SalariesPage() {
                 <Link
                   key={`${report.role}-${report.location}`}
                   href={`/salaries/${slugify(report.role)}/${slugify(report.location)}`}
-                  className="group p-5 bg-white border border-slate-200 rounded-2xl hover:border-emerald-500 hover:shadow-md transition-all"
+                  className="group p-5 bg-surface border border-border rounded-2xl hover:border-primary hover:shadow-md transition-all"
                 >
-                  <h3 className="font-bold text-slate-900 group-hover:text-emerald-600 mb-1">{report.role}</h3>
-                  <p className="text-slate-500 text-sm flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+                  <h3 className="font-bold text-text-primary group-hover:text-primary mb-1">{report.role}</h3>
+                  <p className="text-text-muted text-sm flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-text-muted"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
                     {report.location}
                   </p>
                 </Link>

@@ -121,13 +121,13 @@ export default function SubmitSalaryPage() {
 
   if (isSuccess) {
     return (
-      <main className="min-h-screen bg-slate-50 pt-24 pb-12">
+      <main className="min-h-screen bg-surface-subtle pt-24 pb-12">
         <div className="max-w-2xl mx-auto px-6">
-          <Card className="bg-white border-emerald-200 shadow-lg">
+          <Card className="bg-surface border-primary-subtle shadow-lg">
             <CardContent className="p-12 text-center">
-              <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto mb-6" />
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Thank You!</h2>
-              <p className="text-lg text-slate-600">Your contribution helps make the tech industry more transparent.</p>
+              <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-6" />
+              <h2 className="text-3xl font-bold text-text-primary mb-4">Thank You!</h2>
+              <p className="text-lg text-text-secondary">Your contribution helps make the tech industry more transparent.</p>
             </CardContent>
           </Card>
         </div>
@@ -135,23 +135,23 @@ export default function SubmitSalaryPage() {
     );
   }
 
-  const inputClass = "w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20";
-  const selectClass = "w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20";
-  const labelClass = "block text-sm font-medium text-slate-700 mb-1";
+  const inputClass = "w-full px-4 py-3 bg-surface border border-border rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring/20";
+  const selectClass = "w-full px-4 py-3 bg-surface border border-border rounded-lg text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring/20";
+  const labelClass = "block text-sm font-medium text-text-secondary mb-1";
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-24 pb-12">
+    <main className="min-h-screen bg-surface-subtle pt-24 pb-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="text-center space-y-4 mb-8">
-          <h1 className="text-4xl font-bold text-slate-900">Share Your Salary</h1>
-          <p className="text-xl text-slate-600">Help us build a more transparent compensation landscape.</p>
+          <h1 className="text-4xl font-bold text-text-primary">Share Your Salary</h1>
+          <p className="text-xl text-text-secondary">Help us build a more transparent compensation landscape.</p>
         </div>
 
-        <Card className="bg-white border-slate-200 shadow-lg">
+        <Card className="bg-surface border-border shadow-lg">
           <CardHeader>
-            <CardTitle className="text-slate-900 text-2xl">Salary Submission Form</CardTitle>
-            <CardDescription className="text-slate-500">
-              Fields marked with <span className="text-red-500">*</span> are required.
+            <CardTitle className="text-text-primary text-2xl">Salary Submission Form</CardTitle>
+            <CardDescription className="text-text-muted">
+              Fields marked with <span className="text-error">*</span> are required.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -159,11 +159,11 @@ export default function SubmitSalaryPage() {
 
               {/* Job Details */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Job Details</h3>
+                <h3 className="text-lg font-semibold text-text-primary border-b border-surface-muted pb-2">Job Details</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>Job Title <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>Job Title <span className="text-error">*</span></label>
                     <input
                       type="text"
                       value={formData.jobTitle}
@@ -173,7 +173,7 @@ export default function SubmitSalaryPage() {
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>Company Name <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>Company Name <span className="text-error">*</span></label>
                     <input
                       type="text"
                       value={formData.companyName}
@@ -185,7 +185,7 @@ export default function SubmitSalaryPage() {
                 </div>
 
                 <div>
-                  <label className={labelClass}>Experience Level <span className="text-red-500">*</span></label>
+                  <label className={labelClass}>Experience Level <span className="text-error">*</span></label>
                   <select
                     value={formData.experienceLevel}
                     onChange={e => handleChange('experienceLevel', e.target.value)}
@@ -200,7 +200,7 @@ export default function SubmitSalaryPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>City <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>City <span className="text-error">*</span></label>
                     <input
                       type="text"
                       value={formData.city}
@@ -210,7 +210,7 @@ export default function SubmitSalaryPage() {
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>State <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>State <span className="text-error">*</span></label>
                     <select
                       value={formData.state}
                       onChange={e => handleChange('state', e.target.value)}
@@ -239,11 +239,11 @@ export default function SubmitSalaryPage() {
 
               {/* Compensation */}
               <div className="space-y-4 pt-4">
-                <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Compensation Details</h3>
+                <h3 className="text-lg font-semibold text-text-primary border-b border-surface-muted pb-2">Compensation Details</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>Base Salary (Annual) <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>Base Salary (Annual) <span className="text-error">*</span></label>
                     <input
                       type="number"
                       min="1"
@@ -288,17 +288,17 @@ export default function SubmitSalaryPage() {
                   </div>
                 </div>
 
-                <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
-                  <p className="text-sm text-slate-700">
+                <div className="bg-primary-subtle p-4 rounded-lg border border-primary-subtle">
+                  <p className="text-sm text-text-secondary">
                     <span className="font-semibold">Calculated Total Comp:</span>{' '}
-                    <span className="text-lg font-bold text-emerald-700">${calculateTotalComp().toLocaleString()}</span>
+                    <span className="text-lg font-bold text-primary-hover">${calculateTotalComp().toLocaleString()}</span>
                   </p>
                 </div>
               </div>
 
               {/* Additional Info */}
               <div className="space-y-4 pt-4">
-                <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Additional Information</h3>
+                <h3 className="text-lg font-semibold text-text-primary border-b border-surface-muted pb-2">Additional Information</h3>
                 <div>
                   <label className={labelClass}>Additional Notes</label>
                   <textarea
@@ -313,8 +313,8 @@ export default function SubmitSalaryPage() {
 
               {/* Verification */}
               <div className="space-y-4 pt-4">
-                <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Verification (Optional)</h3>
-                <p className="text-sm text-slate-600">
+                <h3 className="text-lg font-semibold text-text-primary border-b border-surface-muted pb-2">Verification (Optional)</h3>
+                <p className="text-sm text-text-secondary">
                   Upload your offer letter to get a &quot;Verified&quot; badge and unlock premium insights.
                 </p>
                 <div className="mt-4">
@@ -325,7 +325,7 @@ export default function SubmitSalaryPage() {
               </div>
 
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                <div className="p-4 bg-error-subtle border border-error-subtle rounded-lg text-error text-sm">
                   {error}
                 </div>
               )}
@@ -333,13 +333,13 @@ export default function SubmitSalaryPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-6 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300"
+                className="w-full py-6 text-lg font-semibold bg-primary hover:bg-primary-hover disabled:bg-surface-muted"
               >
                 {isLoading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Submitting...</> : "Submit Salary Data"}
               </Button>
 
               {/* Live state display */}
-              <div className="text-xs text-slate-400 mt-4 border-t pt-4">
+              <div className="text-xs text-text-muted mt-4 border-t pt-4">
                 <p>Experience Level: {formData.experienceLevel || '(not selected)'}</p>
                 <p>State: {formData.state || '(not selected)'}</p>
               </div>

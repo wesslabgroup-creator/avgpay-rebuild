@@ -18,31 +18,31 @@ export const metadata: Metadata = {
 
 export default function AnalyzeOfferPage() {
   return (
-    <main className="min-h-screen bg-slate-50 pt-24 pb-12">
+    <main className="min-h-screen bg-surface-subtle pt-24 pb-12">
       {/* Hero Section */}
       <section className="max-w-6xl mx-auto px-4 mb-12">
         <div className="text-center space-y-6 mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-subtle0/10 border border-primary/20 text-primary-hover text-sm font-medium">
             <Zap className="w-4 h-4" />
             Negotiate With Confidence
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight">
-            Is Your <span className="text-emerald-600">Offer Fair</span>?
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-text-primary tracking-tight">
+            Is Your <span className="text-primary">Offer Fair</span>?
           </h1>
-          <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-text-secondary mb-8 max-w-2xl mx-auto">
             Upload your offer letter or manually enter details to see how it stacks up against
             real market data. We&apos;ll help you find leverage.
           </p>
         </div>
 
         {/* Social Proof */}
-        <div className="flex items-center justify-center gap-6 text-slate-600 mb-8">
+        <div className="flex items-center justify-center gap-6 text-text-secondary mb-8">
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-emerald-500" />
+            <Users className="w-5 h-5 text-primary" />
             <span className="text-sm">10K+ offers analyzed</span>
           </div>
           <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-emerald-500" />
+            <Shield className="w-5 h-5 text-primary" />
             <span className="text-sm">BLS + H-1B verified data</span>
           </div>
         </div>
@@ -59,10 +59,10 @@ export default function AnalyzeOfferPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Lead Capture Card */}
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-surface border-border">
               <CardContent className="p-6">
-                <h3 className="font-bold text-slate-900 mb-2">Get Negotiation Tips</h3>
-                <p className="text-sm text-slate-600 mb-4">
+                <h3 className="font-bold text-text-primary mb-2">Get Negotiation Tips</h3>
+                <p className="text-sm text-text-secondary mb-4">
                   Receive personalized negotiation strategies based on your offer grade.
                 </p>
                 <EmailCapture type="negotiation-tips" buttonText="Get Tips Free" />
@@ -70,14 +70,14 @@ export default function AnalyzeOfferPage() {
             </Card>
 
             {/* No Offer Yet? Card */}
-            <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+            <Card className="bg-gradient-to-br from-surface-subtle to-surface-muted border-border">
               <CardContent className="p-6">
-                <h3 className="font-bold text-slate-900 mb-2">Don&apos;t Have an Offer Yet?</h3>
-                <p className="text-sm text-slate-600 mb-4">
+                <h3 className="font-bold text-text-primary mb-2">Don&apos;t Have an Offer Yet?</h3>
+                <p className="text-sm text-text-secondary mb-4">
                   Check your market value before you start interviewing.
                 </p>
                 <Link href="/analyze-salary">
-                  <Button variant="outline" className="w-full border-slate-300 hover:bg-slate-200">
+                  <Button variant="outline" className="w-full border-border hover:bg-surface-muted">
                     Check Your Value
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -86,9 +86,9 @@ export default function AnalyzeOfferPage() {
             </Card>
 
             {/* Trust Badges */}
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-surface border-border">
               <CardContent className="p-6">
-                <h3 className="font-bold text-slate-900 mb-4">Why Trust AvgPay?</h3>
+                <h3 className="font-bold text-text-primary mb-4">Why Trust AvgPay?</h3>
                 <ul className="space-y-3">
                   {[
                     "Official BLS & H-1B data",
@@ -96,8 +96,8 @@ export default function AnalyzeOfferPage() {
                     "Grade-based insights",
                     "100% free & anonymous",
                   ].map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-sm text-slate-600">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                    <li key={item} className="flex items-center gap-2 text-sm text-text-secondary">
+                      <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
                       {item}
                     </li>
                   ))}

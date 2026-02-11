@@ -54,9 +54,9 @@ const heroLearnItems = [
 ];
 
 const takeaways = [
-  { icon: DollarSign, iconClassName: "text-green-600", title: "Cash vs Upside", description: "Big Tech usually wins on predictable cash while startups can offer larger upside variance." },
-  { icon: Star, iconClassName: "text-yellow-600", title: "Role Scope Changes Fast", description: "Startups can accelerate scope quickly, but leveling and process are less standardized." },
-  { icon: TrendingUp, iconClassName: "text-purple-600", title: "Liquidity Timeline Matters", description: "Option value depends on exit timing; RSUs tend to realize value more predictably." },
+  { icon: DollarSign, iconClassName: "text-success", title: "Cash vs Upside", description: "Big Tech usually wins on predictable cash while startups can offer larger upside variance." },
+  { icon: Star, iconClassName: "text-warning", title: "Role Scope Changes Fast", description: "Startups can accelerate scope quickly, but leveling and process are less standardized." },
+  { icon: TrendingUp, iconClassName: "text-accent", title: "Liquidity Timeline Matters", description: "Option value depends on exit timing; RSUs tend to realize value more predictably." },
 ];
 
 const resourceLinks = [
@@ -104,12 +104,12 @@ const StartupVsBigTechPage = () => {
       />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Compensation Comparison</h2>
-        <p className="mb-4 text-gray-700">
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Compensation Comparison</h2>
+        <p className="mb-4 text-text-secondary">
           This comparison table uses published benchmarks from compensation platforms, SEC filings, and startup equity studies to quantify the trade-offs.
         </p>
         <DataTable headers={startupBigTechHeaders} rows={startupBigTechRows} />
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-text-muted">
           Methodology: We mapped each source to a common senior individual-contributor profile and normalized cash and equity descriptions into comparable ranges.
         </p>
         <div className="mt-4 flex justify-center">
@@ -124,29 +124,29 @@ const StartupVsBigTechPage = () => {
       <GuideKeyTakeaways title="Key Takeaways" takeaways={takeaways} />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Quick Wins</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex items-start">
-            <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Lightbulb className="h-5 w-5 text-warning mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Define Your Priorities:</strong> What matters most to you? High salary, equity upside, work-life balance, learning opportunities?
             </p>
           </div>
           <div className="flex items-start">
-            <Copy className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Copy className="h-5 w-5 text-info mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Research Company Stage:</strong> Understand where a startup is in its funding and growth cycle—this impacts equity value and risk.
             </p>
           </div>
           <div className="flex items-start">
-            <Search className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Search className="h-5 w-5 text-success mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Network Extensively:</strong> Talk to people working in both environments to get firsthand accounts of culture and compensation.
             </p>
           </div>
           <div className="flex items-start">
-            <Gavel className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Gavel className="h-5 w-5 text-error mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Negotiate Wisely:</strong> Tailor your negotiation strategy based on whether you&apos;re joining a startup or a Big Tech firm.
             </p>
           </div>
@@ -157,11 +157,11 @@ const StartupVsBigTechPage = () => {
 
       <GuideResourceLinks links={resourceLinks} />
 
-      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
-        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
-        <p className="text-gray-700">Updated on February 11, 2026. Startup and public-company compensation references are refreshed after each earnings season.</p>
-        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
-        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+      <section className="mb-12 rounded-lg border border-border bg-surface-subtle p-6">
+        <h2 className="mb-3 text-2xl font-bold text-text-primary">Last updated</h2>
+        <p className="text-text-secondary">Updated on February 11, 2026. Startup and public-company compensation references are refreshed after each earnings season.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-text-primary">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-text-secondary">
           <li>Carta Total Compensation and startup equity benchmarking reports (2025).</li>
           <li>Levels.fyi role-level medians (US, 2025 snapshot).</li>
           <li>Public-company proxy statements (SEC filings) for bonus and equity plan targets.</li>

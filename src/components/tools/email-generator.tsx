@@ -132,14 +132,14 @@ export function EmailGenerator() {
                         </div>
                     )}
 
-                    <Button onClick={handleGenerate} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Button onClick={handleGenerate} className="w-full bg-primary hover:bg-primary-hover text-text-inverse">
                         <Sparkles className="w-4 h-4 mr-2" /> Generate Email
                     </Button>
                 </CardContent>
             </Card>
 
             {/* Preview */}
-            <Card className="bg-slate-50 border-dashed">
+            <Card className="bg-surface-subtle border-dashed">
                 <CardHeader>
                     <CardTitle className="flex justify-between items-center">
                         Email Preview
@@ -154,7 +154,7 @@ export function EmailGenerator() {
                 <CardContent>
                     {generatedEmail ? (
                         <Textarea
-                            className="min-h-[400px] font-mono text-sm bg-white"
+                            className="min-h-[400px] font-mono text-sm bg-surface"
                             value={generatedEmail}
                             readOnly
                         />

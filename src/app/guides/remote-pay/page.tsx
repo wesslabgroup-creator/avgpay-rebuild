@@ -56,19 +56,19 @@ const heroLearnItems = [
 const takeaways = [
   {
     icon: DollarSign,
-    iconClassName: "text-green-600",
+    iconClassName: "text-success",
     title: "Location Matters (Usually)",
     description: "Most companies adjust pay based on location, influencing both base salary and equity ranges.",
   },
   {
     icon: Home,
-    iconClassName: "text-yellow-600",
+    iconClassName: "text-warning",
     title: "Company Policy is Crucial",
     description: "Understand your employer's specific pay philosophy for remote workers.",
   },
   {
     icon: Globe,
-    iconClassName: "text-purple-600",
+    iconClassName: "text-accent",
     title: "Skills Still Command Value",
     description: "In-demand skills and experience continue to be primary drivers of compensation, even remotely.",
   },
@@ -119,12 +119,12 @@ const RemotePayPage = () => {
       />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Factors in Remote Pay</h2>
-        <p className="mb-4 text-gray-700">
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Key Factors in Remote Pay</h2>
+        <p className="mb-4 text-text-secondary">
           These figures summarize published compensation and labor-market data on remote-pay policies, including relocation adjustments, national bands, and compliance overhead.
         </p>
         <DataTable headers={remotePayHeaders} rows={remotePayRows} />
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-text-muted">
           Methodology: We prioritized public reports with disclosed sample windows, then extracted numeric findings most relevant to software and product hiring in US-led companies.
         </p>
         <div className="mt-4 flex justify-center">
@@ -139,29 +139,29 @@ const RemotePayPage = () => {
       <GuideKeyTakeaways title="Key Takeaways for Remote Compensation" takeaways={takeaways} />
 
       <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
+        <h2 className="mb-6 text-3xl font-bold text-text-primary">Quick Wins</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex items-start">
-            <Lightbulb className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Lightbulb className="h-5 w-5 text-warning mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Ask About the Policy:</strong> Inquire about the company&apos;s remote compensation philosophy early in the interview process.
             </p>
           </div>
           <div className="flex items-start">
-            <Copy className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Copy className="h-5 w-5 text-info mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Research Multiple Locations:</strong> Compare salary ranges for your role in various potential remote locations using compensation tools.
             </p>
           </div>
           <div className="flex items-start">
-            <Search className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <Search className="h-5 w-5 text-success mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Factor in Total Compensation:</strong> Consider benefits and cost of living when comparing offers across different locations or companies.
             </p>
           </div>
           <div className="flex items-start">
-            <ArrowRight className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
-            <p className="text-gray-700">
+            <ArrowRight className="h-5 w-5 text-error mr-2 flex-shrink-0" />
+            <p className="text-text-secondary">
               <strong>Be Prepared for Adjustments:</strong> If you move, understand how it might impact your pay and ensure clear communication with your employer.
             </p>
           </div>
@@ -172,11 +172,11 @@ const RemotePayPage = () => {
 
       <GuideResourceLinks links={resourceLinks} />
 
-      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
-        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
-        <p className="text-gray-700">Updated on February 11, 2026. Remote-pay policy data is reviewed each quarter because company geo-pay policies change frequently.</p>
-        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
-        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+      <section className="mb-12 rounded-lg border border-border bg-surface-subtle p-6">
+        <h2 className="mb-3 text-2xl font-bold text-text-primary">Last updated</h2>
+        <p className="text-text-secondary">Updated on February 11, 2026. Remote-pay policy data is reviewed each quarter because company geo-pay policies change frequently.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-text-primary">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-text-secondary">
           <li>Protocol/Reuters coverage of major tech geo-pay policies (Meta, Google, Stripe).</li>
           <li>Pave Compensation Benchmarking Report (2025).</li>
           <li>US BLS JOLTS, CompTIA State of the Tech Workforce (2025).</li>

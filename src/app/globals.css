@@ -3,35 +3,74 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a; /* slate-900 */
-  --primary: #059669; /* emerald-600 */
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9; /* slate-100 */
-  --secondary-foreground: #0f172a;
-  --muted: #f8fafc; /* slate-50 */
-  --muted-foreground: #64748b; /* slate-500 */
-  --accent: #10b981; /* emerald-500 */
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e2e8f0; /* slate-200 */
-  --input: #e2e8f0;
-  --ring: #059669; /* emerald-600 */
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f1f5f9;
+  --color-surface-muted: #e2e8f0;
+
+  --color-primary: #0f766e;
+  --color-primary-hover: #115e59;
+  --color-primary-subtle: #ccfbf1;
+  --color-primary-foreground: #f8fafc;
+
+  --color-secondary: #334155;
+  --color-secondary-hover: #1e293b;
+  --color-secondary-foreground: #f8fafc;
+
+  --color-accent: #0369a1;
+  --color-accent-hover: #075985;
+  --color-accent-subtle: #e0f2fe;
+  --color-accent-foreground: #f8fafc;
+
+  --color-border: #cbd5e1;
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+  --color-text-inverse: #f8fafc;
+  --color-link: #0f766e;
+  --color-link-hover: #115e59;
+
+  --color-success: #15803d;
+  --color-success-subtle: #dcfce7;
+  --color-success-foreground: #14532d;
+
+  --color-warning: #b45309;
+  --color-warning-subtle: #fef3c7;
+  --color-warning-foreground: #78350f;
+
+  --color-error: #b91c1c;
+  --color-error-subtle: #fee2e2;
+  --color-error-foreground: #7f1d1d;
+
+  --color-info: #1d4ed8;
+  --color-info-subtle: #dbeafe;
+  --color-info-foreground: #1e3a8a;
+
+  --color-ring: #0f766e;
   --radius: 0.5rem;
 }
 
 @layer base {
   * {
-    @apply border-slate-200;
+    @apply border-border;
   }
+
   body {
-    @apply bg-white text-slate-900;
+    @apply bg-background text-text-primary antialiased;
+  }
+
+  a {
+    @apply text-text-link underline-offset-2 transition-colors;
+  }
+
+  a:hover {
+    @apply text-text-link-hover;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
   }
 }

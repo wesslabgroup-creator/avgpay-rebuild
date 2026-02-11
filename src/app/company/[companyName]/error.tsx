@@ -17,7 +17,7 @@ export default function Error({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] px-4">
-      <h2 className="text-2xl font-bold text-slate-900 mb-4">Something went wrong!</h2>
+      <h2 className="text-2xl font-bold text-text-primary mb-4">Something went wrong!</h2>
       <Button
         onClick={
           // Attempt to recover by trying to re-render the segment

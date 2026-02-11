@@ -31,15 +31,15 @@ export function CompensationBreakdown() {
   };
 
   return (
-    <Card className="bg-white border-slate-200">
+    <Card className="bg-surface border-border">
       <CardHeader>
-        <CardTitle className="text-2xl text-slate-900">Break Down Your Compensation</CardTitle>
+        <CardTitle className="text-2xl text-text-primary">Break Down Your Compensation</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Input Form */}
         <div className="space-y-4">
           <div>
-            <Label htmlFor="base" className="text-slate-700">Base Salary (Annual)</Label>
+            <Label htmlFor="base" className="text-text-secondary">Base Salary (Annual)</Label>
             <Input
               id="base"
               type="text"
@@ -51,7 +51,7 @@ export function CompensationBreakdown() {
           </div>
 
           <div>
-            <Label htmlFor="bonus" className="text-slate-700">Annual Bonus (Target)</Label>
+            <Label htmlFor="bonus" className="text-text-secondary">Annual Bonus (Target)</Label>
             <Input
               id="bonus"
               type="text"
@@ -63,7 +63,7 @@ export function CompensationBreakdown() {
           </div>
 
           <div>
-            <Label htmlFor="equity" className="text-slate-700">Equity/RSUs (Annual Value)</Label>
+            <Label htmlFor="equity" className="text-text-secondary">Equity/RSUs (Annual Value)</Label>
             <Input
               id="equity"
               type="text"
@@ -72,13 +72,13 @@ export function CompensationBreakdown() {
               onChange={(e) => setEquity(formatCurrency(e.target.value))}
               className="mt-1.5"
             />
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-text-muted mt-1">
               Divide total grant by vesting years (usually 4)
             </p>
           </div>
 
           <div>
-            <Label htmlFor="signOn" className="text-slate-700">Sign-On Bonus (One-Time)</Label>
+            <Label htmlFor="signOn" className="text-text-secondary">Sign-On Bonus (One-Time)</Label>
             <Input
               id="signOn"
               type="text"
@@ -90,7 +90,7 @@ export function CompensationBreakdown() {
           </div>
 
           <div>
-            <Label htmlFor="benefits" className="text-slate-700">Benefits Value (Annual)</Label>
+            <Label htmlFor="benefits" className="text-text-secondary">Benefits Value (Annual)</Label>
             <Input
               id="benefits"
               type="text"
@@ -99,7 +99,7 @@ export function CompensationBreakdown() {
               onChange={(e) => setBenefits(formatCurrency(e.target.value))}
               className="mt-1.5"
             />
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-text-muted mt-1">
               Health insurance, 401k match, perks (average: $15k)
             </p>
           </div>
@@ -107,17 +107,17 @@ export function CompensationBreakdown() {
 
         {/* Results */}
         {totalComp > 0 && (
-          <div className="mt-8 pt-8 border-t border-slate-200 space-y-6">
+          <div className="mt-8 pt-8 border-t border-border space-y-6">
             {/* Total Comp Summary */}
-            <div className="bg-emerald-50 rounded-lg p-6 border border-emerald-200">
-              <div className="text-sm font-medium text-emerald-700 mb-1">
+            <div className="bg-primary-subtle rounded-lg p-6 border border-primary-subtle">
+              <div className="text-sm font-medium text-primary-hover mb-1">
                 Total Annual Compensation
               </div>
-              <div className="text-4xl font-black text-emerald-700">
+              <div className="text-4xl font-black text-primary-hover">
                 ${totalComp.toLocaleString()}
               </div>
               {parseNumber(signOn) > 0 && (
-                <div className="text-sm text-slate-600 mt-3">
+                <div className="text-sm text-text-secondary mt-3">
                   First year total: <strong>${firstYearComp.toLocaleString()}</strong>
                 </div>
               )}
@@ -125,19 +125,19 @@ export function CompensationBreakdown() {
 
             {/* Breakdown Chart */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-slate-900">Compensation Breakdown</h3>
+              <h3 className="font-semibold text-text-primary">Compensation Breakdown</h3>
 
               {parseNumber(baseSalary) > 0 && (
                 <div>
                   <div className="flex justify-between text-sm mb-1.5">
-                    <span className="text-slate-700">Base Salary</span>
-                    <span className="font-medium text-slate-900">
+                    <span className="text-text-secondary">Base Salary</span>
+                    <span className="font-medium text-text-primary">
                       ${parseNumber(baseSalary).toLocaleString()} ({calculatePercentage(baseSalary)}%)
                     </span>
                   </div>
-                  <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-3 bg-surface-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-emerald-600 rounded-full"
+                      className="h-full bg-primary rounded-full"
                       style={{ width: `${calculatePercentage(baseSalary)}%` }}
                     />
                   </div>
@@ -147,14 +147,14 @@ export function CompensationBreakdown() {
               {parseNumber(bonus) > 0 && (
                 <div>
                   <div className="flex justify-between text-sm mb-1.5">
-                    <span className="text-slate-700">Annual Bonus</span>
-                    <span className="font-medium text-slate-900">
+                    <span className="text-text-secondary">Annual Bonus</span>
+                    <span className="font-medium text-text-primary">
                       ${parseNumber(bonus).toLocaleString()} ({calculatePercentage(bonus)}%)
                     </span>
                   </div>
-                  <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-3 bg-surface-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-emerald-500 rounded-full"
+                      className="h-full bg-primary-subtle0 rounded-full"
                       style={{ width: `${calculatePercentage(bonus)}%` }}
                     />
                   </div>
@@ -164,14 +164,14 @@ export function CompensationBreakdown() {
               {parseNumber(equity) > 0 && (
                 <div>
                   <div className="flex justify-between text-sm mb-1.5">
-                    <span className="text-slate-700">Equity (Annual)</span>
-                    <span className="font-medium text-slate-900">
+                    <span className="text-text-secondary">Equity (Annual)</span>
+                    <span className="font-medium text-text-primary">
                       ${parseNumber(equity).toLocaleString()} ({calculatePercentage(equity)}%)
                     </span>
                   </div>
-                  <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-3 bg-surface-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-emerald-400 rounded-full"
+                      className="h-full bg-primary rounded-full"
                       style={{ width: `${calculatePercentage(equity)}%` }}
                     />
                   </div>
@@ -181,14 +181,14 @@ export function CompensationBreakdown() {
               {parseNumber(benefits) > 0 && (
                 <div>
                   <div className="flex justify-between text-sm mb-1.5">
-                    <span className="text-slate-700">Benefits</span>
-                    <span className="font-medium text-slate-900">
+                    <span className="text-text-secondary">Benefits</span>
+                    <span className="font-medium text-text-primary">
                       ${parseNumber(benefits).toLocaleString()} ({calculatePercentage(benefits)}%)
                     </span>
                   </div>
-                  <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-3 bg-surface-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-emerald-300 rounded-full"
+                      className="h-full bg-primary-subtle rounded-full"
                       style={{ width: `${calculatePercentage(benefits)}%` }}
                     />
                   </div>
@@ -200,23 +200,23 @@ export function CompensationBreakdown() {
 
             {/* Cash vs Equity Breakdown */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-slate-50 rounded-lg">
-                <div className="text-xs text-slate-600 mb-1">Cash Compensation</div>
-                <div className="text-2xl font-bold text-slate-900">
+              <div className="text-center p-4 bg-surface-subtle rounded-lg">
+                <div className="text-xs text-text-secondary mb-1">Cash Compensation</div>
+                <div className="text-2xl font-bold text-text-primary">
                   ${(parseNumber(baseSalary) + parseNumber(bonus)).toLocaleString()}
                 </div>
               </div>
-              <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                <div className="text-xs text-slate-600 mb-1">Equity + Benefits</div>
-                <div className="text-2xl font-bold text-emerald-700">
+              <div className="text-center p-4 bg-primary-subtle rounded-lg">
+                <div className="text-xs text-text-secondary mb-1">Equity + Benefits</div>
+                <div className="text-2xl font-bold text-primary-hover">
                   ${(parseNumber(equity) + parseNumber(benefits)).toLocaleString()}
                 </div>
               </div>
             </div>
 
             {/* Insights */}
-            <div className="bg-slate-50 rounded-lg p-4 text-sm text-slate-600">
-              <strong className="text-slate-900">💡 Insight:</strong>{" "}
+            <div className="bg-surface-subtle rounded-lg p-4 text-sm text-text-secondary">
+              <strong className="text-text-primary">💡 Insight:</strong>{" "}
               {parseNumber(equity) / totalComp > 0.3
                 ? "Your package is equity-heavy, which means more upside potential but also more risk."
                 : parseNumber(baseSalary) / totalComp > 0.7

@@ -14,10 +14,10 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-surface">
       <div className="text-center py-24">
         <h1 className="text-4xl font-bold">404 - Page Not Found</h1>
-        <p className="text-slate-600 mt-4">The page you requested could not be found.</p>
+        <p className="text-text-secondary mt-4">The page you requested could not be found.</p>
       </div>
     </main>
   );

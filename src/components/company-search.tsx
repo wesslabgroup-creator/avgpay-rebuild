@@ -64,19 +64,19 @@ export function CompanySearch() {
     <div className="space-y-6">
       {/* Search Input */}
       <div className="relative max-w-md mx-auto">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
         <input
           ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search companies..."
-          className="w-full pl-12 pr-12 py-3 bg-white border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all"
+          className="w-full pl-12 pr-12 py-3 bg-surface border-2 border-border rounded-xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-ring/10 transition-all"
         />
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-secondary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -86,8 +86,8 @@ export function CompanySearch() {
       {/* Company Grid */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-500 border-t-transparent mx-auto"></div>
-          <p className="text-slate-500 mt-4">Loading companies...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto"></div>
+          <p className="text-text-muted mt-4">Loading companies...</p>
         </div>
       ) : filteredCompanies.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -95,31 +95,31 @@ export function CompanySearch() {
             <Link
               key={company.id}
               href={`/company/${encodeURIComponent(company.name)}`}
-              className="group p-6 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:shadow-lg transition-all"
+              className="group p-6 rounded-xl bg-surface border border-border hover:border-primary hover:shadow-lg transition-all"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                  <h3 className="text-xl font-bold text-text-primary group-hover:text-primary transition-colors">
                     {company.name}
                   </h3>
-                  <p className="text-sm text-slate-500 mt-1">
+                  <p className="text-sm text-text-muted mt-1">
                     View salary data →
                   </p>
                 </div>
-                <Building2 className="w-8 h-8 text-slate-300 group-hover:text-emerald-500 transition-colors" />
+                <Building2 className="w-8 h-8 text-text-muted group-hover:text-primary transition-colors" />
               </div>
             </Link>
           ))}
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-slate-500">No companies found matching &quot;{query}&quot;</p>
+          <p className="text-text-muted">No companies found matching &quot;{query}&quot;</p>
         </div>
       )}
 
       {/* Results Count */}
       {!isLoading && (
-        <p className="text-center text-sm text-slate-500">
+        <p className="text-center text-sm text-text-muted">
           Showing {filteredCompanies.length} of {companies.length} companies
         </p>
       )}

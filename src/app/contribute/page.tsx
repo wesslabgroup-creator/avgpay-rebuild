@@ -95,13 +95,13 @@ export default function ContributePage() {
 
   if (isSuccess) {
     return (
-      <main className="min-h-screen bg-slate-50 pt-24 pb-12">
+      <main className="min-h-screen bg-surface-subtle pt-24 pb-12">
         <div className="max-w-2xl mx-auto px-6">
-          <Card className="bg-white border-emerald-200 shadow-lg">
+          <Card className="bg-surface border-primary-subtle shadow-lg">
             <CardContent className="p-12 text-center">
-              <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto mb-6" />
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Thank You!</h2>
-              <p className="text-lg text-slate-600">
+              <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-6" />
+              <h2 className="text-3xl font-bold text-text-primary mb-4">Thank You!</h2>
+              <p className="text-lg text-text-secondary">
                 Your submission has been received and is pending review.
                 Once verified, it will help others negotiate better compensation.
               </p>
@@ -120,33 +120,33 @@ export default function ContributePage() {
     );
   }
 
-  const inputClass = "w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20";
-  const selectClass = "w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20";
-  const labelClass = "block text-sm font-medium text-slate-700 mb-1";
+  const inputClass = "w-full px-4 py-3 bg-surface border border-border rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring/20";
+  const selectClass = "w-full px-4 py-3 bg-surface border border-border rounded-lg text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring/20";
+  const labelClass = "block text-sm font-medium text-text-secondary mb-1";
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-24 pb-12">
+    <main className="min-h-screen bg-surface-subtle pt-24 pb-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="text-center space-y-4 mb-8">
-          <h1 className="text-4xl font-bold text-slate-900">Contribute Your Salary</h1>
-          <p className="text-xl text-slate-600">Help build a more transparent compensation landscape. Your data stays anonymous.</p>
+          <h1 className="text-4xl font-bold text-text-primary">Contribute Your Salary</h1>
+          <p className="text-xl text-text-secondary">Help build a more transparent compensation landscape. Your data stays anonymous.</p>
         </div>
 
-        <Card className="bg-white border-slate-200 shadow-lg">
+        <Card className="bg-surface border-border shadow-lg">
           <CardHeader>
-            <CardTitle className="text-slate-900 text-2xl">Salary Contribution Form</CardTitle>
-            <CardDescription className="text-slate-500">
-              Fields marked with <span className="text-red-500">*</span> are required.
+            <CardTitle className="text-text-primary text-2xl">Salary Contribution Form</CardTitle>
+            <CardDescription className="text-text-muted">
+              Fields marked with <span className="text-error">*</span> are required.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Company & Role */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Professional Details</h3>
+                <h3 className="text-lg font-semibold text-text-primary border-b border-surface-muted pb-2">Professional Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>Company Name <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>Company Name <span className="text-error">*</span></label>
                     <input
                       type="text"
                       required
@@ -157,7 +157,7 @@ export default function ContributePage() {
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>Job Title <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>Job Title <span className="text-error">*</span></label>
                     <input
                       type="text"
                       required
@@ -171,7 +171,7 @@ export default function ContributePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>City <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>City <span className="text-error">*</span></label>
                     <input
                       type="text"
                       required
@@ -182,7 +182,7 @@ export default function ContributePage() {
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>State <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>State <span className="text-error">*</span></label>
                     <select
                       required
                       value={formData.state}
@@ -199,7 +199,7 @@ export default function ContributePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>Experience Level <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>Experience Level <span className="text-error">*</span></label>
                     <select
                       value={formData.experienceLevel}
                       onChange={e => handleChange('experienceLevel', e.target.value)}
@@ -227,10 +227,10 @@ export default function ContributePage() {
 
               {/* Compensation */}
               <div className="space-y-4 pt-4">
-                <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Compensation Details</h3>
+                <h3 className="text-lg font-semibold text-text-primary border-b border-surface-muted pb-2">Compensation Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className={labelClass}>Base Salary <span className="text-red-500">*</span></label>
+                    <label className={labelClass}>Base Salary <span className="text-error">*</span></label>
                     <input
                       type="number"
                       required
@@ -268,7 +268,7 @@ export default function ContributePage() {
 
               {/* Contact */}
               <div className="space-y-4 pt-4">
-                <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-100 pb-2">Contact Info (Optional)</h3>
+                <h3 className="text-lg font-semibold text-text-primary border-b border-surface-muted pb-2">Contact Info (Optional)</h3>
                 <div>
                   <label className={labelClass}>Email Address</label>
                   <input
@@ -278,16 +278,16 @@ export default function ContributePage() {
                     placeholder="you@example.com"
                     className={inputClass}
                   />
-                  <p className="mt-2 text-xs text-slate-500 italic">
+                  <p className="mt-2 text-xs text-text-muted italic">
                     Your email is never shared. We only use it to follow up if there are questions about your data verification.
                   </p>
                 </div>
               </div>
 
               {/* Privacy Message */}
-              <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-100 text-sm text-slate-600">
-                <p className="font-semibold text-emerald-800 mb-1">Privacy Promise</p>
-                <ul className="space-y-1 text-slate-600">
+              <div className="p-4 bg-primary-subtle rounded-lg border border-primary-subtle text-sm text-text-secondary">
+                <p className="font-semibold text-success-foreground mb-1">Privacy Promise</p>
+                <ul className="space-y-1 text-text-secondary">
                   <li>• Your submission is anonymized immediately</li>
                   <li>• We never share individual data points</li>
                   <li>• Only aggregated statistics are shown publicly</li>
@@ -295,7 +295,7 @@ export default function ContributePage() {
               </div>
 
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                <div className="p-4 bg-error-subtle border border-error-subtle rounded-lg text-error text-sm">
                   {error}
                 </div>
               )}
@@ -303,7 +303,7 @@ export default function ContributePage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-6 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300"
+                className="w-full py-6 text-lg font-semibold bg-primary hover:bg-primary-hover disabled:bg-surface-muted"
               >
                 {isLoading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Submitting...</> : "Submit Anonymously"}
               </Button>

@@ -69,7 +69,7 @@ export default function JobDetailPage() {
   };
 
   if (isLoading) return <div className="flex justify-center items-center min-h-screen">Loading job details...</div>;
-  if (error || !data) return <div className="flex justify-center items-center min-h-screen text-red-500">{error || "No data available."}</div>;
+  if (error || !data) return <div className="flex justify-center items-center min-h-screen text-error">{error || "No data available."}</div>;
 
   const { jobData, topCompanies, topLocations, bottomLocations, salaryDistribution, relatedJobs } = data;
 
@@ -105,52 +105,52 @@ export default function JobDetailPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </Head>
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen bg-surface">
         <div className="max-w-6xl mx-auto px-6 py-12 space-y-8">
-          <Button variant="ghost" onClick={() => router.back()} className="text-emerald-600 hover:text-emerald-700 -ml-4">
+          <Button variant="ghost" onClick={() => router.back()} className="text-primary hover:text-primary-hover -ml-4">
             <ChevronLeft className="w-4 h-4 mr-1" /> Back to Salaries
           </Button>
 
           {/* Hero Section */}
           <div className="text-left space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900">{jobData.title} Salary & Career Data</h1>
-            <p className="text-xl text-slate-600 max-w-3xl">{jobData.description}</p>
+            <h1 className="text-4xl font-bold tracking-tight text-text-primary">{jobData.title} Salary & Career Data</h1>
+            <p className="text-xl text-text-secondary max-w-3xl">{jobData.description}</p>
           </div>
 
           {/* Aggregated Statistics */}
-          <Card className="bg-white border-emerald-500/50 shadow-sm">
+          <Card className="bg-surface border-primary/50 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-emerald-600" />
+              <CardTitle className="text-lg text-text-primary flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-primary" />
                 Overall Compensation for {jobData.title}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-emerald-600">{formatCurrency(jobData?.global_median_comp)}</p>
-                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">Median Total Comp</p>
+                  <p className="text-4xl font-bold text-primary">{formatCurrency(jobData?.global_median_comp)}</p>
+                  <p className="text-sm font-medium text-text-muted uppercase mt-1">Median Total Comp</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-800">{formatCurrency(jobData?.global_min_comp)}</p>
-                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">Min Comp</p>
+                  <p className="text-3xl font-semibold text-text-primary">{formatCurrency(jobData?.global_min_comp)}</p>
+                  <p className="text-sm font-medium text-text-muted uppercase mt-1">Min Comp</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-800">{formatCurrency(jobData?.global_max_comp)}</p>
-                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">Max Comp</p>
+                  <p className="text-3xl font-semibold text-text-primary">{formatCurrency(jobData?.global_max_comp)}</p>
+                  <p className="text-sm font-medium text-text-muted uppercase mt-1">Max Comp</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-800">{(jobData?.global_count || 0).toLocaleString()}</p>
-                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">Data Points</p>
+                  <p className="text-3xl font-semibold text-text-primary">{(jobData?.global_count || 0).toLocaleString()}</p>
+                  <p className="text-sm font-medium text-text-muted uppercase mt-1">Data Points</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Salary Distribution */}
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-surface border-border">
             <CardHeader>
-              <CardTitle className="text-lg text-slate-900">Salary Distribution</CardTitle>
+              <CardTitle className="text-lg text-text-primary">Salary Distribution</CardTitle>
             </CardHeader>
             <CardContent>
               <SalaryDistributionChart data={salaryDistribution.map(s => s.total_comp)} />
@@ -158,10 +158,10 @@ export default function JobDetailPage() {
           </Card>
 
           {/* Company Rankings */}
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-surface border-border">
             <CardHeader>
-              <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-slate-600" />
+              <CardTitle className="text-lg text-text-primary flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-text-secondary" />
                 Who Pays the Most?
               </CardTitle>
             </CardHeader>
@@ -169,7 +169,7 @@ export default function JobDetailPage() {
               <DataTable
                 headers={[{ label: "Company", key: "company" }, { label: "Median Comp", key: "median" }]}
                 rows={topCompanies.map(r => [
-                  <Link key={r.company_name} href={`/company/${r.company_name}`} className="text-emerald-600 hover:underline">{r.company_name}</Link>,
+                  <Link key={r.company_name} href={`/company/${r.company_name}`} className="text-primary hover:underline">{r.company_name}</Link>,
                   formatCurrency(r.total_comp)
                 ])}
               />
@@ -178,10 +178,10 @@ export default function JobDetailPage() {
 
           {/* Location Rankings */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-surface border-border">
               <CardHeader>
-                <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-emerald-600" />
+                <CardTitle className="text-lg text-text-primary flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-primary" />
                   Highest Paying Locations
                 </CardTitle>
               </CardHeader>
@@ -192,10 +192,10 @@ export default function JobDetailPage() {
                 />
               </CardContent>
             </Card>
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-surface border-border">
               <CardHeader>
-                <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
-                  <TrendingDown className="w-5 h-5 text-red-500" />
+                <CardTitle className="text-lg text-text-primary flex items-center gap-2">
+                  <TrendingDown className="w-5 h-5 text-error" />
                   Lowest Paying Locations
                 </CardTitle>
               </CardHeader>
@@ -209,10 +209,10 @@ export default function JobDetailPage() {
           </div>
 
           {/* Related Jobs */}
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-surface border-border">
             <CardHeader>
-              <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
-                <Users className="w-5 h-5 text-slate-600" />
+              <CardTitle className="text-lg text-text-primary flex items-center gap-2">
+                <Users className="w-5 h-5 text-text-secondary" />
                 Related Jobs
               </CardTitle>
             </CardHeader>

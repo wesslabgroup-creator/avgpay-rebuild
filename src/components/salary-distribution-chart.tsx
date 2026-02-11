@@ -8,7 +8,7 @@ interface SalaryDistributionChartProps {
 
 export const SalaryDistributionChart = ({ data }: SalaryDistributionChartProps) => {
   if (!data || data.length === 0) {
-    return <p className="text-slate-500 text-center">Not enough data to display a chart.</p>;
+    return <p className="text-text-muted text-center">Not enough data to display a chart.</p>;
   }
 
   // Simple histogram logic

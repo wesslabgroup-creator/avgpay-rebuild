@@ -11,15 +11,15 @@ export const metadata: Metadata = {
 
 export default function CompareIndexPage() {
   return (
-    <main className="min-h-screen bg-slate-50 pt-24 pb-12">
+    <main className="min-h-screen bg-surface-subtle pt-24 pb-12">
       <section className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-10 space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary-subtle bg-primary-subtle px-4 py-2 text-sm font-medium text-primary-hover">
             <Scale className="h-4 w-4" />
             High-Demand Offer Matchups
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900">Compare Top Compensation Paths</h1>
-          <p className="max-w-3xl mx-auto text-lg text-slate-600">
+          <h1 className="text-4xl md:text-5xl font-bold text-text-primary">Compare Top Compensation Paths</h1>
+          <p className="max-w-3xl mx-auto text-lg text-text-secondary">
             Start with the most requested role/company combinations from our existing market interest trends.
           </p>
         </div>
@@ -29,18 +29,18 @@ export default function CompareIndexPage() {
             <Link
               key={comparison.slug}
               href={`/compare/${comparison.slug}`}
-              className="group rounded-2xl border border-slate-200 bg-white p-6 hover:border-emerald-300 hover:shadow-md transition-all"
+              className="group rounded-2xl border border-border bg-surface p-6 hover:border-primary hover:shadow-md transition-all"
             >
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-700 mb-3">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary-hover mb-3">
                 <Sparkles className="h-4 w-4" />
                 Curated Comparison
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 group-hover:text-emerald-600">{comparison.title}</h2>
-              <p className="mt-3 text-slate-600">{comparison.summary}</p>
-              <div className="mt-4 text-sm text-slate-500">
-                <p><span className="font-semibold text-slate-700">Why demand is high:</span> {comparison.whyPopular}</p>
+              <h2 className="text-2xl font-bold text-text-primary group-hover:text-primary">{comparison.title}</h2>
+              <p className="mt-3 text-text-secondary">{comparison.summary}</p>
+              <div className="mt-4 text-sm text-text-muted">
+                <p><span className="font-semibold text-text-secondary">Why demand is high:</span> {comparison.whyPopular}</p>
               </div>
-              <div className="mt-4 inline-flex items-center gap-2 text-emerald-700 font-semibold">
+              <div className="mt-4 inline-flex items-center gap-2 text-primary-hover font-semibold">
                 Explore comparison
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </div>
