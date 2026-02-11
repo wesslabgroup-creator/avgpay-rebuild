@@ -264,9 +264,14 @@ export async function generateTimelessAnalysis(
       contextBlock: comparisonContext,
     };
   } else {
+    const metricsEntityType: EntityMetricsScope['entityType'] =
+      entityType === 'Company' || entityType === 'City' || entityType === 'Job'
+        ? entityType
+        : undefined;
+
     const inferredScope: EntityMetricsScope = {
       ...(contextData?.metricsScope as EntityMetricsScope | undefined),
-      entityType,
+      entityType: metricsEntityType,
       entityName,
       state: typeof contextData?.state === 'string' ? contextData.state : undefined,
     };
