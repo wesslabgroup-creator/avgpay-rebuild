@@ -51,6 +51,26 @@ CREATE TABLE salaries (
   submitted_at timestamp with time zone DEFAULT now()
 );
 
+
+CREATE TABLE comparisons (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  entity_a_type text NOT NULL,
+  entity_a_id uuid NOT NULL,
+  entity_a_name text NOT NULL,
+  entity_a_slug text NOT NULL,
+  entity_b_type text NOT NULL,
+  entity_b_id uuid NOT NULL,
+  entity_b_name text NOT NULL,
+  entity_b_slug text NOT NULL,
+  stats_snapshot jsonb,
+  generated_insights jsonb,
+  status text NOT NULL DEFAULT 'completed',
+  generated_at timestamp with time zone,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT comparisons_entity_pair_unique UNIQUE (entity_a_type, entity_a_id, entity_b_type, entity_b_id)
+);
+
 CREATE TABLE user_submissions (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   email text,
@@ -78,6 +98,7 @@ CREATE INDEX idx_salaries_role ON salaries(role_id);
 CREATE INDEX idx_salaries_location ON salaries(location_id);
 CREATE INDEX idx_salaries_total_comp ON salaries(total_comp);
 
+CREATE INDEX idx_comparisons_status_updated_at ON comparisons(status, updated_at DESC);
 -- Insert sample data
 INSERT INTO companies (name, slug, industry) VALUES 
   ('Google', 'google', 'Technology'),

@@ -164,3 +164,24 @@ model EmailSubscription {
   active      Boolean  @default(true)
   subscribedAt DateTime @default(now())
 }
+
+model Comparison {
+  id             String   @id @default(cuid())
+  entityAType    String
+  entityAId      String
+  entityAName    String
+  entityASlug    String
+  entityBType    String
+  entityBId      String
+  entityBName    String
+  entityBSlug    String
+  statsSnapshot  Json?
+  insights       Json?
+  status         String   @default("completed") // pending, processing, completed, failed
+  generatedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([entityAType, entityAId, entityBType, entityBId])
+  @@index([status, updatedAt])
+}
