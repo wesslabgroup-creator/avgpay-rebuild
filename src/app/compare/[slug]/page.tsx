@@ -5,10 +5,68 @@ import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { ComparisonInsights } from "@/components/comparison-insights";
 import { supabaseAdmin } from "@/lib/supabaseClient";
+import { generateComparisonAnalysis } from "@/lib/comparisonEngine";
 import {
   CURATED_COMPARISONS,
   getComparisonBySlug,
 } from "@/app/compare/data/curated-comparisons";
+
+
+interface RuntimeComparison {
+  slug: string;
+  title: string;
+  description: string;
+  whyPopular: string;
+  companies: [string, string];
+  roles: string[];
+  takeaways: string[];
+  faqs: Array<{ question: string; answer: string }>;
+  cta: { label: string; href: string };
+}
+
+function toDisplayEntity(raw: string) {
+  return raw
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function parseDynamicComparison(slug: string): RuntimeComparison | null {
+  const [left, right] = slug.split('-vs-');
+  if (!left || !right) return null;
+
+  const entityA = toDisplayEntity(left);
+  const entityB = toDisplayEntity(right);
+
+  return {
+    slug,
+    title: `${entityA} vs ${entityB}`,
+    description: `Data-backed compensation and market narrative comparison for ${entityA} and ${entityB}.`,
+    whyPopular: 'This page is generated on-demand when users compare two entities with overlapping salary bands.',
+    companies: [entityA, entityB],
+    roles: ['Software Engineer'],
+    takeaways: [
+      `Compare pay mix, compensation volatility, and expected promotion cadence between ${entityA} and ${entityB}.`,
+      'Use median and distribution deltas to benchmark both short-term cash flow and long-term upside.',
+      'Treat candidate-market fit as a first-order variable when two packages are close on headline compensation.',
+    ],
+    faqs: [
+      {
+        question: `How should I compare ${entityA} vs ${entityB} beyond salary?`,
+        answer: 'Evaluate base salary, variable compensation mix, expected vesting horizon, and operating culture trade-offs together instead of isolating one metric.',
+      },
+      {
+        question: 'Why do median compensation numbers differ from my offer?',
+        answer: 'Offer outcomes vary by level, team, market, and timing. Use medians as a baseline and anchor negotiations with your scope and leveling evidence.',
+      },
+    ],
+    cta: {
+      label: 'Analyze my offer',
+      href: '/tools/offer-analyzer',
+    },
+  };
+}
 
 interface ComparisonPageProps {
   params: Promise<{ slug: string }>;
@@ -52,8 +110,6 @@ interface EntityCompensationProfile {
   topLocations: EntityLocationInsight[];
 }
 
-const COMPARISON_ANALYSIS_TABLE = process.env.COMPARISON_ANALYSIS_TABLE ?? "Comparison";
-
 function percentile(values: number[], p: number) {
   if (!values.length) return 0;
   const sorted = [...values].sort((a, b) => a - b);
@@ -70,21 +126,6 @@ function median(values: number[]) {
 
 function formatCurrency(value: number) {
   return `$${Math.round(value).toLocaleString()}`;
-}
-
-function normalizeRecordValue(value: unknown) {
-  if (typeof value === "string") return value;
-  if (Array.isArray(value)) return value.join(" ");
-  return "";
-}
-
-function getNarrativeField(record: Record<string, unknown>, keys: string[], fallback: string) {
-  for (const key of keys) {
-    const candidate = normalizeRecordValue(record[key]);
-    if (candidate.trim().length > 0) return candidate;
-  }
-
-  return fallback;
 }
 
 function getDefaultNarrative(entityA: string, entityB: string): ComparisonNarrative {
@@ -176,75 +217,13 @@ async function getCompensationProfile(company: string, role: string): Promise<En
   };
 }
 
-async function getGeneratedComparisonNarrative(
-  slug: string,
-  entityA: string,
-  entityB: string,
-): Promise<ComparisonNarrative> {
-  const fields = ["generatedAnalysis", "generated_analysis", "analysis", "narrative"];
-
-  const { data } = await supabaseAdmin
-    .from(COMPARISON_ANALYSIS_TABLE)
-    .select(`slug, ${fields.join(", ")}`)
-    .eq("slug", slug)
-    .maybeSingle();
-
-  const comparisonRecord = data as Record<string, unknown> | null;
-  const rawNarrative = fields
-    .map((field) => comparisonRecord?.[field])
-    .find((value) => typeof value === "object" && value !== null) as Record<string, unknown> | undefined;
-
-  const narrativeSource = rawNarrative ?? {};
-  const defaults = getDefaultNarrative(entityA, entityB);
-
-  return {
-    philosophicalDivergence: getNarrativeField(
-      narrativeSource,
-      ["Philosophical Divergence", "philosophical_divergence", "philosophicalDivergence"],
-      defaults.philosophicalDivergence,
-    ),
-    culturalTradeOff: getNarrativeField(
-      narrativeSource,
-      ["Cultural Trade-off", "cultural_tradeoff", "culturalTradeOff"],
-      defaults.culturalTradeOff,
-    ),
-    winnerProfileA: getNarrativeField(
-      narrativeSource,
-      [
-        "Winner Profile A-fit",
-        "winner_profile_a_fit",
-        "winnerProfileAFit",
-        "a_fit",
-        "winnerProfileA",
-      ],
-      defaults.winnerProfileA,
-    ),
-    winnerProfileB: getNarrativeField(
-      narrativeSource,
-      [
-        "Winner Profile B-fit",
-        "winner_profile_b_fit",
-        "winnerProfileBFit",
-        "b_fit",
-        "winnerProfileB",
-      ],
-      defaults.winnerProfileB,
-    ),
-    tradeOffSummary: getNarrativeField(
-      narrativeSource,
-      ["trade_off_summary", "tradeOffSummary", "Trade-off Summary", "summary"],
-      defaults.tradeOffSummary,
-    ),
-  };
-}
-
 export async function generateStaticParams() {
   return CURATED_COMPARISONS.map((comparison) => ({ slug: comparison.slug }));
 }
 
 export async function generateMetadata({ params }: ComparisonPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const comparison = getComparisonBySlug(slug);
+  const comparison = getComparisonBySlug(slug) ?? parseDynamicComparison(slug);
 
   if (!comparison) {
     return {
@@ -275,7 +254,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
 
 export default async function ComparisonPage({ params }: ComparisonPageProps) {
   const { slug } = await params;
-  const comparison = getComparisonBySlug(slug);
+  const comparison = getComparisonBySlug(slug) ?? parseDynamicComparison(slug);
 
   if (!comparison) {
     notFound();
@@ -284,11 +263,21 @@ export default async function ComparisonPage({ params }: ComparisonPageProps) {
   const [entityA, entityB] = comparison.companies;
   const role = comparison.roles[0] ?? "Software Engineer";
 
-  const [profileA, profileB, narrative] = await Promise.all([
+  const defaults = getDefaultNarrative(entityA, entityB);
+
+  const [profileA, profileB, generated] = await Promise.all([
     getCompensationProfile(entityA, role),
     getCompensationProfile(entityB, role),
-    getGeneratedComparisonNarrative(comparison.slug, entityA, entityB),
+    generateComparisonAnalysis(entityA, entityB, role, comparison.slug),
   ]);
+
+  const narrative: ComparisonNarrative = {
+    philosophicalDivergence: generated.philosophical_divergence || defaults.philosophicalDivergence,
+    culturalTradeOff: generated.cultural_tradeoff || defaults.culturalTradeOff,
+    winnerProfileA: `${entityA}-fit: ${generated.winner_profile || defaults.winnerProfileA}`,
+    winnerProfileB: `${entityB}-fit: ${generated.winner_profile || defaults.winnerProfileB}`,
+    tradeOffSummary: generated.cultural_tradeoff || defaults.tradeOffSummary,
+  };
 
   const statsA = profileA.stats;
   const statsB = profileB.stats;

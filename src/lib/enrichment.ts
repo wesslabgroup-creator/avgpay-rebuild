@@ -12,7 +12,7 @@ import {
 // Types
 // ============================================================
 
-export type EntityType = 'Company' | 'City' | 'Job';
+export type EntityType = 'Company' | 'City' | 'Job' | 'Combo' | 'Comparison';
 
 export interface CompanyAnalysis {
   comp_philosophy: string;
@@ -35,7 +35,21 @@ export interface JobAnalysis {
   [key: string]: string;
 }
 
-export type AnalysisResult = CompanyAnalysis | CityAnalysis | JobAnalysis;
+export interface ComboAnalysis {
+  local_market_leverage: string;
+  disposable_income_index: string;
+  commute_economics: string;
+  [key: string]: string;
+}
+
+export interface ComparisonAnalysis {
+  philosophical_divergence: string;
+  cultural_tradeoff: string;
+  winner_profile: string;
+  [key: string]: string;
+}
+
+export type AnalysisResult = CompanyAnalysis | CityAnalysis | JobAnalysis | ComboAnalysis | ComparisonAnalysis;
 
 interface PromptContextSnapshot {
   mode: 'single' | 'comparison';
@@ -99,6 +113,20 @@ IF ENTITY_TYPE == "Job":
   "remote_viability": "Is this role historically tied to an office, or does it command a 'Remote Premium'?"
 }
 
+IF ENTITY_TYPE == "Combo":
+{
+  "local_market_leverage": "How does this specific job title perform in this specific city? Is there a talent shortage or surplus here?",
+  "disposable_income_index": "After local taxes and specific city costs, what is the 'real' quality of life for this role?",
+  "commute_economics": "Does this role in this city typically require a physical presence in a high-cost hub or is it suburban-friendly?"
+}
+
+IF ENTITY_TYPE == "Comparison":
+{
+  "philosophical_divergence": "Contrast the two entities. One might prioritize 'Base Salary' while the other prioritizes 'Equity/RSUs.' Explain the 'Why' behind these different paths.",
+  "cultural_tradeoff": "What does a candidate sacrifice when choosing A over B? (e.g., Stability vs. Rapid Growth).",
+  "winner_profile": "Describe the specific type of professional who thrives at Entity A vs. Entity B."
+}
+
 **DYNAMIC SCHEMA EXPANSION:**
 If you identify a highly relevant data point (e.g., a specific tax loophole, a notorious vesting schedule, or a unique certification requirement) that provides extreme value, ADD a new key-value pair to the JSON with a descriptive key name (e.g., "tax_alert").`;
 
@@ -115,7 +143,11 @@ const REQUIRED_KEYS: Record<EntityType, string[]> = {
   Company: ['comp_philosophy', 'benefit_sentiment', 'hiring_bar'],
   City: ['buying_power', 'market_drivers', 'lifestyle_economics'],
   Job: ['career_leverage', 'skill_premium', 'remote_viability'],
+  Combo: ['local_market_leverage', 'disposable_income_index', 'commute_economics'],
+  Comparison: ['philosophical_divergence', 'cultural_tradeoff', 'winner_profile'],
 };
+
+const COMPARATIVE_LANGUAGE_PATTERN = /\b(whereas|alternatively|in contrast|on the other hand|however)\b/i;
 
 export function validateAnalysis(
   jsonResponse: Record<string, string>,
@@ -149,6 +181,13 @@ export function validateAnalysis(
     return { valid: false, reason: 'Contains banned temporal words (2024, 2025, currently, now). Must be timeless.' };
   }
 
+  if (entityType === 'Comparison' && !COMPARATIVE_LANGUAGE_PATTERN.test(jsonStr)) {
+    return {
+      valid: false,
+      reason: 'Comparison analysis must include comparative language such as "whereas", "alternatively", or "in contrast".',
+    };
+  }
+
   return { valid: true };
 }
 
@@ -180,7 +219,7 @@ export async function generateTimelessAnalysis(
   let userPrompt = `ENTITY_TYPE: "${entityType}"\nENTITY_NAME: "${entityName}"\n`;
   let statsSnapshot: PromptContextSnapshot | undefined;
 
-  if (entityType === 'City' && contextData) {
+  if ((entityType === 'City' || entityType === 'Combo') && contextData) {
     userPrompt += `\nADDITIONAL CONTEXT:\n`;
     if (contextData.stateIncomeTaxStatus) {
       userPrompt += `- State Income Tax Status: ${contextData.stateIncomeTaxStatus}\n`;
@@ -405,20 +444,28 @@ export async function processNextEnrichmentJob(): Promise<{
       .eq('id', job.id);
 
     // Update the entity record with the analysis
-    const entityTable = job.entityType === 'City' ? 'Location' : job.entityType === 'Job' ? 'Role' : 'Company';
+    const entityTable = job.entityType === 'City'
+      ? 'Location'
+      : job.entityType === 'Job'
+        ? 'Role'
+        : job.entityType === 'Company'
+          ? 'Company'
+          : null;
 
-    await supabaseAdmin
-      .from(entityTable)
-      .update({
-        analysis: statsSnapshot
-          ? {
-            ...(analysis as Record<string, unknown>),
-            source_context_snapshot: statsSnapshot,
-          }
-          : analysis,
-        analysisGeneratedAt: new Date().toISOString(),
-      })
-      .eq('id', job.entityId);
+    if (entityTable) {
+      await supabaseAdmin
+        .from(entityTable)
+        .update({
+          analysis: statsSnapshot
+            ? {
+              ...(analysis as Record<string, unknown>),
+              source_context_snapshot: statsSnapshot,
+            }
+            : analysis,
+          analysisGeneratedAt: new Date().toISOString(),
+        })
+        .eq('id', job.entityId);
+    }
 
     console.log(`Enrichment completed for ${job.entityType} "${job.entityName}"`);
 
@@ -524,40 +571,41 @@ export async function getEnrichmentStatus(
     .limit(1)
     .maybeSingle();
 
-  if (!job) {
-    return null; // No enrichment has been requested
-  }
+  if (!job) return null;
 
   return {
     status: job.status,
-    analysis: ((job.result as { analysis?: AnalysisResult } | undefined)?.analysis
-      ?? (job.result as AnalysisResult | undefined)),
+    analysis: job.result?.analysis as AnalysisResult | undefined,
   };
 }
 
 // ============================================================
-// Helper: Build City Context Data
+// Helpers for City Context
 // ============================================================
 
-// States with no income tax
-const NO_INCOME_TAX_STATES = [
-  'AK', 'FL', 'NV', 'NH', 'SD', 'TN', 'TX', 'WA', 'WY',
-  'Alaska', 'Florida', 'Nevada', 'New Hampshire', 'South Dakota',
-  'Tennessee', 'Texas', 'Washington', 'Wyoming',
-];
-
 /**
- * Build context data for a city enrichment based on available information.
+ * Build context data for City enrichment from location fields.
  */
-export function buildCityContextData(city: string, state: string): Record<string, unknown> {
-  const stateUpper = state.toUpperCase().trim();
-  const noIncomeTax = NO_INCOME_TAX_STATES.some(
-    s => s.toUpperCase() === stateUpper
-  );
+export function buildCityContextData(location: {
+  city: string;
+  state: string;
+  costOfLivingIndex?: number;
+}): Record<string, unknown> {
+  const noIncomeTaxStates = new Set(['AK', 'FL', 'NV', 'NH', 'SD', 'TN', 'TX', 'WA', 'WY']);
+
+  const taxStatus = noIncomeTaxStates.has(location.state.toUpperCase())
+    ? 'No state income tax'
+    : 'Has state income tax';
+
+  let costTier = 'medium';
+  if (location.costOfLivingIndex !== undefined) {
+    if (location.costOfLivingIndex > 120) costTier = 'high';
+    else if (location.costOfLivingIndex < 95) costTier = 'low';
+  }
 
   return {
-    state,
-    stateIncomeTaxStatus: noIncomeTax ? 'No State Income Tax' : 'Has State Income Tax',
-    costOfLivingTier: 'Infer from city name and state',
+    stateIncomeTaxStatus: taxStatus,
+    costOfLivingTier: costTier,
+    state: location.state,
   };
 }
