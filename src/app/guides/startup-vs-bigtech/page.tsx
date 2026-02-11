@@ -16,6 +16,8 @@ import {
   Lightbulb,
   ArrowRight,
   DollarSign,
+  Star,
+  TrendingUp,
   Briefcase,
   Gavel,
   Search,
