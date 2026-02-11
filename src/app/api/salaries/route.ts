@@ -1,6 +1,7 @@
-
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+
+export const dynamic = 'force-dynamic';
 
 // Helper to calculate percentiles from a list of numbers
 function calculateStats(values: number[]) {

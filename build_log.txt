@@ -1,0 +1,527 @@
+﻿
+> avgpay-rebuild@0.1.0 build
+> next build && node scripts/generate-sitemap.js
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+  - Experiments (use with caution):
+    ┬╖ optimizeCss
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/91) ...
+node.exe : API Error: Dynamic server usage: Route 
+/api/salaries couldn't be rendered statically because it 
+used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (API Error: D 
+   yna...ic-server-error:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+   Generating static pages (22/91) 
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+
+Error occurred prerendering page "/404". Read more: 
+https://nextjs.org/docs/messages/prerender-error
+
+Error: Cannot find module 'critters'
+Require stack:
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\compiled\next-server\pages.runtime.prod.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\.next\s
+erver\pages\_document.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\server\require.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\server\load-components.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\build\utils.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\build\worker.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\compiled\jest-worker\processChild.js
+    at Module._resolveFilename 
+(node:internal/modules/cjs/loader:1421:15)
+    at C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\no
+de_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl 
+(node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks 
+(node:internal/modules/cjs/loader:1064:22)
+    at Module._load 
+(node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync 
+(node:diagnostics_channel:328:14)
+    at wrapModuleLoad 
+(node:internal/modules/cjs/loader:245:24)
+    at Module.require 
+(node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\bryan\VS Projects\AvgPay\avgp
+ay-rebuild\node_modules\next\dist\server\require-hook.js:6
+5:28)
+    at require (node:internal/modules/helpers:152:16)
+
+Error occurred prerendering page "/500". Read more: 
+https://nextjs.org/docs/messages/prerender-error
+
+Error: Cannot find module 'critters'
+Require stack:
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\compiled\next-server\pages.runtime.prod.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\.next\s
+erver\pages\_document.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\server\require.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\server\load-components.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\build\utils.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\build\worker.js
+- C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\node_mo
+dules\next\dist\compiled\jest-worker\processChild.js
+    at Module._resolveFilename 
+(node:internal/modules/cjs/loader:1421:15)
+    at C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\no
+de_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl 
+(node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks 
+(node:internal/modules/cjs/loader:1064:22)
+    at Module._load 
+(node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync 
+(node:diagnostics_channel:328:14)
+    at wrapModuleLoad 
+(node:internal/modules/cjs/loader:245:24)
+    at Module.require 
+(node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\bryan\VS Projects\AvgPay\avgp
+ay-rebuild\node_modules\next\dist\server\require-hook.js:6
+5:28)
+    at require (node:internal/modules/helpers:152:16)
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+   Generating static pages (45/91) 
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+   Generating static pages (68/91) 
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+ ΓÜá metadataBase property in metadata export is not set 
+for resolving social open graph or twitter images, using 
+"http://localhost:3000". See https://nextjs.org/docs/app/a
+pi-reference/functions/generate-metadata#metadatabase
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater 
+than 0,
+       please check the style of container, or the props 
+width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or 
+use aspect(undefined) to control the
+       height and width.
+n [Error]: Dynamic server usage: Route /dashboard 
+couldn't be rendered statically because it used 
+`cookies`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild
+\.next\server\chunks\8948.js:1:56329)
+    at Object.p [as cookies] (C:\Users\bryan\VS Projects\A
+vgPay\avgpay-rebuild\.next\server\chunks\958.js:1:9879)
+    at I.getCookie (C:\Users\bryan\VS Projects\AvgPay\avgp
+ay-rebuild\.next\server\chunks\958.js:1:4603)
+    at I.getItem (C:\Users\bryan\VS Projects\AvgPay\avgpay
+-rebuild\.next\server\chunks\958.js:1:20674)
+    at ty (C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuil
+d\.next\server\chunks\7857.js:24:39118)
+    at rf._recoverAndRefresh (C:\Users\bryan\VS Projects\A
+vgPay\avgpay-rebuild\.next\server\chunks\7857.js:37:26684)
+    at rf._initialize (C:\Users\bryan\VS Projects\AvgPay\a
+vgpay-rebuild\.next\server\chunks\7857.js:24:68499)
+    at C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\.n
+ext\server\chunks\7857.js:24:67492
+    at C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\.n
+ext\server\chunks\7857.js:37:12391
+    at rf.t7 [as lock] (C:\Users\bryan\VS Projects\AvgPay\
+avgpay-rebuild\.next\server\chunks\7857.js:24:63303) {
+  description: "Route /dashboard couldn't be rendered 
+statically because it used `cookies`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+n [Error]: Dynamic server usage: Route /dashboard 
+couldn't be rendered statically because it used 
+`cookies`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild
+\.next\server\chunks\8948.js:1:56329)
+    at Object.p [as cookies] (C:\Users\bryan\VS Projects\A
+vgPay\avgpay-rebuild\.next\server\chunks\958.js:1:9879)
+    at I.getCookie (C:\Users\bryan\VS Projects\AvgPay\avgp
+ay-rebuild\.next\server\chunks\958.js:1:4603)
+    at I.getItem (C:\Users\bryan\VS Projects\AvgPay\avgpay
+-rebuild\.next\server\chunks\958.js:1:20674)
+    at ty (C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuil
+d\.next\server\chunks\7857.js:24:39118)
+    at rf._recoverAndRefresh (C:\Users\bryan\VS Projects\A
+vgPay\avgpay-rebuild\.next\server\chunks\7857.js:37:26684)
+    at rf._initialize (C:\Users\bryan\VS Projects\AvgPay\a
+vgpay-rebuild\.next\server\chunks\7857.js:24:68499)
+    at C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\.n
+ext\server\chunks\7857.js:24:67492
+    at C:\Users\bryan\VS Projects\AvgPay\avgpay-rebuild\.n
+ext\server\chunks\7857.js:37:12391
+    at rf.t7 [as lock] (C:\Users\bryan\VS Projects\AvgPay\
+avgpay-rebuild\.next\server\chunks\7857.js:24:63303) {
+  description: "Route /dashboard couldn't be rendered 
+statically because it used `cookies`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+ Γ£ô Generating static pages (91/91)
+
+> Export encountered errors on following paths:
+	/_error: /404
+	/_error: /500

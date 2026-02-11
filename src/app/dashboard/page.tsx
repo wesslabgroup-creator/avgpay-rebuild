@@ -13,6 +13,8 @@ export const metadata: Metadata = {
     description: 'Manage your verified profile and submissions.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
     const supabase = createServerComponentClient({ cookies });
     const { data: { session } } = await supabase.auth.getSession();
