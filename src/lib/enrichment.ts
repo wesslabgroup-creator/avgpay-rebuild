@@ -320,6 +320,27 @@ export async function generateTimelessAnalysis(
 
 /** Maximum retry attempts for failed enrichment jobs */
 const MAX_ATTEMPTS = 3;
+let isAutoProcessorRunning = false;
+
+/**
+ * Best-effort local trigger so newly queued jobs don't rely solely on external cron/webhooks.
+ */
+async function triggerAutoQueueProcessor() {
+  if (isAutoProcessorRunning) return;
+  isAutoProcessorRunning = true;
+
+  try {
+    const result = await processNextEnrichmentJob();
+
+    if (result.processed) {
+      console.log(`Auto-processed enrichment job ${result.jobId} (${result.status})`);
+    }
+  } catch (error) {
+    console.error('Auto queue processor failed:', error);
+  } finally {
+    isAutoProcessorRunning = false;
+  }
+}
 
 /**
  * Queue an entity for enrichment. Skips if a pending/processing job already exists.
@@ -361,6 +382,10 @@ export async function queueEnrichment(
     console.error(`Failed to queue enrichment for ${entityType} "${entityName}":`, error);
     return null;
   }
+
+  // Fire a best-effort processing pass immediately after queueing.
+  // This keeps enrichment moving even if cron/webhook workers are not configured.
+  void triggerAutoQueueProcessor();
 
   console.log(`Queued enrichment job ${jobId} for ${entityType} "${entityName}"`);
   return jobId;
