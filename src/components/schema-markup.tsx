@@ -10,6 +10,7 @@ interface ArticleSchemaProps {
   headline: string;
   datePublished: string;
   authorName: string;
+  description?: string;
 }
 
 export const BreadcrumbSchema = ({ items }: { items: BreadcrumbItem[] }) => (
@@ -31,7 +32,7 @@ export const BreadcrumbSchema = ({ items }: { items: BreadcrumbItem[] }) => (
   </Script>
 );
 
-export const ArticleSchema = ({ headline, datePublished, authorName }: ArticleSchemaProps) => (
+export const ArticleSchema = ({ headline, datePublished, authorName, description }: ArticleSchemaProps) => (
   <Script id="article-schema" type="application/ld+json">
     {`
       {
@@ -43,6 +44,7 @@ export const ArticleSchema = ({ headline, datePublished, authorName }: ArticleSc
           "@type": "Person",
           "name": "${authorName}"
         },
+        ${description ? `"description": "${description}",` : ''}
         "publisher": {
           "@type": "Organization",
           "name": "AvgPay",
@@ -110,5 +112,47 @@ export const JobPostingSchema = ({
       },
       "employmentType": "FULL_TIME"
     })}
+  </Script>
+);
+
+export const OrganizationSchema = () => (
+  <Script id="organization-schema" type="application/ld+json">
+    {`
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "AvgPay",
+        "url": "https://avgpay.com",
+        "logo": "https://avgpay.com/logo.png",
+        "sameAs": [
+          "https://twitter.com/avgpay",
+          "https://linkedin.com/company/avgpay"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "",
+          "contactType": "customer support",
+          "email": "support@avgpay.com"
+        }
+      }
+    `}
+  </Script>
+);
+
+export const WebSiteSchema = () => (
+  <Script id="website-schema" type="application/ld+json">
+    {`
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "AvgPay",
+        "url": "https://avgpay.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://avgpay.com/salaries?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    `}
   </Script>
 );

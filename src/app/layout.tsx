@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 };
 
 import { Navigation } from "@/components/navigation";
+import { OrganizationSchema } from "@/components/schema-markup";
 
 import { CSPostHogProvider } from "./providers";
 
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased bg-white text-slate-900 pt-20`}>
         <CSPostHogProvider>
+          <OrganizationSchema />
           <Navigation />
           {children}
         </CSPostHogProvider>

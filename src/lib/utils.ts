@@ -29,3 +29,22 @@ export function getFullUrl(path: string): string {
   const base = getBaseUrl();
   return `${base}${path}`;
 }
+
+/**
+ * Create a URL-friendly slug from a string
+ */
+export function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[\s\W-]+/g, '-') // Replace spaces and non-word chars with -
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing -
+}
+
+/**
+ * Find the original string from a list of candidates that matches a slug
+ */
+export function findFromSlug(slug: string, candidates: string[]): string | undefined {
+  return candidates.find(c => slugify(c) === slug);
+}

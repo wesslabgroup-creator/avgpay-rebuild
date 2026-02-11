@@ -1,11 +1,19 @@
 import { Metadata } from "next";
-import { OfferAnalyzer } from "@/components/offer-analyzer";
+import dynamic from 'next/dynamic';
 import { HeroSearch } from "@/components/hero-search";
 import { Button } from "@/components/ui/button";
 import { Database, Shield, TrendingUp, Users, Award, Zap, Star, Search } from "lucide-react";
 import Link from "next/link";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { calculateTotalDataPoints } from "@/lib/data";
+import { WebSiteSchema } from "@/components/schema-markup";
+
+const OfferAnalyzer = dynamic(() => import('@/components/offer-analyzer').then(mod => mod.OfferAnalyzer), {
+  loading: () => <div className="h-96 w-full animate-pulse bg-slate-100 rounded-3xl" />,
+  ssr: false // Optional: Only client-side if we want to defer it completely, but usually SSR is good for SEO content.
+  // However, OfferAnalyzer is highly interactive and mostly client-side logic.
+  // Let's keep SSR: true (default) for now unless it causes hydration issues.
+});
 
 export const metadata: Metadata = {
   title: "AvgPay - Salary Insights & Negotiation Tool | Know Your Worth",
@@ -28,6 +36,7 @@ export const metadata: Metadata = {
 export default async function Home() {
   return (
     <main className="min-h-screen bg-white">
+      <WebSiteSchema />
       {/* Hero Section */}
       <section className="relative px-4 py-20 sm:py-24 md:py-28 lg:py-32 overflow-hidden bg-slate-50">
         <div className="relative max-w-6xl mx-auto text-center space-y-8 lg:space-y-12">
@@ -154,7 +163,7 @@ export default async function Home() {
                 <Star className="w-6 h-6 fill-current" />
               </div>
               <blockquote className="text-slate-700 font-medium leading-relaxed text-lg transition-colors">
-                \"Used this for my Google offer negotiation. Data was spot-on and helped me push for 22% more TC. Game changer!\"
+                &quot;Used this for my Google offer negotiation. Data was spot-on and helped me push for 22% more TC. Game changer!&quot;
               </blockquote>
               <div className="flex items-center gap-3 pt-4 border-t border-slate-200">
                 <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center font-bold text-white">JD</div>
@@ -174,7 +183,7 @@ export default async function Home() {
                 <Star className="w-6 h-6 fill-current" />
               </div>
               <blockquote className="text-slate-700 font-medium leading-relaxed text-lg transition-colors">
-                \"Finally, reliable data that's not self-reported. Negotiated Big Tech-level comp at startup thanks to AvgPay.\"
+                &quot;Finally, reliable data that&apos;s not self-reported. Negotiated Big Tech-level comp at startup thanks to AvgPay.&quot;
               </blockquote>
               <div className="flex items-center gap-3 pt-4 border-t border-slate-200">
                 <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center font-bold text-white">SM</div>
@@ -194,7 +203,7 @@ export default async function Home() {
                 <Star className="w-6 h-6 fill-current" />
               </div>
               <blockquote className="text-slate-700 font-medium leading-relaxed text-lg transition-colors">
-                \"BLS + H1B data combo is gold. Went from underpaid to top percentile in one negotiation.\"
+                &quot;BLS + H1B data combo is gold. Went from underpaid to top percentile in one negotiation.&quot;
               </blockquote>
               <div className="flex items-center gap-3 pt-4 border-t border-slate-200">
                 <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-pink-500 rounded-2xl flex items-center justify-center font-bold text-white">AM</div>
