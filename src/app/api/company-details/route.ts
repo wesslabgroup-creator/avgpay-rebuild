@@ -63,7 +63,11 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({
-      companyData,
+      companyData: {
+        ...companyData,
+        analysis: companyData.analysis || null,
+        analysisGeneratedAt: companyData.analysisGeneratedAt || null,
+      },
       salarySummary: aggregatedSummary,
     });
 

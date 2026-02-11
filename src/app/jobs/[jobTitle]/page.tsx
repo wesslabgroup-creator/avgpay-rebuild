@@ -8,12 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
+import { InsightCards } from '@/components/insight-cards';
 import { SalaryDistributionChart } from '@/components/salary-distribution-chart'; // Placeholder for chart
 
 interface JobDetails {
   jobData: {
     title: string;
     description: string;
+    analysis?: Record<string, string> | null;
     global_median_comp: number;
     global_min_comp: number;
     global_max_comp: number;
@@ -156,6 +158,11 @@ export default function JobDetailPage() {
               <SalaryDistributionChart data={salaryDistribution.map(s => s.total_comp)} />
             </CardContent>
           </Card>
+
+          {/* The Analyst View (Gemini Analysis) */}
+          {jobData.analysis && (
+            <InsightCards analysis={jobData.analysis} entityName={jobData.title} />
+          )}
 
           {/* Company Rankings */}
           <Card className="bg-white border-slate-200">

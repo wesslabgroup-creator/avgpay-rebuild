@@ -151,6 +151,8 @@ export async function GET(request: Request) {
     return NextResponse.json({
       jobData: {
         ...jobData,
+        analysis: jobData.analysis || null,
+        analysisGeneratedAt: jobData.analysisGeneratedAt || null,
         global_count: count,
         global_median_comp: median,
         global_min_comp: min,

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { DataTable } from "@/components/data-table";
+import { InsightCards } from '@/components/insight-cards';
 import { getComparisonsForCompany } from '@/app/compare/data/curated-comparisons';
 
 interface SalarySummary {
@@ -23,6 +24,7 @@ interface CompanyInfo {
   website: string;
   description: string;
   logoUrl?: string;
+  analysis?: Record<string, string> | null;
   salarySummary?: SalarySummary[];
 }
 
@@ -52,7 +54,8 @@ const CompanyDetailPage = () => {
           name: fetchedData.name,
           website: fetchedData.website || '#',
           description: fetchedData.description,
-          logoUrl: fetchedData.logoUrl, // Assuming logoUrl is in DB
+          logoUrl: fetchedData.logoUrl,
+          analysis: fetchedData.analysis || null,
           salarySummary,
         });
       } catch (err: unknown) {
@@ -176,6 +179,11 @@ const CompanyDetailPage = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* The Analyst View (Gemini Analysis) */}
+          {companyData.analysis && (
+            <InsightCards analysis={companyData.analysis} entityName={companyData.name} />
+          )}
 
           {/* Related Links / Action Section */}
           {relevantComparisons.length > 0 && (

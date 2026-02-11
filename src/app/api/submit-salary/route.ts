@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { genAI } from '@/lib/geminiClient';
+import { queueEnrichment, buildCityContextData } from '@/lib/enrichment';
 
 // Levenshtein distance for fuzzy matching
 function levenshteinDistance(a: string, b: string): number {
@@ -339,9 +340,64 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to save salary data' }, { status: 500 });
     }
 
-    // 3. If the job is new, we skip AI content update for now as the schema doesn't support it
+    // 3. Queue enrichment for any new entities (non-blocking, fire-and-forget)
+    const enrichmentPromises: Promise<string | null>[] = [];
+
+    if (companyEntry.isNew) {
+      // Check if company already has analysis cached
+      const { data: companyRecord } = await supabaseAdmin
+        .from('Company')
+        .select('analysis')
+        .eq('id', companyEntry.id)
+        .single();
+
+      if (!companyRecord?.analysis) {
+        enrichmentPromises.push(
+          queueEnrichment('Company', companyEntry.id, companyEntry.name)
+        );
+      }
+    }
+
     if (jobEntry.isNew) {
-      console.log('New job created, skipping AI content update (schema mismatch)');
+      const { data: roleRecord } = await supabaseAdmin
+        .from('Role')
+        .select('analysis')
+        .eq('id', jobEntry.id)
+        .single();
+
+      if (!roleRecord?.analysis) {
+        enrichmentPromises.push(
+          queueEnrichment('Job', jobEntry.id, jobEntry.title)
+        );
+      }
+    }
+
+    if (locationEntry.isNew) {
+      // Parse city/state for context
+      const locParts = locationEntry.name.split(',').map((p: string) => p.trim());
+      const city = locParts[0];
+      const state = locParts[1] || '';
+
+      const { data: locRecord } = await supabaseAdmin
+        .from('Location')
+        .select('analysis')
+        .eq('id', locationEntry.id)
+        .single();
+
+      if (!locRecord?.analysis) {
+        const cityContext = buildCityContextData(city, state);
+        enrichmentPromises.push(
+          queueEnrichment('City', locationEntry.id, locationEntry.name, cityContext)
+        );
+      }
+    }
+
+    // Fire enrichment queue entries without blocking the response
+    if (enrichmentPromises.length > 0) {
+      Promise.allSettled(enrichmentPromises).then(results => {
+        const queued = results.filter(r => r.status === 'fulfilled').length;
+        console.log(`Queued ${queued} enrichment job(s) from salary submission`);
+      });
     }
 
     return NextResponse.json({
