@@ -324,7 +324,7 @@ export async function POST(request: Request) {
         .single();
 
       if (!locRecord?.analysis) {
-        const cityContext = buildCityContextData(city, state);
+        const cityContext = buildCityContextData({ city, state });
         enrichmentPromises.push(
           queueEnrichment('City', locationEntry.id, locationEntry.name, cityContext)
         );
