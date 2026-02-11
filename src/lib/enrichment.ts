@@ -321,19 +321,68 @@ export async function generateTimelessAnalysis(
 /** Maximum retry attempts for failed enrichment jobs */
 const MAX_ATTEMPTS = 3;
 let isAutoProcessorRunning = false;
+let autoProcessorRequestedWhileRunning = false;
+
+const AUTO_PROCESS_MAX_JOBS_PER_PASS = 20;
+const AUTO_PROCESS_DELAY_MS = 750;
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function hasPendingEnrichmentJobs() {
+  const { count, error } = await supabaseAdmin
+    .from('EnrichmentQueue')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'pending');
+
+  if (error) {
+    console.error('Failed checking pending enrichment jobs:', error);
+    return false;
+  }
+
+  return (count ?? 0) > 0;
+}
 
 /**
  * Best-effort local trigger so newly queued jobs don't rely solely on external cron/webhooks.
  */
 async function triggerAutoQueueProcessor() {
-  if (isAutoProcessorRunning) return;
+  if (isAutoProcessorRunning) {
+    autoProcessorRequestedWhileRunning = true;
+    return;
+  }
+
   isAutoProcessorRunning = true;
 
   try {
-    const result = await processNextEnrichmentJob();
+    let processedInPass = 0;
 
-    if (result.processed) {
+    // Keep processing in small, throttled batches so uploads don't leave stale pending rows.
+    // Batch limits prevent one request from monopolizing server resources.
+    while (processedInPass < AUTO_PROCESS_MAX_JOBS_PER_PASS) {
+      const result = await processNextEnrichmentJob();
+
+      if (!result.processed) {
+        break;
+      }
+
+      processedInPass++;
       console.log(`Auto-processed enrichment job ${result.jobId} (${result.status})`);
+
+      // Throttle outbound model calls to avoid API/server spikes.
+      await sleep(AUTO_PROCESS_DELAY_MS);
+    }
+
+    const hasMorePendingJobs = await hasPendingEnrichmentJobs();
+    const shouldContinue = autoProcessorRequestedWhileRunning || hasMorePendingJobs;
+
+    if (shouldContinue) {
+      autoProcessorRequestedWhileRunning = false;
+      // Continue in a detached tick so this invocation exits quickly.
+      setTimeout(() => {
+        void triggerAutoQueueProcessor();
+      }, AUTO_PROCESS_DELAY_MS);
     }
   } catch (error) {
     console.error('Auto queue processor failed:', error);
