@@ -1,42 +1,33 @@
 import { MetadataRoute } from 'next';
+import { COMPANIES, LOCATIONS, ROLES } from '@/lib/data';
+import { INDEXABLE_ROUTES, toAbsoluteUrl } from '@/lib/seo';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://avgpay.com'; // Replace with actual production URL if different
-
-    // Static routes
-    const routes = [
-        '',
-        '/analyze-offer',
-        '/salaries',
-        '/guides',
-        '/about',
-        '/privacy',
-        '/methodology',
-        '/pricing',
-        '/tools/inflation-calculator',
-        '/tools/salary-comparison',
-    ].map((route) => ({
-        url: `${baseUrl}${route}`,
+    const staticRoutes = INDEXABLE_ROUTES.map((route) => ({
+        url: toAbsoluteUrl(route),
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
-        priority: route === '' ? 1 : 0.8,
+        priority: route === '/' ? 1 : 0.8,
     }));
 
-    // Guide routes - ideal world this comes from a database or file system
-    // For now, hardcoding the known guides to ensure they are indexed
-    const guides = [
-        'pm-compensation-2026',
-        'negotiation',
-        'equity',
-        'swe-compensation-2026',
-        'remote-pay',
-        'startup-vs-bigtech'
-    ].map((slug) => ({
-        url: `${baseUrl}/guides/${slug}`,
+    const salaryRoutes = COMPANIES.flatMap((company) =>
+        ROLES.flatMap((role) =>
+            LOCATIONS.map((location) => {
+                const encodedLocation = encodeURIComponent(location.replace(', ', '-'));
+                return {
+                    url: toAbsoluteUrl(`/${encodeURIComponent(company)}/${encodeURIComponent(role)}/${encodedLocation}`),
+                    lastModified: new Date(),
+                    changeFrequency: 'weekly' as const,
+                    priority: 0.7,
+                };
+            })
+        )
+    );
+
+    const deDuplicated = [...new Map([...staticRoutes, ...salaryRoutes].map((route) => [route.url, route])).values()];
+
+    return deDuplicated.map((route) => ({
+        ...route,
         lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.9,
     }));
-
-    return [...routes, ...guides];
 }

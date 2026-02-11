@@ -1,6 +1,8 @@
 // components/SchemaMarkup.tsx
 import Script from 'next/script';
 
+import { SITE_URL, toAbsoluteUrl } from '@/lib/seo';
+
 interface BreadcrumbItem {
   name: string;
   item: string;
@@ -34,27 +36,25 @@ export const BreadcrumbSchema = ({ items }: { items: BreadcrumbItem[] }) => (
 
 export const ArticleSchema = ({ headline, datePublished, authorName, description }: ArticleSchemaProps) => (
   <Script id="article-schema" type="application/ld+json">
-    {`
-      {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "${headline}",
-        "datePublished": "${datePublished}",
-        "author": {
-          "@type": "Person",
-          "name": "${authorName}"
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline,
+      datePublished,
+      author: {
+        '@type': 'Person',
+        name: authorName,
+      },
+      ...(description ? { description } : {}),
+      publisher: {
+        '@type': 'Organization',
+        name: 'AvgPay',
+        logo: {
+          '@type': 'ImageObject',
+          url: toAbsoluteUrl('/favicon.svg'),
         },
-        ${description ? `"description": "${description}",` : ''}
-        "publisher": {
-          "@type": "Organization",
-          "name": "AvgPay",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://avgpay-rebuild.vercel.app/favicon.svg"
-          }
-        }
-      }
-    `}
+      },
+    })}
   </Script>
 );
 
@@ -117,42 +117,35 @@ export const JobPostingSchema = ({
 
 export const OrganizationSchema = () => (
   <Script id="organization-schema" type="application/ld+json">
-    {`
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "AvgPay",
-        "url": "https://avgpay.com",
-        "logo": "https://avgpay.com/logo.png",
-        "sameAs": [
-          "https://twitter.com/avgpay",
-          "https://linkedin.com/company/avgpay"
-        ],
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "telephone": "",
-          "contactType": "customer support",
-          "email": "support@avgpay.com"
-        }
-      }
-    `}
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'AvgPay',
+      url: SITE_URL,
+      logo: toAbsoluteUrl('/logo.png'),
+      sameAs: ['https://twitter.com/avgpay', 'https://linkedin.com/company/avgpay'],
+      contactPoint: {
+        '@type': 'ContactPoint',
+        telephone: '',
+        contactType: 'customer support',
+        email: 'support@avgpay.com',
+      },
+    })}
   </Script>
 );
 
 export const WebSiteSchema = () => (
   <Script id="website-schema" type="application/ld+json">
-    {`
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "AvgPay",
-        "url": "https://avgpay.com",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://avgpay.com/salaries?q={search_term_string}",
-          "query-input": "required name=search_term_string"
-        }
-      }
-    `}
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'AvgPay',
+      url: SITE_URL,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${SITE_URL}/salaries?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    })}
   </Script>
 );

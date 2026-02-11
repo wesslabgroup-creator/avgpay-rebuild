@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://avgpay-rebuild.vercel.app/sitemap.xml
