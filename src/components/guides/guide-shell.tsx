@@ -3,6 +3,7 @@ import { ArrowRight, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ExpandableFAQ } from "@/components/ExpandableFAQ";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 type GuideIconCardProps = {
   icon: LucideIcon;
@@ -84,6 +85,7 @@ export const GuideHero = ({
 
   return (
     <>
+      <Breadcrumbs className="mb-6" items={[{ label: "Guides", href: "/guides" }, { label: title }]} />
       <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">{title}</h1>
       <p className="mb-8 text-lg text-gray-600">{description}</p>
 

@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 
 import { Navigation } from "@/components/navigation";
 import { OrganizationSchema } from "@/components/schema-markup";
+import { SiteFooter } from "@/components/site-footer";
 
 import { CSPostHogProvider } from "./providers";
 
@@ -36,6 +37,7 @@ export default function RootLayout({
           <OrganizationSchema />
           <Navigation />
           {children}
+          <SiteFooter />
         </CSPostHogProvider>
       </body>
     </html>
