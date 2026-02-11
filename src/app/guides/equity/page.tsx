@@ -4,8 +4,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { ArticleSchema } from "@/components/schema-markup";
-import { Card, CardContent } from "@/components/ui/card";
-import { ExpandableFAQ } from "@/components/ExpandableFAQ";
+import {
+  GuideCtaSection,
+  GuideFaqSection,
+  GuideFooterLinks,
+  GuideHero,
+  GuideKeyTakeaways,
+  GuideResourceLinks,
+} from "@/components/guides/guide-shell";
 import {
   Lightbulb,
   ArrowRight,
@@ -39,6 +45,61 @@ const faqs = [
   { question: "When should I exercise my stock options?", answer: "This is a complex decision. Consider your financial situation, the company's growth prospects, tax implications, and the expiration date of your options." },
 ];
 
+const heroLearnItems = [
+  "Key differences between stock options and RSUs.",
+  "Understanding vesting schedules and cliffs.",
+  "Tax implications of different equity types.",
+  "Strategies for exercising and managing your equity.",
+  "How equity impacts startup vs. big tech roles.",
+];
+
+const takeaways = [
+  {
+    icon: DollarSign,
+    iconClassName: "text-green-600",
+    title: "Value & Risk",
+    description:
+      "Equity's value tied to company performance; RSUs offer more predictable value than options.",
+  },
+  {
+    icon: Star,
+    iconClassName: "text-yellow-600",
+    title: "Vesting Schedules",
+    description:
+      "Understand vests to know when your equity becomes truly yours. Plan around cliffs and grant dates.",
+  },
+  {
+    icon: Percent,
+    iconClassName: "text-purple-600",
+    title: "Tax Implications",
+    description:
+      "Be aware of tax events (exercise, vesting) and consult professionals for optimal tax strategies.",
+  },
+];
+
+const resourceLinks = [
+  {
+    label: "Equity Simulator",
+    href: "/tools/equity-simulator",
+    description: "Model dilution, vesting timelines, and potential upside across outcomes.",
+  },
+  {
+    label: "Stock Calculator",
+    href: "/tools/stock-calculator",
+    description: "Estimate strike price scenarios and tax-aware exercise costs.",
+  },
+  {
+    label: "Startup vs. Big Tech Guide",
+    href: "/guides/startup-vs-bigtech",
+    description: "Compare the tradeoff between option upside and public-company RSU stability.",
+  },
+  {
+    label: "Salary Database",
+    href: "/salaries",
+    description: "Contextualize cash compensation so you can value equity in total package terms.",
+  },
+];
+
 export const metadata: Metadata = {
   title: "Equity Compensation Guide | AvgPay",
   description: "Understand stock options, RSUs, and other equity compensation. Learn how to maximize your earnings from company ownership.",
@@ -67,42 +128,14 @@ const EquityPage = () => {
         authorName="AvgPay Team"
       />
 
-      <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
-        Understanding Equity Compensation
-      </h1>
-      <p className="mb-8 text-lg text-gray-600">
-        Navigate the complexities of equity compensation, from stock options to RSUs, and learn how to leverage ownership for financial growth.
-      </p>
-
-      <div className="mb-12 grid gap-8 md:grid-cols-2">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center mb-3">
-              <GitBranch className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
-            </div>
-            <ul className="space-y-2 text-gray-700">
-              <li>Key differences between stock options and RSUs.</li>
-              <li>Understanding vesting schedules and cliffs.</li>
-              <li>Tax implications of different equity types.</li>
-              <li>Strategies for exercising and managing your equity.</li>
-              <li>How equity impacts startup vs. big tech roles.</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6 bg-blue-50 border border-blue-200 shadow-inner">
-            <div className="flex items-center mb-3">
-              <Percent className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-blue-800">Executive Summary</h3>
-            </div>
-            <p className="text-gray-800">
-              Equity compensation can be a significant wealth-building tool, offering employees a stake in their company&apos;s success. Whether through stock options in startups or RSUs in public companies, understanding the terms, value, and tax implications is crucial. This guide breaks down the core concepts of equity compensation to empower your financial decisions.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <GuideHero
+        title="Understanding Equity Compensation"
+        description="Navigate the complexities of equity compensation, from stock options to RSUs, and learn how to leverage ownership for financial growth."
+        learnIcon={GitBranch}
+        learnItems={heroLearnItems}
+        summaryIcon={Percent}
+        summary="Equity compensation can be a significant wealth-building tool, offering employees a stake in their company's success. Whether through stock options in startups or RSUs in public companies, understanding the terms, value, and tax implications is crucial. This guide breaks down the core concepts of equity compensation to empower your financial decisions."
+      />
 
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Types of Equity Compensation</h2>
@@ -122,38 +155,7 @@ const EquityPage = () => {
         </div>
       </section>
 
-      <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Takeaways for Equity</h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <DollarSign className="h-6 w-6 text-green-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Value & Risk</h3>
-              </div>
-              <p className="text-gray-700">Equity&apos;s value tied to company performance; RSUs offer more predictable value than options.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <Star className="h-6 w-6 text-yellow-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Vesting Schedules</h3>
-              </div>
-              <p className="text-gray-700">Understand vests to know when your equity becomes truly yours. Plan around cliffs and grant dates.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <Percent className="h-6 w-6 text-purple-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Tax Implications</h3>
-              </div>
-              <p className="text-gray-700">Be aware of tax events (exercise, vesting) and consult professionals for optimal tax strategies.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      <GuideKeyTakeaways title="Key Takeaways for Equity" takeaways={takeaways} />
 
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
@@ -185,12 +187,9 @@ const EquityPage = () => {
         </div>
       </section>
 
-      <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
-        {faqs.map((faq, index) => (
-          <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
-        ))}
-      </section>
+      <GuideFaqSection faqs={faqs} />
+
+      <GuideResourceLinks links={resourceLinks} />
 
       <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
         <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
@@ -203,31 +202,14 @@ const EquityPage = () => {
         </ul>
       </section>
 
-      <section className="text-center py-12 bg-gray-50 rounded-lg">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Unlock Your Equity&apos;s Potential</h2>
-        <p className="mb-8 text-lg text-gray-700">
-          Use our advanced analyzer to understand your equity grants, potential value, and tax implications.
-        </p>
-        <Link href="/analyze-offer">
-          <Button className="px-8 py-3 text-lg group">
-            Go to Analyzer <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </Button>
-        </Link>
-      </section>
+      <GuideCtaSection
+        title="Unlock Your Equity's Potential"
+        description="Use our advanced analyzer to understand your equity grants, potential value, and tax implications."
+        ctaLabel="Go to Analyzer"
+        ctaHref="/analyze-offer"
+      />
 
-      <footer className="mt-16 text-center text-sm text-gray-500">
-        <p>© 2026 AvgPay. All rights reserved.</p>
-        <div className="mt-2 flex flex-wrap justify-center gap-2">
-          <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
-          <Link href="/terms" className="hover:underline">Terms of Service</Link>
-          <Link href="/guides/swe-compensation-2026" className="hover:underline">SWE Compensation 2026</Link>
-          <Link href="/guides/pm-compensation-2026" className="hover:underline">PM Compensation 2026</Link>
-          <Link href="/guides/negotiation" className="hover:underline">Negotiation Guide</Link>
-          <Link href="/guides/equity" className="font-semibold text-blue-600">Equity Guide</Link>
-          <Link href="/guides/remote-pay" className="hover:underline">Remote Pay Guide</Link>
-          <Link href="/guides/startup-vs-bigtech" className="hover:underline">Startup vs. Big Tech</Link>
-        </div>
-      </footer>
+      <GuideFooterLinks currentGuide="/guides/equity" />
     </div>
   );
 };

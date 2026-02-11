@@ -4,19 +4,22 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { ArticleSchema } from "@/components/schema-markup";
-import { Card, CardContent } from "@/components/ui/card";
-import { ExpandableFAQ } from "@/components/ExpandableFAQ";
+import {
+  GuideCtaSection,
+  GuideFaqSection,
+  GuideFooterLinks,
+  GuideHero,
+  GuideKeyTakeaways,
+  GuideResourceLinks,
+} from "@/components/guides/guide-shell";
 import {
   Lightbulb,
   ArrowRight,
   DollarSign,
   Briefcase,
-  ChartLine,
   Gavel,
   Search,
   Copy,
-  Building,
-  Asterisk,
 } from "lucide-react";
 
 const startupBigTechHeaders = [
@@ -40,6 +43,27 @@ const faqs = [
   { question: "Which offers better long-term career growth?", answer: "Both offer growth, but in different ways. Startups provide breadth and rapid learning across many functions. Big Tech offers depth, specialization, and structured career paths." },
   { question: "Is startup equity worth the risk?", answer: "It can be, especially if the startup achieves a high valuation or IPO. However, many startups fail, leading to worthless equity. Thorough due diligence is essential." },
   { question: "What kind of roles are common in early-stage startups?", answer: "Early-stage startups often require employees to wear multiple hats, taking on responsibilities across engineering, product, marketing, and operations." },
+];
+
+const heroLearnItems = [
+  "How startup and Big Tech compensation structures differ.",
+  "Risk-reward tradeoffs between options and RSUs.",
+  "How career growth paths vary by company stage.",
+  "How to evaluate liquidity timelines and downside risk.",
+  "What to negotiate in each environment.",
+];
+
+const takeaways = [
+  { icon: DollarSign, iconClassName: "text-green-600", title: "Cash vs Upside", description: "Big Tech usually wins on predictable cash while startups can offer larger upside variance." },
+  { icon: Star, iconClassName: "text-yellow-600", title: "Role Scope Changes Fast", description: "Startups can accelerate scope quickly, but leveling and process are less standardized." },
+  { icon: TrendingUp, iconClassName: "text-purple-600", title: "Liquidity Timeline Matters", description: "Option value depends on exit timing; RSUs tend to realize value more predictably." },
+];
+
+const resourceLinks = [
+  { label: "Equity Guide", href: "/guides/equity", description: "Deep-dive on option mechanics, RSU timing, and tax implications." },
+  { label: "SWE Compensation Guide", href: "/guides/swe-compensation-2026", description: "See how cash and equity norms differ by level in large tech orgs." },
+  { label: "Compare Offers Tool", href: "/tools/compare-offers", description: "Compare startup and Big Tech packages using consistent assumptions." },
+  { label: "Salary Database", href: "/salaries", description: "Anchor base salary expectations by role and location before deciding." },
 ];
 
 export const metadata: Metadata = {
@@ -70,42 +94,14 @@ const StartupVsBigTechPage = () => {
         authorName="AvgPay Team"
       />
 
-      <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
-        Startup vs. Big Tech: Compensation & Career Paths
-      </h1>
-      <p className="mb-8 text-lg text-gray-600">
-        Deciding between the fast-paced world of startups and the established stability of Big Tech? Understand the compensation, culture, and career implications of each.
-      </p>
-
-      <div className="mb-12 grid gap-8 md:grid-cols-2">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center mb-3">
-              <Building className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
-            </div>
-            <ul className="space-y-2 text-gray-700">
-              <li>Compensation differences: salary, bonus, equity.</li>
-              <li>Career growth opportunities in both environments.</li>
-              <li>Culture and work-life balance comparisons.</li>
-              <li>Risk vs. reward in startup equity.</li>
-              <li>Choosing the right path for your career goals.</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6 bg-blue-50 border border-blue-200 shadow-inner">
-            <div className="flex items-center mb-3">
-              <Asterisk className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-blue-800">Executive Summary</h3>
-            </div>
-            <p className="text-gray-800">
-              The choice between a startup and Big Tech involves trade-offs in compensation, career development, and work environment. Big Tech offers higher base pay and predictable equity, along with structured career paths. Startups provide broader roles, faster learning, and the potential for massive equity gains, albeit with higher risk. Your personal priorities should guide this significant decision.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <GuideHero
+        title="Startup vs. Big Tech Compensation"
+        description="Understand the compensation tradeoffs between startups and big tech companies, from cash to equity and long-term upside."
+        learnIcon={Briefcase}
+        learnItems={heroLearnItems}
+        summaryIcon={TrendingUp}
+        summary="Choosing between a startup and Big Tech offer is a portfolio decision: cash certainty versus upside variance. This guide breaks down where compensation structures diverge, how liquidity timelines change expected value, and what to negotiate in each environment so you can align pay with your risk tolerance and career goals."
+      />
 
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Compensation Comparison</h2>
@@ -125,38 +121,7 @@ const StartupVsBigTechPage = () => {
         </div>
       </section>
 
-      <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Takeaways</h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <DollarSign className="h-6 w-6 text-green-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Financial Upside Potential</h3>
-              </div>
-              <p className="text-gray-700">Startups offer high-risk, high-reward equity; Big Tech offers more stable, substantial cash compensation.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <Briefcase className="h-6 w-6 text-yellow-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Career Trajectory</h3>
-              </div>
-              <p className="text-gray-700">Startups: broad skills, rapid responsibility. Big Tech: deep specialization, structured progression.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <ChartLine className="h-6 w-6 text-purple-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Culture & Pace</h3>
-              </div>
-              <p className="text-gray-700">Startups: fast-paced, agile, often demanding. Big Tech: more structured, established processes, varying pace.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      <GuideKeyTakeaways title="Key Takeaways" takeaways={takeaways} />
 
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
@@ -188,12 +153,9 @@ const StartupVsBigTechPage = () => {
         </div>
       </section>
 
-      <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
-        {faqs.map((faq, index) => (
-          <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
-        ))}
-      </section>
+      <GuideFaqSection faqs={faqs} />
+
+      <GuideResourceLinks links={resourceLinks} />
 
       <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
         <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
@@ -207,31 +169,14 @@ const StartupVsBigTechPage = () => {
         </ul>
       </section>
 
-      <section className="text-center py-12 bg-gray-50 rounded-lg">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Choose Your Path Wisely</h2>
-        <p className="mb-8 text-lg text-gray-700">
-          Use our analyzer to compare offers and understand the implications of joining a startup or Big Tech company.
-        </p>
-        <Link href="/analyze-offer">
-          <Button className="px-8 py-3 text-lg group">
-            Go to Analyzer <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </Button>
-        </Link>
-      </section>
+      <GuideCtaSection
+        title="Decide With Confidence"
+        description="Use our analyzer to compare startup and Big Tech offers on expected total compensation."
+        ctaLabel="Go to Analyzer"
+        ctaHref="/analyze-offer"
+      />
 
-      <footer className="mt-16 text-center text-sm text-gray-500">
-        <p>© 2026 AvgPay. All rights reserved.</p>
-        <div className="mt-2 flex flex-wrap justify-center gap-2">
-          <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
-          <Link href="/terms" className="hover:underline">Terms of Service</Link>
-          <Link href="/guides/swe-compensation-2026" className="hover:underline">SWE Compensation 2026</Link>
-          <Link href="/guides/pm-compensation-2026" className="hover:underline">PM Compensation 2026</Link>
-          <Link href="/guides/negotiation" className="hover:underline">Negotiation Guide</Link>
-          <Link href="/guides/equity" className="hover:underline">Equity Guide</Link>
-          <Link href="/guides/remote-pay" className="hover:underline">Remote Pay Guide</Link>
-          <Link href="/guides/startup-vs-bigtech" className="font-semibold text-blue-600">Startup vs. Big Tech</Link>
-        </div>
-      </footer>
+      <GuideFooterLinks currentGuide="/guides/startup-vs-bigtech" />
     </div>
   );
 };
