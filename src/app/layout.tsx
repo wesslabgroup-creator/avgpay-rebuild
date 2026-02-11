@@ -1,21 +1,31 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { getAbsoluteUrl, siteConfig } from "@/lib/site-config";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AvgPay - Know Your Worth in 60 Seconds",
-  description: "Data-driven salary insights for tech workers. Compare your compensation against BLS, H-1B, and market data.",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: "AvgPay - Salary Insights & Negotiation Tools",
+    template: "%s | AvgPay",
+  },
+  description: siteConfig.description,
+  alternates: {
+    canonical: getAbsoluteUrl("/"),
+  },
   openGraph: {
-    title: "AvgPay - Know Your Worth in 60 Seconds",
-    description: "Data-driven salary insights for tech workers",
+    title: "AvgPay - Salary Insights & Negotiation Tools",
+    description: siteConfig.description,
     type: "website",
+    url: getAbsoluteUrl("/"),
+    siteName: siteConfig.name,
   },
   twitter: {
     card: "summary_large_image",
-    title: "AvgPay - Know Your Worth in 60 Seconds",
-    description: "Data-driven salary insights for tech workers",
+    title: "AvgPay - Salary Insights & Negotiation Tools",
+    description: siteConfig.description,
   },
 };
 

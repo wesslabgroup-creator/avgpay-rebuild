@@ -48,7 +48,7 @@ export default async function Home() {
 
           <div className="space-y-6">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 leading-tight">
-              Know Your<br className="sm:hidden" /><span className="bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 bg-clip-text text-transparent"> Market Worth</span>
+              Know Your<br className="sm:hidden" /><span className="text-slate-900"> Market Worth</span>
             </h1>
             <p className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-light text-slate-600 max-w-3xl mx-auto leading-relaxed">
               Get instant, data-backed salary insights to <span className="font-semibold text-emerald-600">negotiate like a pro</span>.
@@ -62,7 +62,7 @@ export default async function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
             <Link href="/analyze-offer" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-7 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 font-semibold tracking-wide rounded-2xl h-14 sm:h-auto">
+              <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-7 bg-slate-900 hover:bg-slate-800 shadow-lg transition-all duration-300 font-semibold tracking-wide rounded-2xl h-14 sm:h-auto text-white">
                 <Zap className="w-5 h-5 mr-2" />Analyze My Offer
               </Button>
             </Link>

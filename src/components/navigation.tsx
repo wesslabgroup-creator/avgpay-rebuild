@@ -14,7 +14,7 @@ export function Navigation() {
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 border-b border-slate-200 bg-white/80 backdrop-blur-md">
         <Link
           href="/"
-          className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent hover:scale-105 transition-all"
+          className="text-2xl font-bold text-slate-900 hover:text-slate-700 transition-colors"
         >
           AvgPay
         </Link>
@@ -38,6 +38,12 @@ export function Navigation() {
             className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
           >
             Guides
+          </Link>
+          <Link
+            href="/tools"
+            className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
+          >
+            Tools
           </Link>
           <div className="flex items-center space-x-1">
             <Link
@@ -123,6 +129,13 @@ export function Navigation() {
               className="block w-full px-4 py-4 text-xl font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 rounded-lg transition-colors"
             >
               Guides
+            </Link>
+            <Link
+              href="/tools"
+              onClick={toggleMenu}
+              className="block w-full px-4 py-4 text-xl font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 rounded-lg transition-colors"
+            >
+              Tools
             </Link>
             <div className="grid grid-cols-2 gap-2 pb-2 border-b border-slate-100">
               <Link

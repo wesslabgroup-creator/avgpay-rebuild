@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getAbsoluteUrl, siteConfig } from "@/lib/site-config";
 
 interface PageMetaProps {
   title: string;
@@ -15,13 +16,12 @@ export function generatePageMeta({
   type = "website",
   publishedAt,
 }: PageMetaProps): Metadata {
-  const baseUrl = "https://avgpay-rebuild.vercel.app";
-  const url = `${baseUrl}${path}`;
+  const url = getAbsoluteUrl(path);
   
   return {
     title: `${title} | AvgPay`,
     description,
-    metadataBase: new URL(baseUrl),
+    metadataBase: new URL(siteConfig.url),
     alternates: {
       canonical: url,
     },
