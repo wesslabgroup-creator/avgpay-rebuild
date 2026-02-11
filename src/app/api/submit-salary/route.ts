@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
-import { genAI } from '@/lib/geminiClient';
+import { queueEnrichment, buildCityContextData } from '@/lib/enrichment';
 
 // Levenshtein distance for fuzzy matching
 function levenshteinDistance(a: string, b: string): number {
@@ -142,63 +142,7 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
   return { ...newJob!, isNew: true };
 }
 
-// Function to generate AI content for companies
-async function generateCompanyAIContent(companyName: string): Promise<{ description: string; seo_meta_title: string; seo_meta_description: string }> {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-
-    const promptDescription = `Generate a concise description (under 100 words) about "${companyName}" as an employer, focusing on company culture, industry position, and what makes it attractive for tech professionals.`;
-    const resultDescription = await model.generateContent(promptDescription);
-    const description = resultDescription.response.text();
-
-    const promptMetaTitle = `Generate an SEO-optimized meta title (max 60 characters) for a salary page about "${companyName}".`;
-    const resultMetaTitle = await model.generateContent(promptMetaTitle);
-    const seo_meta_title = resultMetaTitle.response.text();
-
-    const promptMetaDescription = `Generate an SEO-optimized meta description (max 160 characters) for a salary page about "${companyName}". Highlight compensation insights and career opportunities.`;
-    const resultMetaDescription = await model.generateContent(promptMetaDescription);
-    const seo_meta_description = resultMetaDescription.response.text();
-
-    return { description, seo_meta_title, seo_meta_description };
-  } catch (error) {
-    console.error("Error generating company AI content:", error);
-    return {
-      description: `Explore salary data and career opportunities at ${companyName}.`,
-      seo_meta_title: `${companyName} Salaries & Compensation`,
-      seo_meta_description: `Discover compensation data for ${companyName} employees.`
-    };
-  }
-}
-
-// Function to generate AI content for locations
-async function generateLocationAIContent(locationName: string): Promise<{ description: string; seo_meta_title: string; seo_meta_description: string }> {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-
-    const promptDescription = `Generate a concise description (under 100 words) about "${locationName}" as a tech job market, focusing on cost of living, major employers, and quality of life for tech professionals.`;
-    const resultDescription = await model.generateContent(promptDescription);
-    const description = resultDescription.response.text();
-
-    const promptMetaTitle = `Generate an SEO-optimized meta title (max 60 characters) for a tech salary page about "${locationName}".`;
-    const resultMetaTitle = await model.generateContent(promptMetaTitle);
-    const seo_meta_title = resultMetaTitle.response.text();
-
-    const promptMetaDescription = `Generate an SEO-optimized meta description (max 160 characters) for a tech salary page about "${locationName}". Highlight local compensation trends.`;
-    const resultMetaDescription = await model.generateContent(promptMetaDescription);
-    const seo_meta_description = resultMetaDescription.response.text();
-
-    return { description, seo_meta_title, seo_meta_description };
-  } catch (error) {
-    console.error("Error generating location AI content:", error);
-    return {
-      description: `Explore tech salaries in ${locationName}.`,
-      seo_meta_title: `Tech Salaries in ${locationName}`,
-      seo_meta_description: `Discover compensation data for tech professionals in ${locationName}.`
-    };
-  }
-}
-
-// Get or create company with AI content
+// Get or create company
 async function getOrCreateCompany(companyName: string): Promise<{ id: string; name: string; isNew: boolean }> {
   const normalizedName = companyName.trim();
 
@@ -216,9 +160,7 @@ async function getOrCreateCompany(companyName: string): Promise<{ id: string; na
     return { ...existingCompany, isNew: false };
   }
 
-  // Create new company with AI content
-  await generateCompanyAIContent(normalizedName);
-
+  // Create new company record (deep analysis is queued separately after salary insertion)
   const { data: newCompany, error: insertError } = await (supabaseAdmin
     .from('Company')
     .insert([{
@@ -234,7 +176,7 @@ async function getOrCreateCompany(companyName: string): Promise<{ id: string; na
     throw new Error(`Error creating new company: ${insertError.message}`);
   }
 
-  console.log(`New company created with AI content: "${normalizedName}"`);
+  console.log(`New company created: "${normalizedName}"`);
   return { ...newCompany!, isNew: true };
 }
 
@@ -260,9 +202,7 @@ async function getOrCreateLocation(locationName: string): Promise<{ id: string; 
     return { id: existingLocation.id, name: `${existingLocation.city}, ${existingLocation.state}`, isNew: false };
   }
 
-  // Create new location with AI content
-  await generateLocationAIContent(fullName);
-
+  // Create new location record (deep analysis is queued separately after salary insertion)
   const { data: newLocation, error: insertError } = await (supabaseAdmin
     .from('Location')
     .insert([{
@@ -279,7 +219,7 @@ async function getOrCreateLocation(locationName: string): Promise<{ id: string; 
     throw new Error(`Error creating new location: ${insertError.message}`);
   }
 
-  console.log(`New location created with AI content: "${fullName}"`);
+  console.log(`New location created: "${fullName}"`);
   return { id: newLocation!.id, name: `${newLocation!.city}, ${newLocation!.state}`, isNew: true };
 }
 
@@ -339,9 +279,64 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to save salary data' }, { status: 500 });
     }
 
-    // 3. If the job is new, we skip AI content update for now as the schema doesn't support it
+    // 3. Queue enrichment for any new entities (non-blocking, fire-and-forget)
+    const enrichmentPromises: Promise<string | null>[] = [];
+
+    if (companyEntry.isNew) {
+      // Check if company already has analysis cached
+      const { data: companyRecord } = await supabaseAdmin
+        .from('Company')
+        .select('analysis')
+        .eq('id', companyEntry.id)
+        .single();
+
+      if (!companyRecord?.analysis) {
+        enrichmentPromises.push(
+          queueEnrichment('Company', companyEntry.id, companyEntry.name)
+        );
+      }
+    }
+
     if (jobEntry.isNew) {
-      console.log('New job created, skipping AI content update (schema mismatch)');
+      const { data: roleRecord } = await supabaseAdmin
+        .from('Role')
+        .select('analysis')
+        .eq('id', jobEntry.id)
+        .single();
+
+      if (!roleRecord?.analysis) {
+        enrichmentPromises.push(
+          queueEnrichment('Job', jobEntry.id, jobEntry.title)
+        );
+      }
+    }
+
+    if (locationEntry.isNew) {
+      // Parse city/state for context
+      const locParts = locationEntry.name.split(',').map((p: string) => p.trim());
+      const city = locParts[0];
+      const state = locParts[1] || '';
+
+      const { data: locRecord } = await supabaseAdmin
+        .from('Location')
+        .select('analysis')
+        .eq('id', locationEntry.id)
+        .single();
+
+      if (!locRecord?.analysis) {
+        const cityContext = buildCityContextData(city, state);
+        enrichmentPromises.push(
+          queueEnrichment('City', locationEntry.id, locationEntry.name, cityContext)
+        );
+      }
+    }
+
+    // Fire enrichment queue entries without blocking the response
+    if (enrichmentPromises.length > 0) {
+      Promise.allSettled(enrichmentPromises).then(results => {
+        const queued = results.filter(r => r.status === 'fulfilled').length;
+        console.log(`Queued ${queued} enrichment job(s) from salary submission`);
+      });
     }
 
     return NextResponse.json({

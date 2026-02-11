@@ -8,39 +8,62 @@ datasource db {
 }
 
 model Company {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  slug      String   @unique
-  domain    String?
-  industry  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  id                  String    @id @default(cuid())
+  name                String    @unique
+  slug                String    @unique
+  domain              String?
+  industry            String?
+  analysis            Json?
+  analysisGeneratedAt DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
   salaries  Salary[]
   postings  JobPosting[]
 }
 
 model Role {
-  id          String @id @default(cuid())
-  title       String
-  canonicalTitle String
-  slug        String @unique
-  category    String?
-  
+  id                  String    @id @default(cuid())
+  title               String
+  canonicalTitle      String
+  slug                String    @unique
+  category            String?
+  analysis            Json?
+  analysisGeneratedAt DateTime?
+
   salaries    Salary[]
   postings    JobPosting[]
 }
 
 model Location {
-  id       String @id @default(cuid())
-  city     String
-  state    String
-  country  String @default("US")
-  metro    String
-  slug     String @unique
-  
+  id                  String    @id @default(cuid())
+  city                String
+  state               String
+  country             String    @default("US")
+  metro               String
+  slug                String    @unique
+  analysis            Json?
+  analysisGeneratedAt DateTime?
+
   salaries Salary[]
   postings JobPosting[]
+}
+
+model EnrichmentQueue {
+  id          String    @id @default(cuid())
+  entityType  String    // Company, City, Job
+  entityId    String
+  entityName  String
+  contextData Json?
+  status      String    @default("pending") // pending, processing, completed, failed
+  attempts    Int       @default(0)
+  lastError   String?
+  result      Json?
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  @@index([status])
+  @@index([entityType, entityId])
 }
 
 model Salary {
