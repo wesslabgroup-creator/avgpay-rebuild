@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { DataTable } from "@/components/data-table";
+import { getComparisonsForCompany } from '@/app/compare/data/curated-comparisons';
 
 interface SalarySummary {
   role: string;
@@ -123,6 +124,8 @@ const CompanyDetailPage = () => {
     s.dataPoints.toLocaleString()
   ]) || [];
 
+  const relevantComparisons = getComparisonsForCompany(companyData.name);
+
   return (
     <main className="min-h-screen bg-white">
       <div className="px-6 py-12">
@@ -175,6 +178,31 @@ const CompanyDetailPage = () => {
           </Card>
 
           {/* Related Links / Action Section */}
+          {relevantComparisons.length > 0 && (
+            <Card className="bg-white border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-slate-900">Compare {companyData.name} vs peers</CardTitle>
+                <CardDescription className="text-slate-500">
+                  Explore curated, high-demand comparison pages to benchmark competing offers.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {relevantComparisons.map((comparison) => (
+                    <Link
+                      key={comparison.slug}
+                      href={`/compare/${comparison.slug}`}
+                      className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                    >
+                      <p className="font-semibold text-slate-900">{comparison.title}</p>
+                      <p className="text-sm text-slate-500 mt-1">{comparison.summary}</p>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link href="/salaries">
               <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700 w-full">

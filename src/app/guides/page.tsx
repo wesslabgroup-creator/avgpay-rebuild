@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import { CURATED_COMPARISONS } from "@/app/compare/data/curated-comparisons";
 import { 
   Briefcase, 
   TrendingUp, 
@@ -188,6 +189,25 @@ export default function GuidesPage() {
               </Link>
             );
           })}
+        </div>
+
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Popular comparison pages</h2>
+          <p className="text-slate-600 mb-6">
+            Pair these guides with side-by-side compensation matchups for the most in-demand company and role combinations.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {CURATED_COMPARISONS.slice(0, 4).map((comparison) => (
+              <Link
+                key={comparison.slug}
+                href={`/compare/${comparison.slug}`}
+                className="group rounded-xl border border-slate-200 bg-white p-4 hover:border-emerald-300 transition-colors"
+              >
+                <p className="font-semibold text-slate-900 group-hover:text-emerald-600">{comparison.title}</p>
+                <p className="text-sm text-slate-500 mt-1">{comparison.summary}</p>
+              </Link>
+            ))}
+          </div>
         </div>
         
         {/* Bottom CTA */}
