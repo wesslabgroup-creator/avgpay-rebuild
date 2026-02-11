@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-02-11T04:09:07.556Z",
+  "totals": {
+    "allRoutes": 39,
+    "indexableRoutes": 33,
+    "orphanIndexableRoutes": 13,
+    "brokenInternalLinks": 0
+  },
+  "topNavigationCandidates": [
+    "/salaries",
+    "/companies",
+    "/guides",
+    "/tools",
+    "/compare",
+    "/analyze-offer"
+  ],
+  "orphanRoutes": [
+    "/[company]/[role]/[location]",
+    "/company/[companyName]",
+    "/compare/[slug]",
+    "/guides/equity",
+    "/guides/pm-compensation-2026",
+    "/guides/remote-pay",
+    "/guides/startup-vs-bigtech",
+    "/guides/swe-compensation-2026",
+    "/jobs/[jobTitle]",
+    "/salaries/[role]/[location]",
+    "/tools/equity-simulator",
+    "/tools/percentile-calculator",
+    "/tools/stock-calculator"
+  ],
+  "highOutboundRoutes": [],
+  "brokenLinks": []
+}

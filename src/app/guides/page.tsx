@@ -200,6 +200,17 @@ export default function GuidesPage() {
           })}
         </div>
 
+        <div className="mt-12 rounded-xl border border-slate-200 bg-slate-50 p-6">
+          <h2 className="text-2xl font-bold text-slate-900 mb-3">Put these guides into action</h2>
+          <p className="text-slate-600 mb-4">Jump directly from strategy content to calculators and analyzers.</p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <Link href="/tools/compensation-breakdown" className="rounded-lg border border-slate-200 bg-white p-4 font-semibold text-slate-800 hover:border-emerald-300 hover:text-emerald-700">Compensation Breakdown Calculator</Link>
+            <Link href="/tools/negotiation-email" className="rounded-lg border border-slate-200 bg-white p-4 font-semibold text-slate-800 hover:border-emerald-300 hover:text-emerald-700">Negotiation Email Generator</Link>
+            <Link href="/analyze-offer" className="rounded-lg border border-slate-200 bg-white p-4 font-semibold text-slate-800 hover:border-emerald-300 hover:text-emerald-700">Analyze your active job offer</Link>
+            <Link href="/tools/salary-comparison" className="rounded-lg border border-slate-200 bg-white p-4 font-semibold text-slate-800 hover:border-emerald-300 hover:text-emerald-700">Salary Comparison Calculator</Link>
+          </div>
+        </div>
+
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-slate-900 mb-4">Popular comparison pages</h2>
           <p className="text-slate-600 mb-6">

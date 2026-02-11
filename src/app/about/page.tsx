@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "About | AvgPay",
@@ -13,6 +14,7 @@ export default function AboutPage() {
 
       <div className="px-6 py-12">
         <div className="max-w-3xl mx-auto space-y-12">
+          <Breadcrumbs items={[{ label: "About" }]} />
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold text-slate-900">About AvgPay</h1>
             <p className="text-xl text-slate-600">
@@ -81,6 +83,17 @@ export default function AboutPage() {
               Help us grow the database →
             </Link>
           </div>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-6">
+            <h2 className="text-xl font-bold text-slate-900">Popular next steps</h2>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <Link href="/salaries" className="text-emerald-700 hover:underline">Explore salary ranges by role and location</Link>
+              <Link href="/guides" className="text-emerald-700 hover:underline">Read compensation and negotiation guides</Link>
+              <Link href="/tools" className="text-emerald-700 hover:underline">Use calculators to evaluate offers</Link>
+              <Link href="/analyze-offer" className="text-emerald-700 hover:underline">Analyze your current offer</Link>
+            </div>
+          </div>
+
         </div>
       </div>
     </main>

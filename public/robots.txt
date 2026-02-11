@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /auth/
+Disallow: /dashboard
+Disallow: /login
+Disallow: /signup
 
-Sitemap: https://avgpay-rebuild.vercel.app/sitemap.xml
+Sitemap: https://avgpay.com/sitemap.xml
