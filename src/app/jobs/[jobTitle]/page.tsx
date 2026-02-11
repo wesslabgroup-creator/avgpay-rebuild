@@ -6,13 +6,14 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users } from 'lucide-react';
+import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users, Sparkles } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { InsightCards } from '@/components/insight-cards';
 import { SalaryDistributionChart } from '@/components/salary-distribution-chart'; // Placeholder for chart
 
 interface JobDetails {
   jobData: {
+    id: string;
     title: string;
     description: string;
     analysis?: Record<string, string> | null;
@@ -28,6 +29,7 @@ interface JobDetails {
   bottomLocations: { location: string; total_comp: number }[];
   salaryDistribution: { total_comp: number }[];
   relatedJobs: { title: string }[];
+  enrichmentStatus?: string;
 }
 
 export default function JobDetailPage() {
@@ -38,6 +40,7 @@ export default function JobDetailPage() {
   const [data, setData] = useState<JobDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [enrichmentStatus, setEnrichmentStatus] = useState<string>('none');
 
   useEffect(() => {
     if (!jobTitleSlug) return;
@@ -54,6 +57,7 @@ export default function JobDetailPage() {
         }
         const fetchedData: JobDetails = await response.json();
         setData(fetchedData);
+        setEnrichmentStatus(fetchedData.enrichmentStatus || 'none');
       } catch (err: unknown) {
         console.error("Failed to fetch job data:", err);
         setError("Could not load job details. Please try again later.");
@@ -70,10 +74,42 @@ export default function JobDetailPage() {
     return `$${(n / 1000).toFixed(0)}k`;
   };
 
+  useEffect(() => {
+    if (!data?.jobData?.id || data.jobData.analysis) return;
+
+    const terminalStatuses = new Set(['completed', 'failed', 'none']);
+    if (terminalStatuses.has(enrichmentStatus)) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/enrichment-status?entityType=Job&entityId=${data.jobData.id}`);
+        if (!response.ok) return;
+
+        const payload = await response.json();
+        setEnrichmentStatus(payload.status || 'none');
+
+        if (payload.analysis) {
+          setData(prev => prev ? {
+            ...prev,
+            jobData: { ...prev.jobData, analysis: payload.analysis },
+          } : prev);
+        }
+      } catch (pollErr) {
+        console.error('Failed to poll job enrichment status', pollErr);
+      }
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, [data?.jobData?.id, data?.jobData?.analysis, enrichmentStatus]);
+
   if (isLoading) return <div className="flex justify-center items-center min-h-screen">Loading job details...</div>;
   if (error || !data) return <div className="flex justify-center items-center min-h-screen text-red-500">{error || "No data available."}</div>;
 
   const { jobData, topCompanies, topLocations, bottomLocations, salaryDistribution, relatedJobs } = data;
+
+  const spread = (jobData.global_max_comp || 0) - (jobData.global_min_comp || 0);
+  const topCompany = topCompanies[0];
+  const topLocation = topLocations[0];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -156,6 +192,46 @@ export default function JobDetailPage() {
             </CardHeader>
             <CardContent>
               <SalaryDistributionChart data={salaryDistribution.map(s => s.total_comp)} />
+            </CardContent>
+          </Card>
+
+
+          {!jobData.analysis && (
+            <Card className="bg-emerald-50 border-emerald-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-emerald-600" />
+                  Gemini Analyst Briefing
+                </CardTitle>
+                <p className="text-sm text-slate-600">
+                  {enrichmentStatus === 'failed'
+                    ? 'The latest AI narrative failed validation and needs a retry with richer sample depth.'
+                    : enrichmentStatus === 'pending' || enrichmentStatus === 'processing'
+                      ? 'A job-specific AI narrative is being generated. Refresh in a moment to view the full briefing.'
+                      : 'No AI narrative is available yet. New submissions for this role will improve insight quality.'}
+                </p>
+              </CardHeader>
+            </Card>
+          )}
+
+          <Card className="bg-white border-slate-200">
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-900">Market Narrative</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-slate-700">
+              <p>
+                The observed compensation spread for {jobData.title} is {formatCurrency(jobData.global_min_comp)} to {formatCurrency(jobData.global_max_comp)}, a {formatCurrency(spread)} range that signals meaningful variation by employer and location.
+              </p>
+              {topCompany && (
+                <p>
+                  {topCompany.company_name} currently leads this dataset with a median package near {formatCurrency(topCompany.total_comp)}, making it a useful anchor for high-end negotiation targets.
+                </p>
+              )}
+              {topLocation && (
+                <p>
+                  {topLocation.location} appears as the highest-paying location in this role snapshot, indicating stronger market pricing pressure for this talent pool.
+                </p>
+              )}
             </CardContent>
           </Card>
 

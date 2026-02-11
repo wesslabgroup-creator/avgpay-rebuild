@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ExternalLink, Sparkles } from 'lucide-react';
 import { DataTable } from "@/components/data-table";
 import { InsightCards } from '@/components/insight-cards';
 
@@ -28,6 +28,7 @@ interface SimilarCompanyLink {
 }
 
 interface CompanyInfo {
+  id: string;
   name: string;
   website: string;
   description: string;
@@ -45,6 +46,7 @@ const CompanyDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [similarCompanies, setSimilarCompanies] = useState<SimilarCompanyLink[]>([]);
+  const [enrichmentStatus, setEnrichmentStatus] = useState<string>('none');
 
   useEffect(() => {
     if (!companyName) return;
@@ -57,9 +59,10 @@ const CompanyDetailPage = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const { companyData: fetchedData, salarySummary } = await response.json();
+        const { companyData: fetchedData, salarySummary, enrichmentStatus: initialEnrichmentStatus } = await response.json();
 
         setCompanyData({
+          id: fetchedData.id,
           name: fetchedData.name,
           website: fetchedData.website || '#',
           description: fetchedData.description,
@@ -67,6 +70,7 @@ const CompanyDetailPage = () => {
           analysis: fetchedData.analysis || null,
           salarySummary,
         });
+        setEnrichmentStatus(initialEnrichmentStatus || 'none');
 
         const similarResponse = await fetch(`/api/company-similar?companyName=${encodeURIComponent(companyName)}`);
         if (similarResponse.ok) {
@@ -85,6 +89,31 @@ const CompanyDetailPage = () => {
   }, [companyName]);
 
   const formatCurrency = (n: number) => `$${(n / 1000).toFixed(0)}k`;
+
+  useEffect(() => {
+    if (!companyData?.id || companyData.analysis) return;
+
+    const terminalStatuses = new Set(['completed', 'failed', 'none']);
+    if (terminalStatuses.has(enrichmentStatus)) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/enrichment-status?entityType=Company&entityId=${companyData.id}`);
+        if (!response.ok) return;
+
+        const payload = await response.json();
+        setEnrichmentStatus(payload.status || 'none');
+
+        if (payload.analysis) {
+          setCompanyData(prev => prev ? { ...prev, analysis: payload.analysis } : prev);
+        }
+      } catch (pollErr) {
+        console.error('Failed to poll company enrichment status', pollErr);
+      }
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, [companyData?.id, companyData?.analysis, enrichmentStatus]);
 
   if (isLoading) {
     return (
@@ -131,6 +160,14 @@ const CompanyDetailPage = () => {
     { label: "Levels", key: "levels" },
     { label: "Data Points", key: "count" }
   ];
+
+
+  const strongestRole = companyData.salarySummary && companyData.salarySummary.length > 0
+    ? [...companyData.salarySummary].sort((a, b) => b.medianComp - a.medianComp)[0]
+    : null;
+  const broadestRole = companyData.salarySummary && companyData.salarySummary.length > 0
+    ? [...companyData.salarySummary].sort((a, b) => b.dataPoints - a.dataPoints)[0]
+    : null;
 
   const tableRows = companyData.salarySummary?.map((s, index) => [
     <Link key={`link-${index}`} href={`/jobs/${encodeURIComponent(s.role)}`} className="text-emerald-600 hover:text-emerald-500 font-medium transition-colors">
@@ -188,6 +225,51 @@ const CompanyDetailPage = () => {
               ) : (
                 <p className="text-slate-500 text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-200">
                   No detailed salary data available for this company yet.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+
+          {!companyData.analysis && (
+            <Card className="bg-emerald-50 border-emerald-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-slate-900 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-emerald-600" />
+                  Gemini Analyst Briefing
+                </CardTitle>
+                <CardDescription className="text-slate-600">
+                  {enrichmentStatus === 'failed'
+                    ? 'The latest AI insight run failed quality checks. It will be retried after new salary submissions.'
+                    : enrichmentStatus === 'pending' || enrichmentStatus === 'processing'
+                      ? 'A fresh AI narrative is being generated for this company. Check back shortly for deeper context.'
+                      : 'No AI narrative is available yet. Submitting more salary data helps trigger richer analysis.'}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          )}
+
+          <Card className="bg-white border-slate-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-slate-900">Compensation Storyline</CardTitle>
+              <CardDescription className="text-slate-500">
+                Human-readable highlights generated from submitted salary data.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 text-slate-700">
+              <p>
+                {strongestRole
+                  ? `${companyData.name}'s top-paying role in our dataset is ${strongestRole.role} with a median total compensation of ${formatCurrency(strongestRole.medianComp)}.`
+                  : `We are still collecting enough samples to build a complete compensation storyline for ${companyData.name}.`}
+              </p>
+              {broadestRole && (
+                <p>
+                  The most well-sampled role is {broadestRole.role} ({broadestRole.dataPoints.toLocaleString()} submissions), which improves reliability of trend estimates.
+                </p>
+              )}
+              {similarCompanies.length > 0 && (
+                <p>
+                  Peer data suggests the closest salary market neighbors are {similarCompanies.slice(0, 2).map((c) => c.company).join(' and ')}, giving you a practical benchmark set for offer evaluation.
                 </p>
               )}
             </CardContent>
