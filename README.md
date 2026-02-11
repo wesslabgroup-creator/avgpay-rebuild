@@ -31,3 +31,16 @@ npx prisma generate
 npx prisma db push
 npx prisma studio
 ```
+
+### Supabase migration required for Gemini enrichment
+If company/job pages are missing Gemini analysis and Supabase errors mention missing columns/table, run:
+
+```bash
+supabase db push
+```
+
+Or paste `supabase/migrations/20260211_add_enrichment_queue.sql` into the Supabase SQL Editor.
+
+This migration creates:
+- `"EnrichmentQueue"` table (async enrichment jobs)
+- `"analysis"` + `"analysisGeneratedAt"` on `"Company"`, `"Role"`, and `"Location"`

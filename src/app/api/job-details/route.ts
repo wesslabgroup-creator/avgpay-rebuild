@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+import { getEnrichmentStatus, queueEnrichment } from '@/lib/enrichment';
 
 type CompanySalaryRow = { totalComp: number; Company: { name: string } | { name: string }[] | null };
 type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string } | { city: string; state: string }[] | null };
@@ -22,6 +23,18 @@ export async function GET(request: Request) {
       .single());
 
     if (jobError) throw new Error(`Job not found: ${jobError.message}`);
+
+    // Ensure enrichment is queued if analysis is missing or previously failed.
+    let enrichmentStatus = 'completed';
+    if (!jobData.analysis) {
+      const status = await getEnrichmentStatus('Job', jobData.id);
+      if (!status || status.status === 'failed') {
+        await queueEnrichment('Job', jobData.id, jobData.title);
+        enrichmentStatus = 'pending';
+      } else {
+        enrichmentStatus = status.status;
+      }
+    }
 
     // 2. Get Top Companies (Aggregated)
     // Fetch more rows to allow for aggregation
@@ -163,6 +176,7 @@ export async function GET(request: Request) {
       bottomLocations,
       salaryDistribution: salaries.map((s: number) => ({ total_comp: s })),
       relatedJobs,
+      enrichmentStatus,
     });
 
   } catch (error: unknown) {

@@ -27,7 +27,7 @@ export function SalarySearch({ onResultsChange }: SalarySearchProps) {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch("/api/salaries?view=role_global");
+        const response = await fetch(`/api/salaries?view=role_global&ts=${Date.now()}`, { cache: "no-store" });
         const data = await response.json();
         setAllJobs(data);
         setFilteredJobs(data);

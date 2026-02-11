@@ -6,13 +6,14 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users } from 'lucide-react';
+import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users, Sparkles } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { InsightCards } from '@/components/insight-cards';
 import { SalaryDistributionChart } from '@/components/salary-distribution-chart'; // Placeholder for chart
 
 interface JobDetails {
   jobData: {
+    id: string;
     title: string;
     description: string;
     analysis?: Record<string, string> | null;
@@ -28,6 +29,7 @@ interface JobDetails {
   bottomLocations: { location: string; total_comp: number }[];
   salaryDistribution: { total_comp: number }[];
   relatedJobs: { title: string }[];
+  enrichmentStatus?: string;
 }
 
 export default function JobDetailPage() {
@@ -38,6 +40,7 @@ export default function JobDetailPage() {
   const [data, setData] = useState<JobDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [enrichmentStatus, setEnrichmentStatus] = useState<string>('none');
 
   useEffect(() => {
     if (!jobTitleSlug) return;
@@ -54,6 +57,7 @@ export default function JobDetailPage() {
         }
         const fetchedData: JobDetails = await response.json();
         setData(fetchedData);
+        setEnrichmentStatus(fetchedData.enrichmentStatus || 'none');
       } catch (err: unknown) {
         console.error("Failed to fetch job data:", err);
         setError("Could not load job details. Please try again later.");
@@ -70,10 +74,42 @@ export default function JobDetailPage() {
     return `$${(n / 1000).toFixed(0)}k`;
   };
 
+  useEffect(() => {
+    if (!data?.jobData?.id || data.jobData.analysis) return;
+
+    const terminalStatuses = new Set(['completed', 'failed', 'none']);
+    if (terminalStatuses.has(enrichmentStatus)) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/enrichment-status?entityType=Job&entityId=${data.jobData.id}`);
+        if (!response.ok) return;
+
+        const payload = await response.json();
+        setEnrichmentStatus(payload.status || 'none');
+
+        if (payload.analysis) {
+          setData(prev => prev ? {
+            ...prev,
+            jobData: { ...prev.jobData, analysis: payload.analysis },
+          } : prev);
+        }
+      } catch (pollErr) {
+        console.error('Failed to poll job enrichment status', pollErr);
+      }
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, [data?.jobData?.id, data?.jobData?.analysis, enrichmentStatus]);
+
   if (isLoading) return <div className="flex justify-center items-center min-h-screen">Loading job details...</div>;
   if (error || !data) return <div className="flex justify-center items-center min-h-screen text-red-500">{error || "No data available."}</div>;
 
   const { jobData, topCompanies, topLocations, bottomLocations, salaryDistribution, relatedJobs } = data;
+
+  const spread = (jobData.global_max_comp || 0) - (jobData.global_min_comp || 0);
+  const topCompany = topCompanies[0];
+  const topLocation = topLocations[0];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -156,6 +192,52 @@ export default function JobDetailPage() {
             </CardHeader>
             <CardContent>
               <SalaryDistributionChart data={salaryDistribution.map(s => s.total_comp)} />
+            </CardContent>
+          </Card>
+
+
+          {!jobData.analysis && (
+            <Card className="bg-emerald-50 border-emerald-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-emerald-600" />
+                  Insights Briefing
+                </CardTitle>
+                <p className="text-sm text-slate-600">
+                  {enrichmentStatus === 'failed'
+                    ? 'The latest insights briefing failed validation and needs a retry with richer sample depth.'
+                    : enrichmentStatus === 'pending' || enrichmentStatus === 'processing'
+                      ? 'A role-specific insights briefing is being generated. Refresh in a moment to view the full briefing.'
+                      : 'No automated briefing is available yet. New submissions for this role will improve insight quality.'}
+                </p>
+              </CardHeader>
+            </Card>
+          )}
+
+          <Card className="bg-white border-slate-200">
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-900">Market Narrative</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-slate-700 leading-relaxed">
+              <p>
+                Compensation for {jobData.title} spans {formatCurrency(jobData.global_min_comp)} to {formatCurrency(jobData.global_max_comp)}. A {formatCurrency(spread)} gap means employer choice and location strategy can materially change total earnings over time.
+              </p>
+              <p>
+                The market midpoint sits near {formatCurrency(jobData.global_median_comp)} across {(jobData.global_count || 0).toLocaleString()} data points. Use that midpoint as your baseline, then position your ask above or below it depending on scope, level, and interview leverage.
+              </p>
+              {topCompany && (
+                <p>
+                  At the premium end, {topCompany.company_name} leads this dataset with a median near {formatCurrency(topCompany.total_comp)}. That establishes a realistic ceiling reference for candidates targeting top-quartile outcomes.
+                </p>
+              )}
+              {topLocation && (
+                <p>
+                  Geographically, {topLocation.location} shows the strongest pricing for this role, which often reflects denser competition for experienced talent in that market.
+                </p>
+              )}
+              <p>
+                Decision flow: benchmark against the global median first, compare against top-paying employers second, then decide whether relocation, remote targeting, or title-leveling gives you the biggest compensation lift.
+              </p>
             </CardContent>
           </Card>
 

@@ -113,7 +113,8 @@ export async function GET(request: Request) {
             Role(title),
             Location(city)
         `)
-      .limit(2000);
+      .order('submittedAt', { ascending: false })
+      .limit(5000);
 
     if (aggError) throw aggError;
 
