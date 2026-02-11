@@ -1,0 +1,212 @@
+{
+  "totalRoutes": 39,
+  "maxClickDepthFromHome": 1,
+  "unreachableRoutes": [
+    "/[company]/[role]/[location]",
+    "/admin",
+    "/admin/verify/[id]",
+    "/auth/verify-request",
+    "/companies",
+    "/company/[companyName]",
+    "/compare",
+    "/compare/[slug]",
+    "/dashboard",
+    "/guides/equity",
+    "/guides/negotiation",
+    "/guides/pm-compensation-2026",
+    "/guides/remote-pay",
+    "/guides/startup-vs-bigtech",
+    "/guides/swe-compensation-2026",
+    "/jobs/[jobTitle]",
+    "/login",
+    "/salaries/[role]/[location]",
+    "/signup",
+    "/tools/compare-offers",
+    "/tools/compensation-breakdown",
+    "/tools/equity-simulator",
+    "/tools/negotiation-email",
+    "/tools/percentile-calculator",
+    "/tools/stock-calculator"
+  ],
+  "orphanRoutes": [
+    "/[company]/[role]/[location]",
+    "/admin",
+    "/admin/verify/[id]",
+    "/auth/verify-request",
+    "/company/[companyName]",
+    "/compare/[slug]",
+    "/dashboard",
+    "/guides/equity",
+    "/guides/pm-compensation-2026",
+    "/guides/remote-pay",
+    "/guides/startup-vs-bigtech",
+    "/guides/swe-compensation-2026",
+    "/jobs/[jobTitle]",
+    "/salaries/[role]/[location]",
+    "/tools/compensation-breakdown",
+    "/tools/equity-simulator",
+    "/tools/negotiation-email",
+    "/tools/percentile-calculator",
+    "/tools/stock-calculator"
+  ],
+  "highOutbound": [],
+  "brokenLinks": [],
+  "routeInventory": [
+    {
+      "route": "/[company]/[role]/[location]",
+      "file": "src/app/[company]/[role]/[location]/page.tsx"
+    },
+    {
+      "route": "/about",
+      "file": "src/app/about/page.tsx"
+    },
+    {
+      "route": "/admin",
+      "file": "src/app/admin/page.tsx"
+    },
+    {
+      "route": "/admin/verify/[id]",
+      "file": "src/app/admin/verify/[id]/page.tsx"
+    },
+    {
+      "route": "/analyze-offer",
+      "file": "src/app/analyze-offer/page.tsx"
+    },
+    {
+      "route": "/analyze-salary",
+      "file": "src/app/analyze-salary/page.tsx"
+    },
+    {
+      "route": "/auth/verify-request",
+      "file": "src/app/auth/verify-request/page.tsx"
+    },
+    {
+      "route": "/companies",
+      "file": "src/app/companies/page.tsx"
+    },
+    {
+      "route": "/company/[companyName]",
+      "file": "src/app/company/[companyName]/page.tsx"
+    },
+    {
+      "route": "/compare/[slug]",
+      "file": "src/app/compare/[slug]/page.tsx"
+    },
+    {
+      "route": "/compare",
+      "file": "src/app/compare/page.tsx"
+    },
+    {
+      "route": "/contribute",
+      "file": "src/app/contribute/page.tsx"
+    },
+    {
+      "route": "/dashboard",
+      "file": "src/app/dashboard/page.tsx"
+    },
+    {
+      "route": "/guides/equity",
+      "file": "src/app/guides/equity/page.tsx"
+    },
+    {
+      "route": "/guides/negotiation",
+      "file": "src/app/guides/negotiation/page.tsx"
+    },
+    {
+      "route": "/guides",
+      "file": "src/app/guides/page.tsx"
+    },
+    {
+      "route": "/guides/pm-compensation-2026",
+      "file": "src/app/guides/pm-compensation-2026/page.tsx"
+    },
+    {
+      "route": "/guides/remote-pay",
+      "file": "src/app/guides/remote-pay/page.tsx"
+    },
+    {
+      "route": "/guides/startup-vs-bigtech",
+      "file": "src/app/guides/startup-vs-bigtech/page.tsx"
+    },
+    {
+      "route": "/guides/swe-compensation-2026",
+      "file": "src/app/guides/swe-compensation-2026/page.tsx"
+    },
+    {
+      "route": "/jobs/[jobTitle]",
+      "file": "src/app/jobs/[jobTitle]/page.tsx"
+    },
+    {
+      "route": "/login",
+      "file": "src/app/login/page.tsx"
+    },
+    {
+      "route": "/methodology",
+      "file": "src/app/methodology/page.tsx"
+    },
+    {
+      "route": "/",
+      "file": "src/app/page.tsx"
+    },
+    {
+      "route": "/pricing",
+      "file": "src/app/pricing/page.tsx"
+    },
+    {
+      "route": "/privacy",
+      "file": "src/app/privacy/page.tsx"
+    },
+    {
+      "route": "/salaries/[role]/[location]",
+      "file": "src/app/salaries/[role]/[location]/page.tsx"
+    },
+    {
+      "route": "/salaries",
+      "file": "src/app/salaries/page.tsx"
+    },
+    {
+      "route": "/signup",
+      "file": "src/app/signup/page.tsx"
+    },
+    {
+      "route": "/submit",
+      "file": "src/app/submit/page.tsx"
+    },
+    {
+      "route": "/tools/compare-offers",
+      "file": "src/app/tools/compare-offers/page.tsx"
+    },
+    {
+      "route": "/tools/compensation-breakdown",
+      "file": "src/app/tools/compensation-breakdown/page.tsx"
+    },
+    {
+      "route": "/tools/equity-simulator",
+      "file": "src/app/tools/equity-simulator/page.tsx"
+    },
+    {
+      "route": "/tools/inflation-calculator",
+      "file": "src/app/tools/inflation-calculator/page.tsx"
+    },
+    {
+      "route": "/tools/negotiation-email",
+      "file": "src/app/tools/negotiation-email/page.tsx"
+    },
+    {
+      "route": "/tools",
+      "file": "src/app/tools/page.tsx"
+    },
+    {
+      "route": "/tools/percentile-calculator",
+      "file": "src/app/tools/percentile-calculator/page.tsx"
+    },
+    {
+      "route": "/tools/salary-comparison",
+      "file": "src/app/tools/salary-comparison/page.tsx"
+    },
+    {
+      "route": "/tools/stock-calculator",
+      "file": "src/app/tools/stock-calculator/page.tsx"
+    }
+  ]
+}

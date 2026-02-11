@@ -2,16 +2,31 @@
 
 import Link from "next/link";
 import { useState } from "react";
-// Assuming lucide-react is installed, if not I'll use SVGs
+
+const primaryLinks = [
+  { href: "/salaries", label: "Salaries" },
+  { href: "/companies", label: "Companies" },
+  { href: "/compare", label: "Comparisons" },
+  { href: "/guides", label: "Guides" },
+  { href: "/tools", label: "Tools" },
+  { href: "/methodology", label: "Methodology" },
+];
+
+const quickToolLinks = [
+  { href: "/tools/salary-comparison", label: "Salary Comparison" },
+  { href: "/tools/compensation-breakdown", label: "Comp Breakdown" },
+  { href: "/tools/equity-simulator", label: "Equity Simulator" },
+  { href: "/tools/negotiation-email", label: "Negotiation Email" },
+];
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const toggleMenu = () => setIsOpen((prev) => !prev);
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 border-b border-slate-200 bg-white/80 backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 border-b border-slate-200 bg-white/90 backdrop-blur-md">
         <Link
           href="/"
           className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent hover:scale-105 transition-all"
@@ -19,63 +34,21 @@ export function Navigation() {
           AvgPay
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center space-x-6">
-          <Link
-            href="/salaries"
-            className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
-          >
-            Salaries
-          </Link>
-          <Link
-            href="/companies"
-            className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
-          >
-            Companies
-          </Link>
-          <Link
-            href="/guides"
-            className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
-          >
-            Guides
-          </Link>
-          <div className="flex items-center space-x-1">
+        <div className="hidden md:flex items-center gap-2">
+          {primaryLinks.map((link) => (
             <Link
-              href="/tools/inflation-calculator"
+              key={link.href}
+              href={link.href}
               className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
             >
-              Inflation
+              {link.label}
             </Link>
-            <Link
-              href="/tools/salary-comparison"
-              className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
-            >
-              Compare
-            </Link>
-          </div>
-          <Link
-            href="/tools/negotiation-email"
-            className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
-          >
-            Negotiate
-          </Link>
-          <Link
-            href="/tools/equity-simulator"
-            className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
-          >
-            Equity
-          </Link>
+          ))}
           <Link
             href="/submit"
-            className="text-emerald-600 hover:text-emerald-700 font-medium px-3 py-2 rounded-md transition-colors hover:bg-emerald-50"
+            className="text-emerald-700 hover:text-emerald-800 font-medium px-3 py-2 rounded-md transition-colors hover:bg-emerald-50"
           >
-            Contribute
-          </Link>
-          <Link
-            href="/analyze-salary"
-            className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
-          >
-            Check Your Value
+            Contribute Data
           </Link>
           <Link
             href="/analyze-offer"
@@ -85,7 +58,6 @@ export function Navigation() {
           </Link>
         </div>
 
-        {/* Mobile menu button */}
         <button
           onClick={toggleMenu}
           className="md:hidden p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
@@ -99,75 +71,53 @@ export function Navigation() {
         </button>
       </nav>
 
-      {/* Mobile menu overlay */}
       {isOpen && (
         <div className="fixed inset-0 z-40 md:hidden bg-white pt-20 px-6 pb-6 overflow-y-auto animate-in fade-in slide-in-from-top-5 duration-200">
-          <div className="flex flex-col space-y-4">
-            <Link
-              href="/salaries"
-              onClick={toggleMenu}
-              className="block w-full px-4 py-4 text-xl font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 rounded-lg transition-colors"
-            >
-              Salaries
-            </Link>
-            <Link
-              href="/companies"
-              onClick={toggleMenu}
-              className="block w-full px-4 py-4 text-xl font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 rounded-lg transition-colors"
-            >
-              Companies
-            </Link>
-            <Link
-              href="/guides"
-              onClick={toggleMenu}
-              className="block w-full px-4 py-4 text-xl font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 rounded-lg transition-colors"
-            >
-              Guides
-            </Link>
-            <div className="grid grid-cols-2 gap-2 pb-2 border-b border-slate-100">
-              <Link
-                href="/tools/inflation-calculator"
-                onClick={toggleMenu}
-                className="block px-4 py-3 text-lg font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                Inflation Calc
-              </Link>
-              <Link
-                href="/tools/salary-comparison"
-                onClick={toggleMenu}
-                className="block px-4 py-3 text-lg font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                Salary Comp
-              </Link>
+          <div className="space-y-6">
+            <div className="grid gap-2">
+              {primaryLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={toggleMenu}
+                  className="block w-full px-4 py-3 text-lg font-semibold text-slate-800 border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
-            <Link
-              href="/tools/negotiation-email"
-              onClick={toggleMenu}
-              className="block w-full px-4 py-4 text-xl font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 rounded-lg transition-colors"
-            >
-              Negotiate
-            </Link>
-            <Link
-              href="/tools/equity-simulator"
-              onClick={toggleMenu}
-              className="block w-full px-4 py-4 text-xl font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 rounded-lg transition-colors"
-            >
-              Equity
-            </Link>
+
+            <div>
+              <p className="text-sm uppercase tracking-wide text-slate-500 mb-2">Popular tools</p>
+              <div className="grid grid-cols-2 gap-2">
+                {quickToolLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={toggleMenu}
+                    className="block px-3 py-3 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
             <Link
               href="/submit"
               onClick={toggleMenu}
-              className="block w-full px-4 py-4 text-xl font-semibold text-emerald-600 border-b border-slate-100 hover:bg-emerald-50 rounded-lg transition-colors"
+              className="block w-full px-4 py-4 text-xl font-semibold text-emerald-700 border border-emerald-200 hover:bg-emerald-50 rounded-lg transition-colors"
             >
               Contribute Data
             </Link>
-            <div className="pt-4 space-y-3">
+
+            <div className="pt-2 space-y-3">
               <Link
                 href="/analyze-salary"
                 onClick={toggleMenu}
                 className="block w-full text-center px-6 py-4 text-lg font-bold bg-slate-100 text-slate-800 rounded-xl hover:bg-slate-200 transition-colors"
               >
-                Check Your Value
+                Check Your Salary
               </Link>
               <Link
                 href="/analyze-offer"

@@ -47,6 +47,26 @@ export default function CompareIndexPage() {
             </Link>
           ))}
         </div>
+
+
+        <section className="mt-12 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+          <h2 className="text-2xl font-bold text-slate-900 mb-3">Where to go after a comparison</h2>
+          <p className="text-slate-600 mb-6">Use this path to move from exploration to action: benchmark your current pay, model offers, then prepare your negotiation ask.</p>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Link href="/salaries" className="rounded-xl border border-slate-200 p-4 hover:border-emerald-300 transition-colors">
+              <p className="font-semibold text-slate-900">Salary benchmarks by role and location</p>
+              <p className="text-sm text-slate-600 mt-1">Validate market baselines before comparing offers.</p>
+            </Link>
+            <Link href="/tools/compare-offers" className="rounded-xl border border-slate-200 p-4 hover:border-emerald-300 transition-colors">
+              <p className="font-semibold text-slate-900">Compare Offers Tool</p>
+              <p className="text-sm text-slate-600 mt-1">Quantify year-one and long-term compensation trade-offs.</p>
+            </Link>
+            <Link href="/guides/negotiation" className="rounded-xl border border-slate-200 p-4 hover:border-emerald-300 transition-colors">
+              <p className="font-semibold text-slate-900">Negotiation playbook</p>
+              <p className="text-sm text-slate-600 mt-1">Convert insights into a stronger counteroffer strategy.</p>
+            </Link>
+          </div>
+        </section>
       </section>
     </main>
   );

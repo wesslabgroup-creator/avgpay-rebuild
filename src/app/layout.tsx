@@ -20,6 +20,8 @@ export const metadata: Metadata = {
 };
 
 import { Navigation } from "@/components/navigation";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { SiteFooter } from "@/components/site-footer";
 import { OrganizationSchema } from "@/components/schema-markup";
 
 import { CSPostHogProvider } from "./providers";
@@ -35,7 +37,9 @@ export default function RootLayout({
         <CSPostHogProvider>
           <OrganizationSchema />
           <Navigation />
+          <Breadcrumbs />
           {children}
+          <SiteFooter />
         </CSPostHogProvider>
       </body>
     </html>
