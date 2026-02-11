@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { DataTable } from "@/components/data-table";
 import { InsightCards } from '@/components/insight-cards';
-import { getComparisonsForCompany } from '@/app/compare/data/curated-comparisons';
 
 interface SalarySummary {
   role: string;
@@ -17,6 +16,15 @@ interface SalarySummary {
   medianComp: number;
   levelsCount: number;
   dataPoints: number;
+}
+
+interface SimilarCompanyLink {
+  company: string;
+  similarityScore: number;
+  medianComp: number;
+  sampleSize: number;
+  slug: string;
+  href: string;
 }
 
 interface CompanyInfo {
@@ -36,6 +44,7 @@ const CompanyDetailPage = () => {
   const [companyData, setCompanyData] = useState<CompanyInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [similarCompanies, setSimilarCompanies] = useState<SimilarCompanyLink[]>([]);
 
   useEffect(() => {
     if (!companyName) return;
@@ -58,6 +67,12 @@ const CompanyDetailPage = () => {
           analysis: fetchedData.analysis || null,
           salarySummary,
         });
+
+        const similarResponse = await fetch(`/api/company-similar?companyName=${encodeURIComponent(companyName)}`);
+        if (similarResponse.ok) {
+          const payload = await similarResponse.json();
+          setSimilarCompanies(payload.similarCompanies || []);
+        }
       } catch (err: unknown) {
         setError(`Failed to load data for "${companyName}".`);
         console.error(err);
@@ -127,8 +142,6 @@ const CompanyDetailPage = () => {
     s.dataPoints.toLocaleString()
   ]) || [];
 
-  const relevantComparisons = getComparisonsForCompany(companyData.name);
-
   return (
     <main className="min-h-screen bg-white">
       <div className="px-6 py-12">
@@ -186,24 +199,24 @@ const CompanyDetailPage = () => {
           )}
 
           {/* Related Links / Action Section */}
-          {relevantComparisons.length > 0 && (
+          {similarCompanies.length > 0 && (
             <Card className="bg-white border-slate-200 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-slate-900">Compare {companyData.name} vs peers</CardTitle>
                 <CardDescription className="text-slate-500">
-                  Explore curated, high-demand comparison pages to benchmark competing offers.
+                  Dynamically discovered peers with the most similar salary bands in our dataset.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {relevantComparisons.map((comparison) => (
+                  {similarCompanies.map((comparison) => (
                     <Link
                       key={comparison.slug}
-                      href={`/compare/${comparison.slug}`}
+                      href={comparison.href}
                       className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
                     >
-                      <p className="font-semibold text-slate-900">{comparison.title}</p>
-                      <p className="text-sm text-slate-500 mt-1">{comparison.summary}</p>
+                      <p className="font-semibold text-slate-900">{companyData.name} vs {comparison.company}</p>
+                      <p className="text-sm text-slate-500 mt-1">Similarity score: {comparison.similarityScore.toFixed(1)} · Median comp: {formatCurrency(comparison.medianComp)} · Samples: {comparison.sampleSize}</p>
                     </Link>
                   ))}
                 </div>
