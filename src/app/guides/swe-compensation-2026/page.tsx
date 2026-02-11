@@ -114,7 +114,7 @@ const SWCompensationPage = () => {
         </p>
         <DataTable headers={compensationHeaders} rows={compensationRows} />
         <div className="mt-4 flex justify-center">
-          <Link href="/analyzer" legacyBehavior>
+          <Link href="/analyze-offer">
             <Button variant="outline" className="group">
               Get Your Personalized Analyzer <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
@@ -197,7 +197,7 @@ const SWCompensationPage = () => {
         <p className="mb-8 text-lg text-gray-700">
           Use our advanced analyzer to get a personalized compensation report and negotiation strategies.
         </p>
-        <Link href="/analyzer" legacyBehavior>
+        <Link href="/analyze-offer">
           <Button className="px-8 py-3 text-lg group">
             Go to Analyzer <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Button>
