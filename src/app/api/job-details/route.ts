@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 
-type CompanySalaryRow = { totalComp: number; Company: { name: string }[] | null };
-type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string }[] | null };
+type CompanySalaryRow = { totalComp: number; Company: { name: string } | { name: string }[] | null };
+type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string } | { city: string; state: string }[] | null };
 type DistributionRow = { totalComp: number };
 
 export async function GET(request: Request) {
@@ -33,10 +33,13 @@ export async function GET(request: Request) {
 
     if (topSalariesError) throw new Error(`Error fetching top companies: ${topSalariesError.message}`);
 
-    const topCompanies = (topSalaries as CompanySalaryRow[] | null)?.map((s) => ({
-      company_name: s.Company?.[0]?.name,
-      total_comp: s.totalComp
-    }));
+    const topCompanies = (topSalaries as CompanySalaryRow[] | null)?.map((s) => {
+      const companyName = Array.isArray(s.Company) ? s.Company[0]?.name : s.Company?.name;
+      return {
+        company_name: companyName,
+        total_comp: s.totalComp
+      };
+    });
 
     // 3. Get Top 5 Locations
     const { data: locSalaries, error: locSalariesError } = await (supabaseAdmin
@@ -48,10 +51,13 @@ export async function GET(request: Request) {
 
     if (locSalariesError) throw new Error(`Error fetching top locations: ${locSalariesError.message}`);
 
-    const topLocations = (locSalaries as LocationSalaryRow[] | null)?.map((s) => ({
-      location: `${s.Location?.[0]?.city}, ${s.Location?.[0]?.state}`,
-      total_comp: s.totalComp
-    }));
+    const topLocations = (locSalaries as LocationSalaryRow[] | null)?.map((s) => {
+      const location = Array.isArray(s.Location) ? s.Location[0] : s.Location;
+      return {
+        location: location ? `${location.city}, ${location.state}` : 'Unknown Location',
+        total_comp: s.totalComp
+      };
+    });
 
     // 4. Get Bottom 5 Locations
     const { data: bottomLocSalaries, error: bottomLocSalariesError } = await (supabaseAdmin
@@ -63,10 +69,13 @@ export async function GET(request: Request) {
 
     if (bottomLocSalariesError) throw new Error(`Error fetching bottom locations: ${bottomLocSalariesError.message}`);
 
-    const bottomLocations = (bottomLocSalaries as LocationSalaryRow[] | null)?.map((s) => ({
-      location: `${s.Location?.[0]?.city}, ${s.Location?.[0]?.state}`,
-      total_comp: s.totalComp
-    }));
+    const bottomLocations = (bottomLocSalaries as LocationSalaryRow[] | null)?.map((s) => {
+      const location = Array.isArray(s.Location) ? s.Location[0] : s.Location;
+      return {
+        location: location ? `${location.city}, ${location.state}` : 'Unknown Location',
+        total_comp: s.totalComp
+      };
+    });
 
     // 5. Get Salary Distribution Data
     const { data: distributionData, error: distributionError } = await (supabaseAdmin

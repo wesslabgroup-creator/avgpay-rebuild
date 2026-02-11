@@ -1,0 +1,31 @@
+﻿
+> avgpay-rebuild@0.1.0 build
+> next build && node scripts/generate-sitemap.js
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+  - Experiments (use with caution):
+    ┬╖ optimizeCss
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+node.exe : 
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], 
+    RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Failed to compile.
+
+./src/app/salaries/page.tsx
+34:35  Error: A `require()` style import is forbidden.  
+@typescript-eslint/no-require-imports
+
+info  - Need to disable some ESLint rules? Learn more 
+here: https://nextjs.org/docs/basic-features/eslint#disabl
+ing-rules

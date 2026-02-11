@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { SalarySearch } from "@/components/salary-search";
+import { slugify } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Salaries | AvgPay",
@@ -18,7 +19,38 @@ export default function SalariesPage() {
         </div>
 
         <SalarySearch />
+
+        {/* Popular Reports Section */}
+        <div className="mt-16 border-t border-slate-200 pt-16">
+          <h2 className="text-2xl font-bold text-slate-900 mb-8">Popular Salary Reports</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { role: "Software Engineer", location: "San Francisco, CA" },
+              { role: "Product Manager", location: "New York, NY" },
+              { role: "Data Scientist", location: "Seattle, WA" },
+              { role: "Product Designer", location: "Austin, TX" },
+              { role: "Engineering Manager", location: "San Francisco, CA" },
+              { role: "Software Engineer", location: "Remote" },
+            ].map((report) => {
+              return (
+                <Link
+                  key={`${report.role}-${report.location}`}
+                  href={`/salaries/${slugify(report.role)}/${slugify(report.location)}`}
+                  className="group p-5 bg-white border border-slate-200 rounded-2xl hover:border-emerald-500 hover:shadow-md transition-all"
+                >
+                  <h3 className="font-bold text-slate-900 group-hover:text-emerald-600 mb-1">{report.role}</h3>
+                  <p className="text-slate-500 text-sm flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+                    {report.location}
+                  </p>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </main>
   );
 }
+
+import Link from "next/link";

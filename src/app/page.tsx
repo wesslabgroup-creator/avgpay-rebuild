@@ -2,7 +2,8 @@ import { Metadata } from "next";
 import dynamic from 'next/dynamic';
 import { HeroSearch } from "@/components/hero-search";
 import { Button } from "@/components/ui/button";
-import { Database, Shield, TrendingUp, Users, Award, Zap, Star, Search } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Database, Shield, TrendingUp, Users, Award, Zap, Star, Search, Calculator, Scale } from "lucide-react";
 import Link from "next/link";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { calculateTotalDataPoints } from "@/lib/data";
@@ -142,6 +143,47 @@ export default async function Home() {
             <Link href="/salaries" className="inline-flex items-center gap-2 text-lg font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
               See All Salary Data <TrendingUp className="w-5 h-5" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Tools Preview */}
+      <section className="px-4 py-20 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div className="max-w-xl space-y-4">
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Interactive Salary Tools</h2>
+              <p className="text-xl text-slate-600">Expert-level tools to help you model your career and compensation with precision.</p>
+            </div>
+            <Link href="/tools" className="text-emerald-600 font-bold hover:underline">View All Tools →</Link>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <Card className="p-8 border-2 border-slate-100 hover:border-emerald-500/30 transition-all group">
+              <div className="p-3 bg-emerald-100 rounded-2xl w-fit mb-6 group-hover:scale-110 transition-transform">
+                <Calculator className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Inflation Calculator</h3>
+              <p className="text-slate-600 mb-8 leading-relaxed">
+                See how much your salary has actually grown (or shrunk) after adjusting for US inflation data. Know your "Real Wage".
+              </p>
+              <Link href="/tools/inflation-calculator">
+                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-6 rounded-xl">Calculate Real Wage</Button>
+              </Link>
+            </Card>
+
+            <Card className="p-8 border-2 border-slate-100 hover:border-blue-500/30 transition-all group">
+              <div className="p-3 bg-blue-100 rounded-2xl w-fit mb-6 group-hover:scale-110 transition-transform">
+                <Scale className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Salary Comparison Tool</h3>
+              <p className="text-slate-600 mb-8 leading-relaxed">
+                Side-by-side comparison of different roles, levels, and locations. Perfect for weighing multiple job offers.
+              </p>
+              <Link href="/tools/salary-comparison">
+                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-6 rounded-xl">Compare Offers</Button>
+              </Link>
+            </Card>
           </div>
         </div>
       </section>
@@ -375,9 +417,11 @@ export default async function Home() {
             © 2026 <span className="text-emerald-600 font-black">AvgPay</span>. Built for tech workers who negotiate.
           </div>
           <div className="flex flex-wrap gap-6 justify-center md:justify-end text-sm text-slate-600 font-medium">
+            <Link href="/salaries" className="hover:text-slate-900 transition-colors">Salaries</Link>
+            <Link href="/tools/inflation-calculator" className="hover:text-slate-900 transition-colors">Inflation Calc</Link>
+            <Link href="/tools/salary-comparison" className="hover:text-slate-900 transition-colors">Comparison Tool</Link>
             <Link href="/guides" className="hover:text-slate-900 transition-colors">Guides</Link>
             <Link href="/methodology" className="hover:text-slate-900 transition-colors">Methodology</Link>
-            <Link href="/salaries" className="hover:text-slate-900 transition-colors">Salaries</Link>
             <Link href="/pricing" className="hover:text-slate-900 transition-colors">Pricing</Link>
             <Link href="/about" className="hover:text-slate-900 transition-colors">About</Link>
             <Link href="/privacy" className="hover:text-slate-900 transition-colors">Privacy</Link>

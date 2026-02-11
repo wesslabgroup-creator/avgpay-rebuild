@@ -39,6 +39,20 @@ export function Navigation() {
           >
             Guides
           </Link>
+          <div className="flex items-center space-x-1">
+            <Link
+              href="/tools/inflation-calculator"
+              className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
+            >
+              Inflation
+            </Link>
+            <Link
+              href="/tools/salary-comparison"
+              className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
+            >
+              Compare
+            </Link>
+          </div>
           <Link
             href="/tools/negotiation-email"
             className="text-slate-600 hover:text-slate-900 font-medium px-3 py-2 rounded-md transition-colors hover:bg-slate-50"
@@ -110,6 +124,22 @@ export function Navigation() {
             >
               Guides
             </Link>
+            <div className="grid grid-cols-2 gap-2 pb-2 border-b border-slate-100">
+              <Link
+                href="/tools/inflation-calculator"
+                onClick={toggleMenu}
+                className="block px-4 py-3 text-lg font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                Inflation Calc
+              </Link>
+              <Link
+                href="/tools/salary-comparison"
+                onClick={toggleMenu}
+                className="block px-4 py-3 text-lg font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                Salary Comp
+              </Link>
+            </div>
             <Link
               href="/tools/negotiation-email"
               onClick={toggleMenu}
