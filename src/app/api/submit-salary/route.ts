@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
-import { genAI } from '@/lib/geminiClient';
 import { queueEnrichment, buildCityContextData } from '@/lib/enrichment';
 
 // Levenshtein distance for fuzzy matching
@@ -143,63 +142,7 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
   return { ...newJob!, isNew: true };
 }
 
-// Function to generate AI content for companies
-async function generateCompanyAIContent(companyName: string): Promise<{ description: string; seo_meta_title: string; seo_meta_description: string }> {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-
-    const promptDescription = `Generate a concise description (under 100 words) about "${companyName}" as an employer, focusing on company culture, industry position, and what makes it attractive for tech professionals.`;
-    const resultDescription = await model.generateContent(promptDescription);
-    const description = resultDescription.response.text();
-
-    const promptMetaTitle = `Generate an SEO-optimized meta title (max 60 characters) for a salary page about "${companyName}".`;
-    const resultMetaTitle = await model.generateContent(promptMetaTitle);
-    const seo_meta_title = resultMetaTitle.response.text();
-
-    const promptMetaDescription = `Generate an SEO-optimized meta description (max 160 characters) for a salary page about "${companyName}". Highlight compensation insights and career opportunities.`;
-    const resultMetaDescription = await model.generateContent(promptMetaDescription);
-    const seo_meta_description = resultMetaDescription.response.text();
-
-    return { description, seo_meta_title, seo_meta_description };
-  } catch (error) {
-    console.error("Error generating company AI content:", error);
-    return {
-      description: `Explore salary data and career opportunities at ${companyName}.`,
-      seo_meta_title: `${companyName} Salaries & Compensation`,
-      seo_meta_description: `Discover compensation data for ${companyName} employees.`
-    };
-  }
-}
-
-// Function to generate AI content for locations
-async function generateLocationAIContent(locationName: string): Promise<{ description: string; seo_meta_title: string; seo_meta_description: string }> {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-
-    const promptDescription = `Generate a concise description (under 100 words) about "${locationName}" as a tech job market, focusing on cost of living, major employers, and quality of life for tech professionals.`;
-    const resultDescription = await model.generateContent(promptDescription);
-    const description = resultDescription.response.text();
-
-    const promptMetaTitle = `Generate an SEO-optimized meta title (max 60 characters) for a tech salary page about "${locationName}".`;
-    const resultMetaTitle = await model.generateContent(promptMetaTitle);
-    const seo_meta_title = resultMetaTitle.response.text();
-
-    const promptMetaDescription = `Generate an SEO-optimized meta description (max 160 characters) for a tech salary page about "${locationName}". Highlight local compensation trends.`;
-    const resultMetaDescription = await model.generateContent(promptMetaDescription);
-    const seo_meta_description = resultMetaDescription.response.text();
-
-    return { description, seo_meta_title, seo_meta_description };
-  } catch (error) {
-    console.error("Error generating location AI content:", error);
-    return {
-      description: `Explore tech salaries in ${locationName}.`,
-      seo_meta_title: `Tech Salaries in ${locationName}`,
-      seo_meta_description: `Discover compensation data for tech professionals in ${locationName}.`
-    };
-  }
-}
-
-// Get or create company with AI content
+// Get or create company
 async function getOrCreateCompany(companyName: string): Promise<{ id: string; name: string; isNew: boolean }> {
   const normalizedName = companyName.trim();
 
@@ -217,9 +160,7 @@ async function getOrCreateCompany(companyName: string): Promise<{ id: string; na
     return { ...existingCompany, isNew: false };
   }
 
-  // Create new company with AI content
-  await generateCompanyAIContent(normalizedName);
-
+  // Create new company record (deep analysis is queued separately after salary insertion)
   const { data: newCompany, error: insertError } = await (supabaseAdmin
     .from('Company')
     .insert([{
@@ -235,7 +176,7 @@ async function getOrCreateCompany(companyName: string): Promise<{ id: string; na
     throw new Error(`Error creating new company: ${insertError.message}`);
   }
 
-  console.log(`New company created with AI content: "${normalizedName}"`);
+  console.log(`New company created: "${normalizedName}"`);
   return { ...newCompany!, isNew: true };
 }
 
@@ -261,9 +202,7 @@ async function getOrCreateLocation(locationName: string): Promise<{ id: string; 
     return { id: existingLocation.id, name: `${existingLocation.city}, ${existingLocation.state}`, isNew: false };
   }
 
-  // Create new location with AI content
-  await generateLocationAIContent(fullName);
-
+  // Create new location record (deep analysis is queued separately after salary insertion)
   const { data: newLocation, error: insertError } = await (supabaseAdmin
     .from('Location')
     .insert([{
@@ -280,7 +219,7 @@ async function getOrCreateLocation(locationName: string): Promise<{ id: string; 
     throw new Error(`Error creating new location: ${insertError.message}`);
   }
 
-  console.log(`New location created with AI content: "${fullName}"`);
+  console.log(`New location created: "${fullName}"`);
   return { id: newLocation!.id, name: `${newLocation!.city}, ${newLocation!.state}`, isNew: true };
 }
 

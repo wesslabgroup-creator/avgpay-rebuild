@@ -95,21 +95,40 @@ If you identify a highly relevant data point (e.g., a specific tax loophole, a n
  * Validates the Gemini analysis response for quality before saving.
  * Rejects thin content and content with banned temporal words.
  */
-export function validateAnalysis(jsonResponse: Record<string, string>): { valid: boolean; reason?: string } {
-  const values = Object.values(jsonResponse);
+// Required keys per entity type — analysis must contain at least these
+const REQUIRED_KEYS: Record<EntityType, string[]> = {
+  Company: ['comp_philosophy', 'benefit_sentiment', 'hiring_bar'],
+  City: ['buying_power', 'market_drivers', 'lifestyle_economics'],
+  Job: ['career_leverage', 'skill_premium', 'remote_viability'],
+};
 
-  if (values.length === 0) {
+export function validateAnalysis(
+  jsonResponse: Record<string, string>,
+  entityType?: EntityType
+): { valid: boolean; reason?: string } {
+  const entries = Object.entries(jsonResponse);
+
+  if (entries.length === 0) {
     return { valid: false, reason: 'Empty analysis response' };
   }
 
+  // Structural check: ensure the response contains the correct keys for this entity type
+  if (entityType && REQUIRED_KEYS[entityType]) {
+    const missingKeys = REQUIRED_KEYS[entityType].filter(k => !(k in jsonResponse));
+    if (missingKeys.length > 0) {
+      return { valid: false, reason: `Missing required keys for ${entityType}: ${missingKeys.join(', ')}` };
+    }
+  }
+
   // Fail if any section is too short (Thin Content Risk)
-  const thinValues = values.filter(text => typeof text === 'string' && text.length < 50);
+  const thinValues = entries.filter(([, text]) => typeof text === 'string' && text.length < 50);
   if (thinValues.length > 0) {
     return { valid: false, reason: `${thinValues.length} section(s) are too short (under 50 chars). Thin content risk.` };
   }
 
   // Fail if it uses banned words (temporal references)
-  const bannedPattern = /(2024|2025|currently|now)/i;
+  // Use word boundaries (\b) so "known", "knowledge", "innovation" don't false-positive on "now"
+  const bannedPattern = /\b(2024|2025|currently|now)\b/i;
   const jsonStr = JSON.stringify(jsonResponse);
   if (bannedPattern.test(jsonStr)) {
     return { valid: false, reason: 'Contains banned temporal words (2024, 2025, currently, now). Must be timeless.' };
@@ -269,8 +288,8 @@ export async function processNextEnrichmentJob(): Promise<{
       job.contextData as Record<string, unknown> | undefined
     );
 
-    // Validate the analysis
-    const validation = validateAnalysis(analysis as Record<string, string>);
+    // Validate the analysis (pass entityType for structural key checking)
+    const validation = validateAnalysis(analysis as Record<string, string>, job.entityType as EntityType);
 
     if (!validation.valid) {
       // If validation fails and we have retries left, re-queue
