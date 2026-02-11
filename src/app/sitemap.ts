@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { CURATED_COMPARISONS } from '@/app/compare/data/curated-comparisons';
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://avgpay.com'; // Replace with actual production URL if different
@@ -38,5 +39,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.9,
     }));
 
-    return [...routes, ...guides];
+
+    const comparisons = CURATED_COMPARISONS.map((comparison) => ({
+        url: `${baseUrl}/compare/${comparison.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.85,
+    }));
+
+    return [...routes, ...guides, ...comparisons];
 }

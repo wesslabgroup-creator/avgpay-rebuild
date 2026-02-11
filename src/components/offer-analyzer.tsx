@@ -8,6 +8,8 @@ import { SearchableSelect } from "@/components/searchable-select";
 import { calculateGrade } from "@/lib/data";
 import { CheckCircle2, TrendingUp, TrendingDown, Minus, Loader2 } from "lucide-react";
 import { usePostHog } from "posthog-js/react";
+import Link from "next/link";
+import { getBestComparisonMatch } from "@/app/compare/data/curated-comparisons";
 
 const LEVELS = [
   { value: "Junior (L1-L2)", label: "Junior (L1-L2)" },
@@ -213,6 +215,7 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
 
   if (step === "results" && result) {
     const feedback = getFeedback(result.grade);
+    const matchedComparison = getBestComparisonMatch(formData.company, formData.role);
     return (
       <Card className="w-full max-w-2xl mx-auto bg-white border-slate-200 shadow-lg overflow-hidden">
         <div className={`p-6 ${feedback.bgColor} border-b border-slate-200`}>
@@ -244,6 +247,23 @@ export function OfferAnalyzer({ mode = "offer" }: OfferAnalyzerProps) {
           <div className="text-center text-sm text-slate-500">
             <p>Based on <span className="font-semibold text-slate-700">{result.count.toLocaleString()}</span> verified salaries</p>
           </div>
+
+          {matchedComparison && (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+              <p className="text-sm font-semibold text-slate-900">
+                Want a direct peer benchmark for this offer?
+              </p>
+              <p className="text-sm text-slate-600 mt-1">
+                Explore {matchedComparison.title} for negotiation angles, FAQs, and side-by-side context.
+              </p>
+              <Link
+                href={`/compare/${matchedComparison.slug}`}
+                className="inline-flex mt-3 text-sm font-semibold text-emerald-700 hover:text-emerald-600"
+              >
+                Open comparison page →
+              </Link>
+            </div>
+          )}
 
           <Button
             onClick={() => setStep("form")}

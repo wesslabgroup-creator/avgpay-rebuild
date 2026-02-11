@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, ArrowRight } from "lucide-react";
 import { COMPANIES, ROLES, LOCATIONS, LEVELS, getMarketData, MarketData } from "@/lib/data";
+import { getBestComparisonMatch } from "@/app/compare/data/curated-comparisons";
 
 interface ComparisonPoint {
     role: string;
@@ -69,6 +71,9 @@ export function SalaryComparison() {
             maximumFractionDigits: 0,
         }).format(amount);
     };
+
+    const scenarioAComparison = getBestComparisonMatch(point1.company, point1.role);
+    const scenarioBComparison = getBestComparisonMatch(point2.company, point2.role);
 
     return (
         <div className="space-y-8">
@@ -276,8 +281,20 @@ export function SalaryComparison() {
                         </CardContent>
                     </Card>
 
-                    <div className="mt-8 text-center">
-                        <p className="text-slate-600 mb-4">Want to see the full breakdown for these roles?</p>
+                    <div className="mt-8 text-center space-y-3">
+                        <p className="text-slate-600">Want to see the full breakdown for these roles?</p>
+                        <div className="flex flex-wrap justify-center gap-3">
+                            {scenarioAComparison && (
+                                <Link href={`/compare/${scenarioAComparison.slug}`} className="text-sm font-semibold text-emerald-700 hover:text-emerald-600">
+                                    Explore {scenarioAComparison.title}
+                                </Link>
+                            )}
+                            {scenarioBComparison && scenarioBComparison.slug !== scenarioAComparison?.slug && (
+                                <Link href={`/compare/${scenarioBComparison.slug}`} className="text-sm font-semibold text-blue-700 hover:text-blue-600">
+                                    Explore {scenarioBComparison.title}
+                                </Link>
+                            )}
+                        </div>
                         <Button variant="outline" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                             Run Another Comparison
                         </Button>
