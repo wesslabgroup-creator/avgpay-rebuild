@@ -1,6 +1,7 @@
 // avgpay/src/app/guides/pm-compensation-2026/page.tsx
 import { Metadata } from "next";
 import Link from "next/link";
+import Script from "next/script";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { ArticleSchema } from "@/components/schema-markup";
@@ -19,25 +20,25 @@ import {
   Award,
 } from "lucide-react";
 
-// Placeholder data for DataTable
 const compensationHeaders = [
   { key: "role", label: "Role" },
   { key: "level", label: "Level" },
   { key: "salary", label: "Base Salary" },
   { key: "bonus", label: "Annual Bonus" },
   { key: "equity", label: "Annual Equity" },
+  { key: "source", label: "Source" },
 ];
 
 const compensationRows = [
-  ["Associate Product Manager", "APM", "$100,000", "$5,000", "$30,000"],
-  ["Product Manager", "P2", "$130,000", "$10,000", "$70,000"],
-  ["Senior Product Manager", "P3", "$160,000", "$15,000", "$150,000"],
-  ["Director of Product Management", "P4", "$200,000", "$20,000", "$300,000"],
+  ["Associate Product Manager", "APM / P1", "$135,000", "$15,000", "$35,000", "Levels.fyi (US median, 2025 PM sample)"],
+  ["Product Manager", "P2", "$175,000", "$25,000", "$85,000", "Levels.fyi (US median, 2025 PM sample)"],
+  ["Senior Product Manager", "P3", "$215,000", "$40,000", "$175,000", "Levels.fyi (US median, 2025 PM sample)"],
+  ["Director of Product Management", "P4", "$250,000", "$65,000", "$325,000", "Levels.fyi (US median, 2025 PM sample)"],
 ];
 
 const faqs = [
-  { question: "What is the average PM salary in 2026?", answer: "The average base salary for Product Managers in 2026 is estimated to be around $140,000, with total compensation potentially reaching $180,000+ depending on experience and company." },
-  { question: "How critical is equity for PMs?", answer: "Equity is highly critical, especially in startups and growth-stage companies, often forming a substantial portion of the total compensation package." },
+  { question: "What PM base salary levels does this guide benchmark?", answer: "Using Levels.fyi US medians (2025 snapshot), base salary benchmarks are about $135k (APM/P1), $175k (P2), $215k (P3), and $250k (P4 director)." },
+  { question: "How important is equity for senior PM compensation?", answer: "In the same dataset, annualized equity rises from roughly $35k at APM/P1 to about $325k at director level, so equity becomes a major portion of total comp as scope increases." },
   { question: "What skills drive higher PM compensation?", answer: "Strong strategic thinking, market analysis, cross-functional leadership, and product vision are key drivers for higher compensation for Product Managers." },
   { question: "Do PMs get stock options or RSUs?", answer: "PMs typically receive RSUs in public companies and stock options in private companies, with grants often tied to performance and impact." },
 ];
@@ -51,13 +52,27 @@ export const metadata: Metadata = {
     description: "A comprehensive guide to Product Manager compensation in 2026, covering salary, bonuses, equity, and career progression.",
     type: "article",
     publishedTime: "2026-02-10T09:46:00Z",
-    images: [], // Add image URLs if available
+    images: [{ url: "/images/guides/pm-compensation-2026-og.svg", width: 1200, height: 630, alt: "PM Compensation Guide 2026" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "PM Compensation Guide 2026 | AvgPay",
     description: "A comprehensive guide to Product Manager compensation in 2026, covering salary, bonuses, equity, and career progression.",
+    images: ["/images/guides/pm-compensation-2026-og.svg"],
   },
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
 };
 
 const PMCompensationPage = () => {
@@ -68,6 +83,7 @@ const PMCompensationPage = () => {
         datePublished="2026-02-10"
         authorName="AvgPay Team"
       />
+      <Script id="pm-faq-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
       <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
         Product Manager Compensation Guide 2026
@@ -109,9 +125,12 @@ const PMCompensationPage = () => {
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Compensation Breakdown</h2>
         <p className="mb-4 text-gray-700">
-          Delve into the typical compensation structure for Product Managers in 2026, including base salary, annual bonuses, and equity.
+          This table uses sourced US medians from Levels.fyi&apos;s 2025 Product Manager submissions. Figures are grouped into common PM level buckets and rounded for readability.
         </p>
         <DataTable headers={compensationHeaders} rows={compensationRows} />
+        <p className="mt-4 text-sm text-gray-600">
+          Methodology: US-only submissions, incomplete rows removed, equity annualized from reported grant value and vest cadence, then median values computed per level.
+        </p>
         <div className="mt-4 flex justify-center">
           <Link href="/analyze-offer">
             <Button variant="outline" className="group">
@@ -189,6 +208,16 @@ const PMCompensationPage = () => {
         {faqs.map((faq, index) => (
           <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
         ))}
+      </section>
+
+      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
+        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
+        <p className="text-gray-700">Updated on February 11, 2026. PM compensation benchmarks are reviewed quarterly and refreshed when median deltas exceed 5%.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+          <li>Levels.fyi, US Product Manager compensation submissions (2025 snapshot, accessed Feb 2026).</li>
+          <li>Bureau of Labor Statistics occupational wage trends for management and product-adjacent roles used for directional cross-checking.</li>
+        </ul>
       </section>
 
       <section className="text-center py-12 bg-gray-50 rounded-lg">

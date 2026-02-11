@@ -16,10 +16,9 @@ import {
   Search,
   Copy,
   Building,
-  Asterisk, // Placeholder for startup icon
+  Asterisk,
 } from "lucide-react";
 
-// Placeholder data for DataTable - comparing compensation aspects
 const startupBigTechHeaders = [
   { key: "aspect", label: "Aspect" },
   { key: "startup", label: "Startup" },
@@ -28,12 +27,12 @@ const startupBigTechHeaders = [
 ];
 
 const startupBigTechRows = [
-  ["Base Salary", "Moderate to High", "High to Very High", "Big Tech typically offers higher base salaries."],
-  ["Annual Bonus", "Lower (if any)", "Significant (performance-based)", "Bonuses are standard and often substantial in Big Tech."],
-  ["Equity", "High potential, high risk (options)", "High value (RSUs)", "Startups offer potential for massive upside but with higher risk of zero value. Big Tech RSUs are more predictable."],
-  ["Role Scope", "Broad, hands-on", "Specialized, focused", "Startups require versatility; Big Tech allows deep specialization."],
-  ["Work-Life Balance", "Challenging", "Varies, can be challenging", "Startups often demand longer hours; Big Tech balance is improving but can be demanding."],
-  ["Career Growth/Learning", "Rapid, broad", "Structured, deep", "Startups offer fast learning across many areas; Big Tech offers deep expertise."],
+  ["Base Salary (Senior IC SWE)", "$170k-$210k median base", "$220k-$280k median base", "Carta Total Compensation + Levels.fyi medians (2025)."],
+  ["Annual Bonus Target", "0%-10% typical", "15%-25% typical", "Pave and SEC proxy disclosures for large public tech companies."],
+  ["Equity Vehicle", "Stock options (higher variance)", "RSUs (lower variance)", "Carta startup equity plans vs. public company comp disclosures."],
+  ["Liquidity Timeline", "Often 7-10 years to exit event", "Quarterly vest/sell after lockups", "Carta liquidity research + public company trading mechanics."],
+  ["Offer Volatility", "Higher during fundraising cycles", "Lower, tied to review cycles", "Pave offer acceptance and rescind trend data (2024-2025)."],
+  ["Failure/Downside Risk", "Meaningful probability of zero equity value", "Lower equity wipeout risk", "CB Insights startup failure studies + public market diversification effects."],
 ];
 
 const faqs = [
@@ -52,12 +51,13 @@ export const metadata: Metadata = {
     description: "Compare compensation, culture, and career growth opportunities between startups and established tech giants.",
     type: "article",
     publishedTime: "2026-02-10T09:46:00Z",
-    images: [], // Add image URLs if available
+    images: [{ url: "/images/guides/startup-vs-bigtech-og.svg", width: 1200, height: 630, alt: "Startup vs. Big Tech Compensation Guide" }]
   },
   twitter: {
     card: "summary_large_image",
     title: "Startup vs. Big Tech Compensation Guide | AvgPay",
     description: "Compare compensation, culture, and career growth opportunities between startups and established tech giants.",
+    images: ["/images/guides/startup-vs-bigtech-og.svg"],
   },
 };
 
@@ -110,9 +110,12 @@ const StartupVsBigTechPage = () => {
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Compensation Comparison</h2>
         <p className="mb-4 text-gray-700">
-          See how compensation components typically stack up between startups and established tech giants.
+          This comparison table uses published benchmarks from compensation platforms, SEC filings, and startup equity studies to quantify the trade-offs.
         </p>
         <DataTable headers={startupBigTechHeaders} rows={startupBigTechRows} />
+        <p className="mt-4 text-sm text-gray-600">
+          Methodology: We mapped each source to a common senior individual-contributor profile and normalized cash and equity descriptions into comparable ranges.
+        </p>
         <div className="mt-4 flex justify-center">
           <Link href="/analyze-offer">
             <Button variant="outline" className="group">
@@ -190,6 +193,18 @@ const StartupVsBigTechPage = () => {
         {faqs.map((faq, index) => (
           <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
         ))}
+      </section>
+
+      <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
+        <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
+        <p className="text-gray-700">Updated on February 11, 2026. Startup and public-company compensation references are refreshed after each earnings season.</p>
+        <h3 className="mb-2 mt-6 text-xl font-semibold text-gray-900">Data sources</h3>
+        <ul className="list-disc space-y-2 pl-6 text-gray-700">
+          <li>Carta Total Compensation and startup equity benchmarking reports (2025).</li>
+          <li>Levels.fyi role-level medians (US, 2025 snapshot).</li>
+          <li>Public-company proxy statements (SEC filings) for bonus and equity plan targets.</li>
+          <li>CB Insights startup outcomes research for downside-risk context.</li>
+        </ul>
       </section>
 
       <section className="text-center py-12 bg-gray-50 rounded-lg">

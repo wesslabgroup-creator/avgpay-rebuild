@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Startup vs. Big Tech Guide">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#b45309" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)" />
+  <text x="80" y="270" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="36">AvgPay Guides</text>
+  <text x="80" y="350" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="700">Startup vs. Big Tech Guide</text>
+</svg>
