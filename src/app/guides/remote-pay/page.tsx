@@ -4,8 +4,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { ArticleSchema } from "@/components/schema-markup";
-import { Card, CardContent } from "@/components/ui/card";
-import { ExpandableFAQ } from "@/components/ExpandableFAQ";
+import {
+  GuideCtaSection,
+  GuideFaqSection,
+  GuideFooterLinks,
+  GuideHero,
+  GuideKeyTakeaways,
+  GuideResourceLinks,
+} from "@/components/guides/guide-shell";
 import {
   Lightbulb,
   ArrowRight,
@@ -38,6 +44,43 @@ const faqs = [
   { question: "What about working remotely internationally?", answer: "International remote work adds layers of complexity including tax laws, employment regulations, and payroll differences, often requiring specific company policies or PEOs (Professional Employer Organizations)." },
 ];
 
+
+const heroLearnItems = [
+  "Different models for setting remote pay (geo-adjusted, national bands).",
+  "Factors influencing your remote salary.",
+  "Pros and cons of different remote pay strategies.",
+  "How to research and negotiate remote compensation.",
+  "Considerations for international remote work.",
+];
+
+const takeaways = [
+  {
+    icon: DollarSign,
+    iconClassName: "text-green-600",
+    title: "Location Matters (Usually)",
+    description: "Most companies adjust pay based on location, influencing both base salary and equity ranges.",
+  },
+  {
+    icon: Home,
+    iconClassName: "text-yellow-600",
+    title: "Company Policy is Crucial",
+    description: "Understand your employer's specific pay philosophy for remote workers.",
+  },
+  {
+    icon: Globe,
+    iconClassName: "text-purple-600",
+    title: "Skills Still Command Value",
+    description: "In-demand skills and experience continue to be primary drivers of compensation, even remotely.",
+  },
+];
+
+const resourceLinks = [
+  { label: "Salary Database", href: "/salaries", description: "Benchmark your target pay across cities before accepting geo-adjustments." },
+  { label: "Salary Comparison Tool", href: "/tools/salary-comparison", description: "Compare compensation scenarios when moving between markets." },
+  { label: "Compare Offers", href: "/tools/compare-offers", description: "Evaluate competing remote offers with consistent total-comp math." },
+  { label: "Startup vs. Big Tech", href: "/guides/startup-vs-bigtech", description: "See how remote policies diverge by company stage and risk profile." },
+];
+
 export const metadata: Metadata = {
   title: "Remote Work Compensation Guide | AvgPay",
   description: "Understand how remote work impacts pay. Learn about location-based adjustments, national pay bands, and navigating your remote compensation.",
@@ -66,42 +109,14 @@ const RemotePayPage = () => {
         authorName="AvgPay Team"
       />
 
-      <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
-        Navigating Remote Compensation
-      </h1>
-      <p className="mb-8 text-lg text-gray-600">
-        Explore how remote work affects your salary. Understand location adjustments, pay bands, and how to maximize your earnings in a distributed workforce.
-      </p>
-
-      <div className="mb-12 grid gap-8 md:grid-cols-2">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center mb-3">
-              <Home className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
-            </div>
-            <ul className="space-y-2 text-gray-700">
-              <li>Different models for setting remote pay (geo-adjusted, national bands).</li>
-              <li>Factors influencing your remote salary.</li>
-              <li>Pros and cons of different remote pay strategies.</li>
-              <li>How to research and negotiate remote compensation.</li>
-              <li>Considerations for international remote work.</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6 bg-blue-50 border border-blue-200 shadow-inner">
-            <div className="flex items-center mb-3">
-              <Globe className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-blue-800">Executive Summary</h3>
-            </div>
-            <p className="text-gray-800">
-              The rise of remote work has fundamentally changed compensation strategies. Companies today employ diverse methods, from geo-adjusting salaries based on local cost of living to establishing national pay bands. Understanding these models and how they apply to your situation is key to ensuring fair compensation and maximizing your financial well-being as a remote employee.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <GuideHero
+        title="Navigating Remote Compensation"
+        description="Explore how remote work affects your salary. Understand location adjustments, pay bands, and how to maximize your earnings in a distributed workforce."
+        learnIcon={Home}
+        learnItems={heroLearnItems}
+        summaryIcon={Globe}
+        summary="The rise of remote work has fundamentally changed compensation strategies. Companies today employ diverse methods, from geo-adjusting salaries based on local cost of living to national pay bands. Understanding these models and their implications is essential for making informed career decisions and maximizing your earning potential in a remote-first world."
+      />
 
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Factors in Remote Pay</h2>
@@ -121,38 +136,7 @@ const RemotePayPage = () => {
         </div>
       </section>
 
-      <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Takeaways for Remote Compensation</h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <DollarSign className="h-6 w-6 text-green-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Location Matters (Usually)</h3>
-              </div>
-              <p className="text-gray-700">Most companies adjust pay based on location, influencing both base salary and equity ranges.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <Home className="h-6 w-6 text-yellow-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Company Policy is Crucial</h3>
-              </div>
-              <p className="text-gray-700">Understand your employer&apos;s specific pay philosophy for remote workers.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <Globe className="h-6 w-6 text-purple-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Skills Still Command Value</h3>
-              </div>
-              <p className="text-gray-700">In-demand skills and experience continue to be primary drivers of compensation, even remotely.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      <GuideKeyTakeaways title="Key Takeaways for Remote Compensation" takeaways={takeaways} />
 
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
@@ -184,12 +168,9 @@ const RemotePayPage = () => {
         </div>
       </section>
 
-      <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
-        {faqs.map((faq, index) => (
-          <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
-        ))}
-      </section>
+      <GuideFaqSection faqs={faqs} />
+
+      <GuideResourceLinks links={resourceLinks} />
 
       <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
         <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
@@ -203,31 +184,14 @@ const RemotePayPage = () => {
         </ul>
       </section>
 
-      <section className="text-center py-12 bg-gray-50 rounded-lg">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Optimize Your Remote Pay</h2>
-        <p className="mb-8 text-lg text-gray-700">
-          Use our advanced analyzer to benchmark your remote compensation and understand location-based adjustments.
-        </p>
-        <Link href="/analyze-offer">
-          <Button className="px-8 py-3 text-lg group">
-            Go to Analyzer <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </Button>
-        </Link>
-      </section>
+      <GuideCtaSection
+        title="Optimize Your Remote Pay"
+        description="Use our advanced analyzer to benchmark your remote compensation and understand location-based adjustments."
+        ctaLabel="Go to Analyzer"
+        ctaHref="/analyze-offer"
+      />
 
-      <footer className="mt-16 text-center text-sm text-gray-500">
-        <p>© 2026 AvgPay. All rights reserved.</p>
-        <div className="mt-2 flex flex-wrap justify-center gap-2">
-          <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
-          <Link href="/terms" className="hover:underline">Terms of Service</Link>
-          <Link href="/guides/swe-compensation-2026" className="hover:underline">SWE Compensation 2026</Link>
-          <Link href="/guides/pm-compensation-2026" className="hover:underline">PM Compensation 2026</Link>
-          <Link href="/guides/negotiation" className="hover:underline">Negotiation Guide</Link>
-          <Link href="/guides/equity" className="hover:underline">Equity Guide</Link>
-          <Link href="/guides/remote-pay" className="font-semibold text-blue-600">Remote Pay Guide</Link>
-          <Link href="/guides/startup-vs-bigtech" className="hover:underline">Startup vs. Big Tech</Link>
-        </div>
-      </footer>
+      <GuideFooterLinks currentGuide="/guides/remote-pay" />
     </div>
   );
 };

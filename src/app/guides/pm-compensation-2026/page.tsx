@@ -5,8 +5,14 @@ import Script from "next/script";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { ArticleSchema } from "@/components/schema-markup";
-import { Card, CardContent } from "@/components/ui/card";
-import { ExpandableFAQ } from "@/components/ExpandableFAQ";
+import {
+  GuideCtaSection,
+  GuideFaqSection,
+  GuideFooterLinks,
+  GuideHero,
+  GuideKeyTakeaways,
+  GuideResourceLinks,
+} from "@/components/guides/guide-shell";
 import {
   Lightbulb,
   ArrowRight,
@@ -62,6 +68,27 @@ export const metadata: Metadata = {
   },
 };
 
+const heroLearnItems = [
+  "Key components of a PM compensation package.",
+  "Factors influencing PM salaries and bonuses in 2026.",
+  "The role of equity in PM compensation.",
+  "Career progression paths and their compensation implications.",
+  "How to benchmark your own PM salary.",
+];
+
+const takeaways = [
+  { icon: DollarSign, iconClassName: "text-green-600", title: "Cash + Equity Balance", description: "PM offers increasingly bundle larger equity grants as product scope and ownership increase." },
+  { icon: Star, iconClassName: "text-yellow-600", title: "Scope Drives Level", description: "Comp jumps are tied to product complexity, revenue impact, and cross-functional leadership depth." },
+  { icon: TrendingUp, iconClassName: "text-purple-600", title: "Career Progression Matters", description: "Strategic moves between PM levels can materially outpace annual merit increases." },
+];
+
+const resourceLinks = [
+  { label: "Salary Database", href: "/salaries", description: "Benchmark PM compensation by market before discussing your target range." },
+  { label: "Offer Analyzer", href: "/analyze-offer", description: "Understand how bonus and equity components impact true offer value." },
+  { label: "SWE Compensation Guide", href: "/guides/swe-compensation-2026", description: "Compare PM vs SWE packages to frame cross-functional leveling discussions." },
+  { label: "Compensation Breakdown Tool", href: "/tools/compensation-breakdown", description: "Break down base, bonus, equity, and benefits for clearer negotiations." },
+];
+
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -85,42 +112,14 @@ const PMCompensationPage = () => {
       />
       <Script id="pm-faq-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
-        Product Manager Compensation Guide 2026
-      </h1>
-      <p className="mb-8 text-lg text-gray-600">
-        Understand the compensation landscape for Product Managers in 2026, from base salary to equity and strategic career moves.
-      </p>
-
-      <div className="mb-12 grid gap-8 md:grid-cols-2">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center mb-3">
-              <Briefcase className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900">What You&apos;ll Learn</h3>
-            </div>
-            <ul className="space-y-2 text-gray-700">
-              <li>Key components of a PM compensation package.</li>
-              <li>Factors influencing PM salaries and bonuses in 2026.</li>
-              <li>The role of equity in PM compensation.</li>
-              <li>Career progression paths and their compensation implications.</li>
-              <li>How to benchmark your own PM salary.</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6 bg-blue-50 border border-blue-200 shadow-inner">
-            <div className="flex items-center mb-3">
-              <Award className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-blue-800">Executive Summary</h3>
-            </div>
-            <p className="text-gray-800">
-              Product Managers are pivotal to a company&apos;s success, and their compensation reflects this critical role. In 2026, PM compensation packages are characterized by competitive base salaries, performance-driven bonuses, and significant equity components, especially in fast-growing tech companies. Understanding these dynamics and focusing on strategic career development are key to maximizing earning potential.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <GuideHero
+        title="Product Manager Compensation Guide 2026"
+        description="Understand the compensation landscape for Product Managers in 2026, from base salary to equity and strategic career moves."
+        learnIcon={Briefcase}
+        learnItems={heroLearnItems}
+        summaryIcon={Award}
+        summary="Product Managers are pivotal to a company's success, and their compensation reflects this critical role. In 2026, PM compensation packages are characterized by competitive base salaries, performance-driven bonuses, and significant equity components, especially in fast-growing tech companies. Understanding these dynamics and focusing on strategic career development are key to maximizing earning potential."
+      />
 
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Compensation Breakdown</h2>
@@ -140,38 +139,7 @@ const PMCompensationPage = () => {
         </div>
       </section>
 
-      <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Key Takeaways</h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <DollarSign className="h-6 w-6 text-green-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Competitive Base Salaries</h3>
-              </div>
-              <p className="text-gray-700">Base salaries for PMs remain strong, reflecting the skill and responsibility involved in product strategy.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <Star className="h-6 w-6 text-yellow-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Significant Equity Component</h3>
-              </div>
-              <p className="text-gray-700">Equity, whether RSUs or stock options, often forms a substantial part of the total compensation, especially at senior levels.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-3">
-                <TrendingUp className="h-6 w-6 text-purple-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Performance & Impact Bonuses</h3>
-              </div>
-              <p className="text-gray-700">Bonuses are frequently tied to product success metrics, team performance, and overall company profitability.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      <GuideKeyTakeaways title="Key Takeaways" takeaways={takeaways} />
 
       <section className="mb-12">
         <h2 className="mb-6 text-3xl font-bold text-gray-900">Quick Wins</h2>
@@ -203,12 +171,9 @@ const PMCompensationPage = () => {
         </div>
       </section>
 
-      <section className="mb-12">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
-        {faqs.map((faq, index) => (
-          <ExpandableFAQ key={index} question={faq.question} answer={faq.answer} />
-        ))}
-      </section>
+      <GuideFaqSection faqs={faqs} />
+
+      <GuideResourceLinks links={resourceLinks} />
 
       <section className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
         <h2 className="mb-3 text-2xl font-bold text-gray-900">Last updated</h2>
@@ -220,31 +185,14 @@ const PMCompensationPage = () => {
         </ul>
       </section>
 
-      <section className="text-center py-12 bg-gray-50 rounded-lg">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Ready to Optimize Your Pay?</h2>
-        <p className="mb-8 text-lg text-gray-700">
-          Use our advanced analyzer to get a personalized compensation report and negotiation strategies.
-        </p>
-        <Link href="/analyze-offer">
-          <Button className="px-8 py-3 text-lg group">
-            Go to Analyzer <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </Button>
-        </Link>
-      </section>
+      <GuideCtaSection
+        title="Ready to Elevate Your PM Career?"
+        description="Use our advanced analyzer to benchmark your PM package and negotiate your next move."
+        ctaLabel="Go to Analyzer"
+        ctaHref="/analyze-offer"
+      />
 
-      <footer className="mt-16 text-center text-sm text-gray-500">
-        <p>© 2026 AvgPay. All rights reserved.</p>
-        <div className="mt-2 flex flex-wrap justify-center gap-2">
-          <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
-          <Link href="/terms" className="hover:underline">Terms of Service</Link>
-          <Link href="/guides/swe-compensation-2026" className="hover:underline">SWE Compensation 2026</Link>
-          <Link href="/guides/pm-compensation-2026" className="font-semibold text-blue-600">PM Compensation 2026</Link>
-          <Link href="/guides/negotiation" className="hover:underline">Negotiation Guide</Link>
-          <Link href="/guides/equity" className="hover:underline">Equity Guide</Link>
-          <Link href="/guides/remote-pay" className="hover:underline">Remote Pay Guide</Link>
-          <Link href="/guides/startup-vs-bigtech" className="hover:underline">Startup vs. Big Tech</Link>
-        </div>
-      </footer>
+      <GuideFooterLinks currentGuide="/guides/pm-compensation-2026" />
     </div>
   );
 };
