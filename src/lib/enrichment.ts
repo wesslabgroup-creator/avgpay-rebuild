@@ -191,6 +191,24 @@ export function validateAnalysis(
   return { valid: true };
 }
 
+/**
+ * Determines whether an analysis payload is usable for rendering.
+ * We require the core schema keys for the entity and non-empty text values.
+ */
+export function hasRenderableAnalysis(
+  analysis: unknown,
+  entityType: EntityType
+): analysis is Record<string, string> {
+  if (!analysis || typeof analysis !== 'object') return false;
+
+  const record = analysis as Record<string, unknown>;
+  const requiredKeys = REQUIRED_KEYS[entityType] || [];
+
+  if (requiredKeys.length === 0) return false;
+
+  return requiredKeys.every((key) => typeof record[key] === 'string' && record[key].trim().length > 0);
+}
+
 // ============================================================
 // Core Generation Function
 // ============================================================

@@ -55,6 +55,7 @@ interface CityDetailsResponse {
   stats: CityStats;
   topCompanies: TopCompany[];
   topJobs: TopJob[];
+  enrichmentStatus?: string;
 }
 
 export default function CityPage() {
@@ -65,6 +66,7 @@ export default function CityPage() {
   const [data, setData] = useState<CityDetailsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [enrichmentStatus, setEnrichmentStatus] = useState<string>('none');
 
   useEffect(() => {
     if (!citySlug) return;
@@ -79,6 +81,7 @@ export default function CityPage() {
         }
         const fetchedData: CityDetailsResponse = await response.json();
         setData(fetchedData);
+        setEnrichmentStatus(fetchedData.enrichmentStatus || 'none');
       } catch (err) {
         console.error('Failed to fetch city data:', err);
         setError('Could not load city details. Please try again later.');
@@ -89,6 +92,35 @@ export default function CityPage() {
 
     fetchData();
   }, [citySlug]);
+
+
+  useEffect(() => {
+    if (!data?.cityData?.id || data.cityData.analysis) return;
+
+    const terminalStatuses = new Set(['completed', 'failed', 'none']);
+    if (terminalStatuses.has(enrichmentStatus)) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/enrichment-status?entityType=City&entityId=${data.cityData.id}`);
+        if (!response.ok) return;
+
+        const payload = await response.json();
+        setEnrichmentStatus(payload.status || 'none');
+
+        if (payload.analysis) {
+          setData(prev => prev ? {
+            ...prev,
+            cityData: { ...prev.cityData, analysis: payload.analysis },
+          } : prev);
+        }
+      } catch (pollErr) {
+        console.error('Failed to poll city enrichment status', pollErr);
+      }
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, [data?.cityData?.id, data?.cityData?.analysis, enrichmentStatus]);
 
   const formatCurrency = (n: number | undefined | null) => {
     if (n === undefined || n === null || n === 0) return '$0k';
@@ -225,7 +257,11 @@ export default function CityPage() {
             <Card className="bg-slate-50 border-slate-200 border-dashed">
               <CardContent className="py-8">
                 <p className="text-center text-slate-500">
-                  Market analysis for {cityLabel} is being generated. Check back shortly.
+                  {enrichmentStatus === 'failed'
+                    ? `We couldn't generate market analysis for ${cityLabel} yet. Please try again shortly.`
+                    : enrichmentStatus === 'pending' || enrichmentStatus === 'processing'
+                      ? `Market analysis for ${cityLabel} is being generated now.`
+                      : `Market analysis for ${cityLabel} is being generated. Check back shortly.`}
                 </p>
               </CardContent>
             </Card>
