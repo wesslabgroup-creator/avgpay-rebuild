@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+import { getEnrichmentStatus, queueEnrichment } from '@/lib/enrichment';
 
 type SalarySummaryRow = {
   totalComp: number;
@@ -24,6 +25,18 @@ export async function GET(request: Request) {
       .single());
 
     if (companyError) throw new Error(`Company not found: ${companyError.message}`);
+
+    // Ensure enrichment is queued if analysis is missing or previously failed.
+    let enrichmentStatus = 'completed';
+    if (!companyData.analysis) {
+      const status = await getEnrichmentStatus('Company', companyData.id);
+      if (!status || status.status === 'failed') {
+        await queueEnrichment('Company', companyData.id, companyData.name);
+        enrichmentStatus = 'pending';
+      } else {
+        enrichmentStatus = status.status;
+      }
+    }
 
     // 2. Get Salary Summary by Role for this Company
     const { data: rawSalaries, error: summaryError } = await (supabaseAdmin
@@ -69,6 +82,7 @@ export async function GET(request: Request) {
         analysisGeneratedAt: companyData.analysisGeneratedAt || null,
       },
       salarySummary: aggregatedSummary,
+      enrichmentStatus,
     });
 
   } catch (error: unknown) {
