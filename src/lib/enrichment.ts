@@ -297,9 +297,23 @@ export async function generateTimelessAnalysis(
   const result = await generateWithFallback(llmPrompt, (content) => {
     try {
       const parsed = JSON.parse(content) as Record<string, unknown>;
-      return validateAnalysis(parsed, entityType);
+      const validation = validateAnalysis(parsed, entityType);
+
+      if (!validation.valid) {
+        return {
+          valid: false,
+          reasonType: 'low_quality',
+          reason: validation.reason,
+        };
+      }
+
+      return { valid: true };
     } catch {
-      return { valid: false, reason: 'Malformed JSON response from model' };
+      return {
+        valid: false,
+        reasonType: 'malformed_json',
+        reason: 'Malformed JSON response from model',
+      };
     }
   });
 

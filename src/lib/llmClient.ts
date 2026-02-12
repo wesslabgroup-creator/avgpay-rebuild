@@ -18,6 +18,12 @@ export interface LlmGenerationResult {
   attempts: LlmAttemptFailure[];
 }
 
+export interface QualityGateResult {
+  valid: boolean;
+  reason?: string;
+  reasonType?: 'malformed_json' | 'low_quality';
+}
+
 interface LlmModelConfig {
   provider: LlmProvider;
   model: string;
@@ -124,7 +130,7 @@ function classifyFailure(error: unknown): Pick<LlmAttemptFailure, 'reason' | 'me
 
 export async function generateWithFallback(
   prompt: string,
-  qualityGate: (content: string) => { valid: boolean; reason?: string }
+  qualityGate: (content: string) => QualityGateResult
 ): Promise<LlmGenerationResult> {
   const chain = buildModelChain();
   const failures: LlmAttemptFailure[] = [];
@@ -140,7 +146,7 @@ export async function generateWithFallback(
         failures.push({
           provider: entry.provider,
           model: entry.model,
-          reason: 'low_quality',
+          reason: qualityCheck.reasonType ?? 'low_quality',
           message: qualityCheck.reason ?? 'Generated content did not pass quality checks.',
         });
         continue;
