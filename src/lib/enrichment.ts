@@ -380,6 +380,26 @@ function computeBackoffMs(attempts: number): number {
 }
 
 /** Map EntityType → DB table name */
+
+function buildQueueContextData(
+  entityType: EntityType,
+  entityName: string,
+  contextData?: Record<string, unknown>
+): Record<string, unknown> {
+  const baseContext: Record<string, unknown> = {
+    metricsScope: {
+      entityType: entityType === 'Company' || entityType === 'City' || entityType === 'Job' ? entityType : undefined,
+      entityName,
+    },
+    queuedAt: new Date().toISOString(),
+  };
+
+  return {
+    ...baseContext,
+    ...(contextData ?? {}),
+  };
+}
+
 function entityTableName(entityType: string): string | null {
   switch (entityType) {
     case 'City': return 'Location';
@@ -471,6 +491,7 @@ export async function queueEnrichment(
   contextData?: Record<string, unknown>
 ): Promise<string | null> {
   const entityKey = buildEntityKey(entityType, entityName);
+  const normalizedContextData = buildQueueContextData(entityType, entityName, contextData);
 
   log('info', 'queue_attempt', `Attempting to queue enrichment`, {
     entityType, entityId, entityName, entityKey,
@@ -510,7 +531,7 @@ export async function queueEnrichment(
         .update({
           status: 'pending',
           lastError: null,
-          contextData: contextData || null,
+          contextData: normalizedContextData,
           runAfter: new Date().toISOString(),
           lockedAt: null,
           lockedBy: null,
@@ -550,7 +571,7 @@ export async function queueEnrichment(
       entityId,
       entityName,
       entityKey,
-      contextData: contextData || null,
+      contextData: normalizedContextData,
       status: 'pending',
       attempts: 0,
       runAfter: new Date().toISOString(),
@@ -667,7 +688,7 @@ export async function processNextEnrichmentJob(): Promise<{
       job.contextData as Record<string, unknown> | undefined
     );
 
-    log('info', 'gemini_response', `Received Gemini response for ${job.entityType} "${job.entityName}"`, {
+    log('info', 'llm_response', `Received LLM response for ${job.entityType} "${job.entityName}"`, {
       jobId: job.id, keys: Object.keys(analysis),
     });
 

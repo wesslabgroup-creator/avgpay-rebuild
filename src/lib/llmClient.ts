@@ -29,7 +29,10 @@ interface LlmModelConfig {
   model: string;
 }
 
-const DEFAULT_PROVIDER = (process.env.LLM_PROVIDER ?? 'gemini').toLowerCase() as LlmProvider;
+const providerFromEnv = (process.env.LLM_PROVIDER ?? 'openrouter').toLowerCase();
+const DEFAULT_PROVIDER: LlmProvider = providerFromEnv === 'gemini' || providerFromEnv === 'openrouter'
+  ? providerFromEnv
+  : 'openrouter';
 
 const GEMINI_PRIMARY_MODEL = process.env.GEMINI_MODEL ?? 'gemini-1.5-flash';
 const OPENROUTER_PRIMARY_MODEL = process.env.OPENROUTER_PRIMARY_MODEL ?? 'arcee-ai/trinity-large-preview:free';
