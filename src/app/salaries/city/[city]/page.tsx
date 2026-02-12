@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/data-table';
 import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
+import { buildCanonicalUrl } from '@/lib/canonical';
 import {
   ChevronLeft,
   MapPin,
@@ -57,6 +58,8 @@ interface CityDetailsResponse {
   topCompanies: TopCompany[];
   topJobs: TopJob[];
   enrichmentStatus?: string;
+  indexing?: { shouldNoIndex?: boolean };
+  faq?: { question: string; answer: string }[];
 }
 
 export default function CityPage() {
@@ -182,6 +185,30 @@ export default function CityPage() {
     },
   };
 
+  const webpageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `${cityLabel} salary intelligence`,
+    description: `Compensation intelligence for ${cityLabel}.`,
+    url: `https://avgpay.com/salaries/city/${cityData.slug}`
+  };
+
+  const datasetSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: `${cityLabel} compensation dataset`,
+    creator: { '@type': 'Organization', name: 'AvgPay' },
+    variableMeasured: ['base salary', 'bonus', 'equity', 'total compensation'],
+  };
+
+  const canonicalUrl = buildCanonicalUrl(`/salaries/city/${cityData.slug}`);
+
+  const faqSchema = data.faq && data.faq.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: data.faq.map((item) => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })),
+  } : null;
+
   return (
     <>
       <Head>
@@ -190,10 +217,12 @@ export default function CityPage() {
           name="description"
           content={`Explore salary data for ${cityLabel}. Median total comp is ${formatCurrency(stats.median)}. See top companies, highest-paying jobs, and local market insights.`}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content={data.indexing?.shouldNoIndex ? 'noindex,follow' : 'index,follow'} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema) }} />
+        {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
       </Head>
 
       <main className="min-h-screen bg-white">

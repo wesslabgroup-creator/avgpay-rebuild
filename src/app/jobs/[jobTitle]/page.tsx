@@ -11,6 +11,7 @@ import { DataTable } from '@/components/data-table';
 import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { SalaryDistributionChart } from '@/components/salary-distribution-chart'; // Placeholder for chart
 import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
+import { buildCanonicalUrl } from '@/lib/canonical';
 
 interface JobDetails {
   jobData: {
@@ -31,6 +32,8 @@ interface JobDetails {
   salaryDistribution: { total_comp: number }[];
   relatedJobs: { title: string }[];
   enrichmentStatus?: string;
+  indexing?: { shouldNoIndex?: boolean };
+  faq?: { question: string; answer: string }[];
 }
 
 export default function JobDetailPage() {
@@ -136,6 +139,36 @@ export default function JobDetailPage() {
     },
   };
 
+  const webpageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `${jobData.title} salary intelligence`,
+    description: `${jobData.title} compensation intelligence from self-reported and public salary datasets.`,
+    url: `https://avgpay.com/jobs/${encodeURIComponent(jobData.title)}`
+  };
+
+  const datasetSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: `${jobData.title} compensation dataset`,
+    description: `Normalized compensation submissions for ${jobData.title} roles`,
+    creator: { '@type': 'Organization', name: 'AvgPay' },
+    variableMeasured: ['base salary', 'bonus', 'equity', 'total compensation'],
+    measurementTechnique: 'Self-reported + public compensation normalization',
+  };
+
+  const canonicalUrl = buildCanonicalUrl(`/jobs/${encodeURIComponent(jobData.title)}`);
+
+  const faqSchema = data.faq && data.faq.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: data.faq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  } : null;
+
   return (
     <>
       <Head>
@@ -144,10 +177,12 @@ export default function JobDetailPage() {
           name="description"
           content={jobData.seo_meta_description || `${jobData.title} salary insights with a median of ${formatCurrency(jobData.global_median_comp)}, pay range from ${formatCurrency(jobData.global_min_comp)} to ${formatCurrency(jobData.global_max_comp)}, and ${(jobData.global_count || 0).toLocaleString()} real submissions.`}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content={data.indexing?.shouldNoIndex ? 'noindex,follow' : 'index,follow'} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema) }} />
+        {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
       </Head>
       <main className="min-h-screen bg-white">
         <div className="max-w-6xl mx-auto px-6 py-12 space-y-8">
@@ -295,7 +330,7 @@ export default function JobDetailPage() {
               <CardContent>
                 <DataTable
                   headers={[{ label: "Location", key: "location" }, { label: "Median Comp", key: "median" }]}
-                  rows={topLocations.map(r => [r.location, formatCurrency(r.total_comp)])}
+                  rows={topLocations.map(r => [<Link key={r.location} href={`/salaries/city/${r.location.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="text-emerald-600 hover:underline">{r.location}</Link>, formatCurrency(r.total_comp)])}
                 />
               </CardContent>
             </Card>
@@ -309,7 +344,7 @@ export default function JobDetailPage() {
               <CardContent>
                 <DataTable
                   headers={[{ label: "Location", key: "location" }, { label: "Median Comp", key: "median" }]}
-                  rows={bottomLocations.map(r => [r.location, formatCurrency(r.total_comp)])}
+                  rows={bottomLocations.map(r => [<Link key={r.location} href={`/salaries/city/${r.location.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="text-emerald-600 hover:underline">{r.location}</Link>, formatCurrency(r.total_comp)])}
                 />
               </CardContent>
             </Card>

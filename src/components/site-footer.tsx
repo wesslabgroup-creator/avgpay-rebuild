@@ -32,7 +32,12 @@ const footerSections = [
     title: "Company",
     links: [
       { href: "/about", label: "About AvgPay" },
+      { href: "/methodology", label: "Methodology" },
+      { href: "/data-policy", label: "Data Policy" },
+      { href: "/editorial-policy", label: "Editorial Policy" },
       { href: "/privacy", label: "Privacy Policy" },
+      { href: "/terms", label: "Terms" },
+      { href: "/contact", label: "Contact" },
       { href: "/contribute", label: "Contribute" },
     ],
   },

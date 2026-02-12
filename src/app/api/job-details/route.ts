@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
+import { buildEntityFaq, evaluateIndexingEligibility, shouldTriggerEnrichment } from '@/lib/seo';
 
 type CompanySalaryRow = { totalComp: number; Company: { name: string } | { name: string }[] | null };
 type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string } | { city: string; state: string }[] | null };
@@ -71,7 +72,7 @@ export async function GET(request: Request) {
         return { company_name: name, total_comp: median };
       })
       .sort((a, b) => b.total_comp - a.total_comp)
-      .slice(0, 5);
+      .slice(0, 10);
 
 
     // 3. Get Top 5 Locations (Aggregated)
@@ -104,7 +105,7 @@ export async function GET(request: Request) {
         return { location: loc, total_comp: median };
       })
       .sort((a, b) => b.total_comp - a.total_comp)
-      .slice(0, 5);
+      .slice(0, 10);
 
     // 4. Get Bottom 5 Locations (Aggregated)
     // We reuse the same location aggregation logic but sort ascending,
@@ -138,7 +139,7 @@ export async function GET(request: Request) {
         return { location: loc, total_comp: median };
       })
       .sort((a, b) => a.total_comp - b.total_comp) // Sort ASC
-      .slice(0, 5);
+      .slice(0, 10);
 
     // 5. Get Salary Distribution Data
     const { data: distributionData, error: distributionError } = await (supabaseAdmin
@@ -156,12 +157,30 @@ export async function GET(request: Request) {
     const min = count > 0 ? sortedSalaries[0] : 0;
     const max = count > 0 ? sortedSalaries[count - 1] : 0;
 
+    const indexing = evaluateIndexingEligibility({
+      entityType: 'Job',
+      entityName: jobData.title,
+      salarySubmissionCount: count,
+      hasRenderableAnalysis: !!validAnalysis,
+    });
+
+    const shouldQueue = shouldTriggerEnrichment({
+      hasRenderableAnalysis: !!validAnalysis,
+      analysisGeneratedAt: jobData.analysisGeneratedAt || null,
+      salarySubmissionCount: count,
+    });
+
+    if (shouldQueue && enrichmentStatus !== 'processing') {
+      await queueEnrichment('Job', jobData.id, jobData.title);
+      enrichmentStatus = 'pending';
+    }
+
     // 6. Get Related Jobs
     const { data: relatedJobs, error: relatedJobsError } = await (supabaseAdmin
       .from('Role')
       .select('title')
       .neq('title', jobTitle)
-      .limit(5));
+      .limit(10));
 
     if (relatedJobsError) throw new Error(`Error fetching related jobs: ${relatedJobsError.message}`);
 
@@ -181,6 +200,8 @@ export async function GET(request: Request) {
       salaryDistribution: salaries.map((s: number) => ({ total_comp: s })),
       relatedJobs,
       enrichmentStatus,
+      indexing,
+      faq: buildEntityFaq(jobData.title, 'Job', count, median),
     });
 
   } catch (error: unknown) {
