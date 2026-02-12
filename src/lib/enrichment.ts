@@ -1,3 +1,4 @@
+import 'server-only';
 import { genAI } from '@/lib/geminiClient';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import {

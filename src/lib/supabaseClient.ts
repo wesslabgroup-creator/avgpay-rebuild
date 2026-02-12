@@ -1,4 +1,5 @@
 // Initialize Supabase Client
+import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -7,14 +8,14 @@ const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 // Check if we have valid credentials (not placeholders)
 const hasValidCredentials = (
-  supabaseUrl && 
-  !supabaseUrl.includes('placeholder') && 
-  supabaseAnonKey && 
+  supabaseUrl &&
+  !supabaseUrl.includes('placeholder') &&
+  supabaseAnonKey &&
   !supabaseAnonKey.includes('placeholder')
 );
 
 // Create clients only if we have valid credentials, otherwise create dummy clients
-export const supabase = hasValidCredentials 
+export const supabase = hasValidCredentials
   ? createClient(supabaseUrl, supabaseAnonKey)
   : createClient('https://placeholder.supabase.co', 'placeholder');
 
