@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, ArrowRight } from "lucide-react";
-import { COMPANIES, ROLES, LOCATIONS, LEVELS, getMarketData, MarketData } from "@/lib/data";
+import { COMPANIES, ROLES, LOCATIONS, LEVELS, type MarketData } from "@/lib/shared-data";
+import { fetchMarketData } from "@/app/actions/market";
 import { getBestComparisonMatch } from "@/app/compare/data/curated-comparisons";
 
 interface ComparisonPoint {
@@ -51,8 +52,8 @@ export function SalaryComparison() {
     const handleCompare = async () => {
         setLoading(true);
         try {
-            const data1 = await getMarketData(point1.company, point1.role, point1.location, point1.level);
-            const data2 = await getMarketData(point2.company, point2.role, point2.location, point2.level);
+            const data1 = await fetchMarketData(point1.company, point1.role, point1.location, point1.level);
+            const data2 = await fetchMarketData(point2.company, point2.role, point2.location, point2.level);
 
             setPoint1(prev => ({ ...prev, data: data1 }));
             setPoint2(prev => ({ ...prev, data: data2 }));

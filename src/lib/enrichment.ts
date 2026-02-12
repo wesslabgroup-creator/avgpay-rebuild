@@ -14,44 +14,20 @@ import { log } from '@/lib/enrichmentLogger';
 // Types
 // ============================================================
 
-export type EntityType = 'Company' | 'City' | 'Job' | 'Combo' | 'Comparison';
+import {
+  type EntityType,
+  type AnalysisResult,
+  type CompanyAnalysis,
+  type CityAnalysis,
+  type JobAnalysis,
+  type ComboAnalysis,
+  type ComparisonAnalysis,
+} from './types/enrichment';
 
-export interface CompanyAnalysis {
-  comp_philosophy: string;
-  benefit_sentiment: string;
-  hiring_bar: string;
-  [key: string]: string; // Dynamic schema expansion
-}
+// Re-export for backward compatibility if needed, or just use them internally
+export type { EntityType, AnalysisResult, CompanyAnalysis, CityAnalysis, JobAnalysis, ComboAnalysis, ComparisonAnalysis };
 
-export interface CityAnalysis {
-  buying_power: string;
-  market_drivers: string;
-  lifestyle_economics: string;
-  [key: string]: string;
-}
 
-export interface JobAnalysis {
-  career_leverage: string;
-  skill_premium: string;
-  remote_viability: string;
-  [key: string]: string;
-}
-
-export interface ComboAnalysis {
-  local_market_leverage: string;
-  disposable_income_index: string;
-  commute_economics: string;
-  [key: string]: string;
-}
-
-export interface ComparisonAnalysis {
-  philosophical_divergence: string;
-  cultural_tradeoff: string;
-  winner_profile: string;
-  [key: string]: string;
-}
-
-export type AnalysisResult = CompanyAnalysis | CityAnalysis | JobAnalysis | ComboAnalysis | ComparisonAnalysis;
 
 interface PromptContextSnapshot {
   mode: 'single' | 'comparison';
@@ -361,7 +337,7 @@ function entityTableName(entityType: string): string | null {
   }
 }
 
-async function hasPendingEnrichmentJobs(): Promise<boolean> {
+export async function hasPendingEnrichmentJobs(): Promise<boolean> {
   const { count, error } = await supabaseAdmin
     .from('EnrichmentQueue')
     .select('id', { count: 'exact', head: true })
@@ -379,7 +355,7 @@ async function hasPendingEnrichmentJobs(): Promise<boolean> {
 /**
  * Best-effort local trigger so newly queued jobs don't rely solely on external cron/webhooks.
  */
-async function triggerAutoQueueProcessor() {
+export async function triggerAutoQueueProcessor() {
   if (isAutoProcessorRunning) {
     autoProcessorRequestedWhileRunning = true;
     return;
@@ -391,29 +367,29 @@ async function triggerAutoQueueProcessor() {
   try {
     let processedInPass = 0;
 
+    // Process up to MAX jobs, but stop if we run out of pending jobs
     while (processedInPass < AUTO_PROCESS_MAX_JOBS_PER_PASS) {
       const result = await processNextEnrichmentJob();
 
       if (!result.processed) {
+        // No more jobs ready to process right now
         break;
       }
 
       processedInPass++;
-      log('info', 'auto_processor_job', `Auto-processed enrichment job ${result.jobId} (${result.status})`, {
-        jobId: result.jobId,
-        entityType: result.entityType,
-        entityName: result.entityName,
-        status: result.status,
-      });
+      // Don't log every single success in auto-processor to avoid spam if high volume,
+      // but do log errors. The individual processNextEnrichmentJob already logs start/complete.
 
       await sleep(AUTO_PROCESS_DELAY_MS);
     }
 
+    // Check if we should re-run (more jobs pending?)
     const hasMorePendingJobs = await hasPendingEnrichmentJobs();
-    const shouldContinue = autoProcessorRequestedWhileRunning || hasMorePendingJobs;
+    const shouldContinue = autoProcessorRequestedWhileRunning || (hasMorePendingJobs && processedInPass >= AUTO_PROCESS_MAX_JOBS_PER_PASS);
 
     if (shouldContinue) {
       autoProcessorRequestedWhileRunning = false;
+      // Re-trigger with a small delay to let event loop breathe
       setTimeout(() => {
         void triggerAutoQueueProcessor();
       }, AUTO_PROCESS_DELAY_MS);
@@ -424,9 +400,10 @@ async function triggerAutoQueueProcessor() {
     });
   } finally {
     isAutoProcessorRunning = false;
-    log('info', 'auto_processor_end', 'Auto queue processor finished');
+    log('info', 'auto_processor_end', 'Auto queue processor finished loop');
   }
 }
+
 
 /**
  * Queue an entity for enrichment. Idempotent: skips if a pending/processing

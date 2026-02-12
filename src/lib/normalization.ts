@@ -5,7 +5,7 @@
  * "Google ", " google", and "GOOGLE" all resolve to the same record.
  */
 
-import type { EntityType } from './enrichment';
+import type { EntityType } from './types/enrichment';
 
 // ============================================================
 // Core normalization

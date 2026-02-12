@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { queueEnrichment, buildCityContextData } from '@/lib/enrichment';
 import { log } from '@/lib/enrichmentLogger';
+import { normalizeCompanyName, normalizeJobTitle, normalizeCityName } from '@/lib/normalization';
 
 // Levenshtein distance for fuzzy matching
 function levenshteinDistance(a: string, b: string): number {
@@ -69,7 +70,7 @@ const JOB_ALIASES: Record<string, string> = {
 };
 
 // Normalize job title using aliases
-function normalizeJobTitle(title: string): string {
+function resolveJobTitleAliases(title: string): string {
   const lowerTitle = title.toLowerCase().trim();
   return JOB_ALIASES[lowerTitle] || title.trim();
 }
@@ -77,7 +78,9 @@ function normalizeJobTitle(title: string): string {
 // Function to get or create job title with fuzzy matching
 async function getOrCreateJob(title: string): Promise<{ id: string; title: string; isNew: boolean }> {
   // First, normalize using aliases
-  const normalizedTitle = normalizeJobTitle(title);
+  const aliasedTitle = resolveJobTitleAliases(title);
+  const normalizedInput = normalizeJobTitle(aliasedTitle);
+  const normalizedTitle = normalizedInput.displayName;
 
   // Check for exact match first
   const { data: exactMatch, error: exactError } = await (supabaseAdmin
@@ -145,7 +148,8 @@ async function getOrCreateJob(title: string): Promise<{ id: string; title: strin
 
 // Get or create company
 async function getOrCreateCompany(companyName: string): Promise<{ id: string; name: string; isNew: boolean }> {
-  const normalizedName = companyName.trim();
+  const { displayName } = normalizeCompanyName(companyName);
+  const normalizedName = displayName;
 
   const { data: existingCompany, error: fetchError } = await (supabaseAdmin
     .from('Company')
@@ -183,10 +187,11 @@ async function getOrCreateCompany(companyName: string): Promise<{ id: string; na
 
 // Get or create location with AI content
 async function getOrCreateLocation(locationName: string): Promise<{ id: string; name: string; isNew: boolean }> {
-  const parts = locationName.split(',').map(p => p.trim());
+  const { displayName } = normalizeCityName(locationName);
+  const parts = displayName.split(',').map(p => p.trim());
   const city = parts[0];
   const state = parts[1] || 'US';
-  const fullName = parts[1] ? `${city}, ${state}` : city;
+  const fullName = displayName;
 
   const { data: existingLocation, error: fetchError } = await (supabaseAdmin
     .from('Location')
@@ -341,7 +346,8 @@ export async function POST(request: Request) {
     }
 
     // Check location analysis — always
-    const locParts = locationEntry.name.split(',').map((p: string) => p.trim());
+    const { displayName: locDisplayName } = normalizeCityName(locationEntry.name);
+    const locParts = locDisplayName.split(',').map((p: string) => p.trim());
     const city = locParts[0];
     const state = locParts[1] || '';
 

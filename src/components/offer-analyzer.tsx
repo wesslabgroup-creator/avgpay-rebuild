@@ -5,18 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SearchableSelect } from "@/components/searchable-select";
-import { calculateGrade } from "@/lib/data";
+import { calculateGrade, LEVELS } from "@/lib/shared-data";
 import { CheckCircle2, TrendingUp, TrendingDown, Minus, Loader2 } from "lucide-react";
 import { usePostHog } from "posthog-js/react";
 import Link from "next/link";
 import { getBestComparisonMatch } from "@/app/compare/data/curated-comparisons";
 
-const LEVELS = [
-  { value: "Junior (L1-L2)", label: "Junior (L1-L2)" },
-  { value: "Mid (L3-L4)", label: "Mid (L3-L4)" },
-  { value: "Senior (L5-L6)", label: "Senior (L5-L6)" },
-  { value: "Staff+ (L7+)", label: "Staff+ (L7+)" },
-];
+
 
 interface MarketData {
   count: number;
