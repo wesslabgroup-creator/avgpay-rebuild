@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next';
 import { CURATED_COMPARISONS } from '@/app/compare/data/curated-comparisons';
 import { supabaseAdmin } from '@/lib/supabaseClient';
-import { evaluateIndexingEligibility, shouldTriggerEnrichment } from '@/lib/seo';
-import { queueEnrichment } from '@/lib/enrichment';
+import { evaluateIndexingEligibility } from '@/lib/seo';
 
 const baseUrl = 'https://avgpay.com';
 
@@ -46,11 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const role of roles.data) {
       const { count } = await supabaseAdmin.from('Salary').select('id', { count: 'exact', head: true }).eq('roleId', role.id);
       const evaluation = evaluateIndexingEligibility({ entityType: 'Job', entityName: role.title, salarySubmissionCount: count || 0, hasRenderableAnalysis: !!role.analysis });
-      if (evaluation.indexable) entityRoutes.push({ url: `${baseUrl}/jobs/${encodeURIComponent(role.title)}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.75 });
-      if (shouldTriggerEnrichment({ hasRenderableAnalysis: !!role.analysis, analysisGeneratedAt: role.analysisGeneratedAt, salarySubmissionCount: count || 0 })) {
-        await queueEnrichment('Job', role.id, role.title);
-      }
-    }
+      if (evaluation.indexable) entityRoutes.push({ url: `${baseUrl}/jobs/${encodeURIComponent(role.title)}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.75 });    }
   }
 
   if (companies.data) {

@@ -144,6 +144,15 @@ const REQUIRED_KEYS: Record<EntityType, string[]> = {
 
 const COMPARATIVE_LANGUAGE_PATTERN = /\b(whereas|alternatively|in contrast|on the other hand|however)\b/i;
 
+
+const NON_LONGFORM_KEYS = new Set([
+  'confidence_score',
+  'sources',
+  'last_updated',
+  'faq_blocks',
+  'internal_linking_recommendations',
+]);
+
 export function validateAnalysis(
   jsonResponse: Record<string, unknown>,
   entityType?: EntityType
@@ -162,10 +171,19 @@ export function validateAnalysis(
     }
   }
 
-  // Fail if any section is too short (Thin Content Risk)
-  const thinValues = entries.filter(([, text]) => typeof text === 'string' && text.length < 50);
+  // Fail if narrative sections are too short (Thin Content Risk).
+  // We intentionally exclude non-longform metadata fields such as timestamps, arrays, and scalar metrics.
+  const thinValues = entries.filter(([key, value]) => (
+    typeof value === 'string'
+    && !NON_LONGFORM_KEYS.has(key)
+    && value.trim().length < 50
+  ));
+
   if (thinValues.length > 0) {
-    return { valid: false, reason: `${thinValues.length} section(s) are too short (under 50 chars). Thin content risk.` };
+    return {
+      valid: false,
+      reason: `${thinValues.length} narrative section(s) are too short (under 50 chars). Thin content risk.`,
+    };
   }
 
   // Fail if it uses banned words (temporal references)

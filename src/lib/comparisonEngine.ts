@@ -39,6 +39,11 @@ function getNarrativeField(record: Record<string, unknown>, keys: string[], fall
   return fallback;
 }
 
+
+function shouldSkipLlmDuringBuild(): boolean {
+  return process.env.NEXT_PHASE === 'phase-production-build' || process.env.SKIP_LLM_DURING_BUILD === 'true';
+}
+
 function normalizeComparisonNarrative(analysis: AnalysisResult, entityA: string, entityB: string): ComparisonAnalysis {
   const narrativeSource = analysis as Record<string, unknown>;
 
@@ -128,6 +133,17 @@ export async function generateComparisonAnalysis(entityA: string, entityB: strin
     additionalContext:
       `Interpret trade-offs explicitly using comparative language. Focus on what candidates gain and lose between ${entityA} and ${entityB} for ${role}.`,
   };
+
+  if (shouldSkipLlmDuringBuild()) {
+    const deterministic: ComparisonAnalysis = {
+      philosophical_divergence: `${entityA} and ${entityB} reward different compensation priorities, whereas one tends to emphasize stable cash flow and the other leans on upside-heavy components.`,
+      cultural_tradeoff: `In contrast, candidates choosing between ${entityA} and ${entityB} usually trade predictability for operating velocity, alternatively prioritizing day-to-day certainty over growth optionality.`,
+      winner_profile: `Professionals who thrive in structured execution loops may prefer one path, whereas candidates comfortable with ambiguity and upside risk may prefer the alternative.`,
+    };
+
+    await cacheComparisonNarrative(comparisonSlug, deterministic, entityA, entityB, role);
+    return deterministic;
+  }
 
   try {
     const { analysis } = await generateTimelessAnalysis('Comparison', `${entityA} vs ${entityB}`, context);

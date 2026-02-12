@@ -37,6 +37,7 @@ const OPENROUTER_SECONDARY_MODEL = process.env.OPENROUTER_SECONDARY_MODEL ?? 'x-
 const OPENROUTER_TERTIARY_MODEL = process.env.OPENROUTER_TERTIARY_MODEL ?? 'stepfun/step-3.5-flash:free';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_TIMEOUT_MS = Number(process.env.OPENROUTER_TIMEOUT_MS ?? 12000);
 
 const geminiClient = process.env.GEMINI_API_KEY
   ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
@@ -71,10 +72,36 @@ async function generateWithGemini(modelName: string, prompt: string): Promise<st
   return result.response.text();
 }
 
+
+function modelSupportsJsonResponseFormat(modelName: string): boolean {
+  return !/stepfun\/step-3\.5-flash:free/i.test(modelName);
+}
+
+function withTimeoutSignal(timeoutMs: number): AbortSignal {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), timeoutMs);
+  return controller.signal;
+}
+
 async function generateWithOpenRouter(modelName: string, prompt: string): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error('OPENROUTER_API_KEY is not configured.');
+  }
+
+  const requestPayload: {
+    model: string;
+    messages: Array<{ role: 'user'; content: string }>;
+    temperature: number;
+    response_format?: { type: 'json_object' };
+  } = {
+    model: modelName,
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.3,
+  };
+
+  if (modelSupportsJsonResponseFormat(modelName)) {
+    requestPayload.response_format = { type: 'json_object' };
   }
 
   const response = await fetch(OPENROUTER_URL, {
@@ -83,12 +110,8 @@ async function generateWithOpenRouter(modelName: string, prompt: string): Promis
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      model: modelName,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      response_format: { type: 'json_object' },
-    }),
+    signal: withTimeoutSignal(OPENROUTER_TIMEOUT_MS),
+    body: JSON.stringify(requestPayload),
   });
 
   if (!response.ok) {
@@ -96,16 +119,16 @@ async function generateWithOpenRouter(modelName: string, prompt: string): Promis
     throw new Error(`OpenRouter API error (${response.status}): ${errorText}`);
   }
 
-  const payload = await response.json() as {
+  const responsePayload = await response.json() as {
     error?: { message?: string };
     choices?: Array<{ message?: { content?: string } }>;
   };
 
-  if (payload.error?.message) {
-    throw new Error(`OpenRouter model error: ${payload.error.message}`);
+  if (responsePayload.error?.message) {
+    throw new Error(`OpenRouter model error: ${responsePayload.error.message}`);
   }
 
-  const content = payload.choices?.[0]?.message?.content;
+  const content = responsePayload.choices?.[0]?.message?.content;
 
   if (!content) {
     throw new Error('OpenRouter returned no message content.');
@@ -121,7 +144,7 @@ function classifyFailure(error: unknown): Pick<LlmAttemptFailure, 'reason' | 'me
     return { reason: 'malformed_json', message };
   }
 
-  if (/api|status|network|timeout/i.test(message)) {
+  if (/api|status|network|timeout|abort/i.test(message)) {
     return { reason: 'api_error', message };
   }
 
