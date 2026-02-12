@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Head from 'next/head';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users, Sparkles } from 'lucide-react';
+import { Building2, Briefcase, TrendingUp, TrendingDown, Users, Sparkles } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { SalaryDistributionChart } from '@/components/salary-distribution-chart';
@@ -44,7 +43,6 @@ interface JobDetails {
 }
 
 export default function JobDetailPage() {
-  const router = useRouter();
   const params = useParams();
   const jobTitleSlug = params.jobTitle as string;
 

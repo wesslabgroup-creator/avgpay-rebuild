@@ -7,7 +7,6 @@ import { getJobExternalLinks } from '@/lib/externalLinks';
 
 type CompanySalaryRow = { totalComp: number; Company: { name: string } | { name: string }[] | null };
 type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string } | { city: string; state: string }[] | null };
-type DistributionRow = { totalComp: number };
 type SalaryMixRow = { totalComp: number; baseSalary: number | null; equity: number | null; bonus: number | null; yearsExp: number | null };
 
 export async function GET(request: Request) {
