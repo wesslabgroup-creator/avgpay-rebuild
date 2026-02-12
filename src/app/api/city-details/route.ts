@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { buildCityContextData, getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+import { buildEntityFaq, evaluateIndexingEligibility, shouldTriggerEnrichment } from '@/lib/seo';
 
 type SalaryWithCompanyAndRole = {
   totalComp: number;
@@ -162,6 +163,25 @@ async function buildCityResponse(locationData: {
     .sort((a, b) => b.median_comp - a.median_comp)
     .slice(0, 10);
 
+  const indexing = evaluateIndexingEligibility({
+    entityType: 'City',
+    entityName: `${locationData.city}, ${locationData.state}`,
+    salarySubmissionCount: count,
+    hasRenderableAnalysis: !!validAnalysis,
+  });
+
+  const shouldQueue = shouldTriggerEnrichment({
+    hasRenderableAnalysis: !!validAnalysis,
+    analysisGeneratedAt: locationData.analysisGeneratedAt || null,
+    salarySubmissionCount: count,
+  });
+
+  if (shouldQueue && enrichmentStatus !== 'processing') {
+    const contextData = buildCityContextData({ city: locationData.city, state: locationData.state });
+    await queueEnrichment('City', locationData.id, `${locationData.city}, ${locationData.state}`, contextData);
+    enrichmentStatus = 'pending';
+  }
+
   return NextResponse.json({
     cityData: {
       id: locationData.id,
@@ -184,5 +204,7 @@ async function buildCityResponse(locationData: {
     topCompanies,
     topJobs,
     enrichmentStatus,
+    indexing,
+    faq: buildEntityFaq(`${locationData.city}, ${locationData.state}`, 'City', count, median),
   });
 }

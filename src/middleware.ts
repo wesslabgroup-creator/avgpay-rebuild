@@ -1,6 +1,7 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { normalizePathname, stripTrackingParams } from '@/lib/canonical'
 
 export async function middleware(req: NextRequest) {
     const res = NextResponse.next()
@@ -9,6 +10,24 @@ export async function middleware(req: NextRequest) {
     // Refresh session if expired - required for Server Components
     // https://supabase.com/docs/guides/auth/auth-helpers/nextjs#managing-session-with-middleware
     const { data: { session } } = await supabase.auth.getSession()
+
+
+    const normalizedPath = normalizePathname(req.nextUrl.pathname);
+    const normalizedUrl = req.nextUrl.clone();
+    let shouldRedirect = false;
+
+    if (normalizedPath !== req.nextUrl.pathname) {
+        normalizedUrl.pathname = normalizedPath;
+        shouldRedirect = true;
+    }
+
+    if (stripTrackingParams(normalizedUrl)) {
+        shouldRedirect = true;
+    }
+
+    if (shouldRedirect) {
+        return NextResponse.redirect(normalizedUrl, 308);
+    }
 
     // Protected routes
     const protectedRoutes = ['/dashboard', '/submit', '/admin'];

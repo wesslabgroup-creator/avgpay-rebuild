@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { computeThinContentRiskSummary } from '@/lib/thinContentAudit';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +45,8 @@ export default async function AdminDashboard() {
     // if (!isAdmin) redirect('/dashboard');
 
     // Validating connection and fetching submissions
+    const thinContentRisk = await computeThinContentRiskSummary();
+
     const { data: submissions } = await supabase
         .from('user_submissions')
         .select('*, auth.users(email)')
@@ -57,6 +60,29 @@ export default async function AdminDashboard() {
             </div>
 
             <div className="grid gap-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Thin Content Risk Monitor (sampled)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-xs text-slate-500 mb-4">Generated: {new Date(thinContentRisk.generatedAt).toLocaleString()} · Sample size cap: {thinContentRisk.sampleLimitPerEntityType} per entity type.</p>
+                        <div className="space-y-3">
+                            {thinContentRisk.summary.map((row) => (
+                                <div key={row.entityType} className="flex items-center justify-between rounded border p-3">
+                                    <div>
+                                        <p className="font-medium">{row.entityType}</p>
+                                        <p className="text-xs text-slate-500">Total sampled entities: {row.totalEntities}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm">Thin risk: <span className="font-semibold">{row.thinContentRisk}</span></p>
+                                        <p className="text-sm">High risk: <span className="font-semibold text-red-600">{row.highRisk}</span></p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+
                 <Card>
                     <CardHeader>
                         <CardTitle>Pending Verifications ({submissions?.length || 0})</CardTitle>

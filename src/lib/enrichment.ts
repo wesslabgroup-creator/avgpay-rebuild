@@ -10,6 +10,7 @@ import {
 } from '@/lib/marketStats';
 import { buildEntityKey } from '@/lib/normalization';
 import { log } from '@/lib/enrichmentLogger';
+import { buildMetadataUpsertPayload, splitAnalysisAndMetadata } from '@/lib/enrichmentMetadata';
 
 // ============================================================
 // Types
@@ -72,6 +73,17 @@ Analyze the provided Entity ({{entityName}}) and return a JSON object with uniqu
     * *Good (Specific):* "Austin's 'Silicon Hills' status creates a salary floor that competes with the West Coast, specifically in semiconductor and SaaS sectors."
 3.  **DEPTH REQUIREMENT:** Each JSON value must be 2-3 sentences long and contain at least one "Why" statement (Cause & Effect). Surface-level content will be rejected as "thin."
 4.  **TIMELESSNESS:** Do not use dates (2024, 2025) or words like "currently/now." Use "Historically," "Typically," or "Market fundamentals."
+5.  **NO HYPE / NO FABRICATION:** Never invent compensation numbers, never claim verification, and never market the entity.
+6.  **DATA-CONTEXT ONLY:** Use only the provided context. If context is sparse, state constraints conservatively.
+
+**MANDATORY META FIELDS:**
+- Include "entity_summary" (2-3 sentence plain-language summary)
+- Include "faq_blocks" (array of 5-10 {"question":"...","answer":"..."})
+- Include "internal_linking_recommendations" (array of 5-10 concise anchor ideas)
+- Include "confidence_score" (number from 0 to 1)
+- Include "sources" (array of non-promotional external source URLs relevant to compensation methodology)
+- Include "disclaimer" (must mention self-reported/public salary data limitations)
+- Include "last_updated" (ISO timestamp string)
 
 **OUTPUT JSON STRUCTURE:**
 
@@ -133,7 +145,7 @@ const REQUIRED_KEYS: Record<EntityType, string[]> = {
 const COMPARATIVE_LANGUAGE_PATTERN = /\b(whereas|alternatively|in contrast|on the other hand|however)\b/i;
 
 export function validateAnalysis(
-  jsonResponse: Record<string, string>,
+  jsonResponse: Record<string, unknown>,
   entityType?: EntityType
 ): { valid: boolean; reason?: string } {
   const entries = Object.entries(jsonResponse);
@@ -621,7 +633,7 @@ export async function processNextEnrichmentJob(): Promise<{
     });
 
     // Validate the analysis
-    const validation = validateAnalysis(analysis as Record<string, string>, job.entityType as EntityType);
+    const validation = validateAnalysis(analysis as Record<string, unknown>, job.entityType as EntityType);
 
     if (!validation.valid) {
       log('warn', 'validation_failed', `Analysis validation failed for ${job.entityType} "${job.entityName}": ${validation.reason}`, {
@@ -686,13 +698,16 @@ export async function processNextEnrichmentJob(): Promise<{
       };
     }
 
+    const metadata = splitAnalysisAndMetadata(analysis);
+
     // Validation passed — save to queue result
     await supabaseAdmin
       .from('EnrichmentQueue')
       .update({
         status: 'completed',
         result: {
-          analysis,
+          analysis: metadata.analysisCore,
+          metadata,
           statsSnapshot: statsSnapshot || null,
         },
         processedAt: now.toISOString(),
@@ -705,10 +720,10 @@ export async function processNextEnrichmentJob(): Promise<{
     if (entityTable) {
       const analysisPayload = statsSnapshot
         ? {
-          ...(analysis as Record<string, unknown>),
+          ...metadata.analysisCore,
           source_context_snapshot: statsSnapshot,
         }
-        : analysis;
+        : metadata.analysisCore;
 
       await supabaseAdmin
         .from(entityTable)
@@ -720,6 +735,19 @@ export async function processNextEnrichmentJob(): Promise<{
           enrichmentError: null,
         })
         .eq('id', job.entityId);
+
+      try {
+        await supabaseAdmin
+          .from('EntityEnrichmentMetadata')
+          .upsert(buildMetadataUpsertPayload(job.entityType as EntityType, job.entityId, metadata), { onConflict: 'entityType,entityId' });
+      } catch (metaError) {
+        log('warn', 'metadata_persist_failed', 'Failed to persist structured enrichment metadata', {
+          jobId: job.id,
+          entityType: job.entityType,
+          entityId: job.entityId,
+          error: metaError instanceof Error ? metaError.message : 'unknown',
+        });
+      }
     }
 
     log('info', 'worker_complete', `Enrichment completed for ${job.entityType} "${job.entityName}"`, {
