@@ -1,5 +1,5 @@
 import 'server-only';
-import { genAI } from '@/lib/geminiClient';
+import { generateWithFallback } from '@/lib/llmClient';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import {
   buildComparisonMetricsContextBlock,
@@ -217,14 +217,6 @@ export async function generateTimelessAnalysis(
   entityName: string,
   contextData?: Record<string, unknown>
 ): Promise<{ analysis: AnalysisResult; statsSnapshot?: PromptContextSnapshot }> {
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    generationConfig: {
-      temperature: 0.3,
-      responseMimeType: 'application/json',
-    },
-  });
-
   // Build the prompt with entity-specific context
   const systemPrompt = MASTER_SYSTEM_PROMPT
     .replace('{{entityName}}', entityName);
@@ -300,11 +292,40 @@ export async function generateTimelessAnalysis(
   }
 
   userPrompt += `\nGenerate the timeless financial analysis JSON for this ${entityType}. Return ONLY valid JSON matching the schema for ENTITY_TYPE "${entityType}".`;
+  const llmPrompt = systemPrompt + '\n\n---\n\n' + userPrompt;
 
-  const result = await model.generateContent(systemPrompt + '\n\n---\n\n' + userPrompt);
+  const result = await generateWithFallback(llmPrompt, (content) => {
+    try {
+      const parsed = JSON.parse(content) as Record<string, unknown>;
+      const validation = validateAnalysis(parsed, entityType);
 
-  const responseText = result.response.text();
-  const analysis = JSON.parse(responseText) as AnalysisResult;
+      if (!validation.valid) {
+        return {
+          valid: false,
+          reasonType: 'low_quality',
+          reason: validation.reason,
+        };
+      }
+
+      return { valid: true };
+    } catch {
+      return {
+        valid: false,
+        reasonType: 'malformed_json',
+        reason: 'Malformed JSON response from model',
+      };
+    }
+  });
+
+  const analysis = JSON.parse(result.content) as AnalysisResult;
+
+  log('info', 'llm_generation_success', `Generated analysis with ${result.provider}:${result.model}`, {
+    provider: result.provider,
+    model: result.model,
+    previousFailures: result.attempts,
+    entityType,
+    entityName,
+  });
 
   return { analysis, statsSnapshot };
 }
