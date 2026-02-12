@@ -2,9 +2,14 @@ import { NextResponse } from 'next/server';
 import { buildCityContextData, getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { buildEntityFaq, evaluateIndexingEligibility, shouldTriggerEnrichment } from '@/lib/seo';
+import { generateIntentDrivenFaqs } from '@/lib/intentClassifier';
+import { getCityExternalLinks } from '@/lib/externalLinks';
 
 type SalaryWithCompanyAndRole = {
   totalComp: number;
+  baseSalary: number | null;
+  equity: number | null;
+  bonus: number | null;
   level: string | null;
   Company: { name: string } | { name: string }[] | null;
   Role: { title: string } | { title: string }[] | null;
@@ -95,7 +100,7 @@ async function buildCityResponse(locationData: {
   // 2. Fetch all salaries for this location with company and role info
   const { data: rawSalaries, error: salaryError } = await supabaseAdmin
     .from('Salary')
-    .select('totalComp, level, Company!inner(name), Role!inner(title)')
+    .select('totalComp, baseSalary, equity, bonus, level, Company!inner(name), Role!inner(title)')
     .eq('locationId', locationId)
     .limit(500);
 
@@ -115,9 +120,17 @@ async function buildCityResponse(locationData: {
   const min = count > 0 ? allComps[0] : 0;
   const max = count > 0 ? allComps[count - 1] : 0;
 
-  // P25 and P75
+  // Full percentiles
+  const p10 = count > 0 ? allComps[Math.floor(count * 0.10)] : 0;
   const p25 = count > 0 ? allComps[Math.floor(count * 0.25)] : 0;
   const p75 = count > 0 ? allComps[Math.floor(count * 0.75)] : 0;
+  const p90 = count > 0 ? allComps[Math.floor(count * 0.90)] : 0;
+
+  // Comp Mix Averages
+  const withComp = salaries.filter((r) => r.totalComp > 0);
+  const avgBasePct = withComp.length > 0 ? withComp.reduce((sum, r) => sum + ((r.baseSalary || 0) / r.totalComp) * 100, 0) / withComp.length : 0;
+  const avgEquityPct = withComp.length > 0 ? withComp.reduce((sum, r) => sum + ((r.equity || 0) / r.totalComp) * 100, 0) / withComp.length : 0;
+  const avgBonusPct = withComp.length > 0 ? withComp.reduce((sum, r) => sum + ((r.bonus || 0) / r.totalComp) * 100, 0) / withComp.length : 0;
 
   // 4. Top Companies by median comp
   const companyMap = new Map<string, number[]>();
@@ -182,6 +195,22 @@ async function buildCityResponse(locationData: {
     enrichmentStatus = 'pending';
   }
 
+  const cityLabel = `${locationData.city}, ${locationData.state}`;
+
+  // Build enriched FAQ
+  const intentFaqs = generateIntentDrivenFaqs('City', cityLabel, {
+    medianComp: median,
+    submissionCount: count,
+    p25,
+    p75,
+    topPayingEntity: topJobs[0]?.job_title,
+  });
+  const genericFaqs = buildEntityFaq(cityLabel, 'City', count, median);
+  const seenQuestions = new Set(intentFaqs.map((f) => f.question));
+  const combinedFaqs = [...intentFaqs, ...genericFaqs.filter((f) => !seenQuestions.has(f.question))];
+
+  const externalLinks = getCityExternalLinks(locationData.city, locationData.state);
+
   return NextResponse.json({
     cityData: {
       id: locationData.id,
@@ -198,13 +227,27 @@ async function buildCityResponse(locationData: {
       median,
       min,
       max,
+      p10,
       p25,
       p75,
+      p90,
     },
     topCompanies,
     topJobs,
     enrichmentStatus,
     indexing,
-    faq: buildEntityFaq(`${locationData.city}, ${locationData.state}`, 'City', count, median),
+    faq: combinedFaqs,
+    compMix: {
+      avgBasePct: Math.round(avgBasePct * 10) / 10,
+      avgEquityPct: Math.round(avgEquityPct * 10) / 10,
+      avgBonusPct: Math.round(avgBonusPct * 10) / 10,
+    },
+    dataConfidence: {
+      submissionCount: count,
+      companyCount: companyMap.size,
+      roleCount: roleMap.size,
+      confidenceLabel: count >= 50 ? 'high' : count >= 20 ? 'moderate' : count >= 5 ? 'limited' : 'insufficient',
+    },
+    externalLinks,
   });
 }

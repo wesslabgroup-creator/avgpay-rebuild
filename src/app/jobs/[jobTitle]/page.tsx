@@ -9,8 +9,10 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, Building2, Briefcase, TrendingUp, TrendingDown, Users, Sparkles } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
-import { SalaryDistributionChart } from '@/components/salary-distribution-chart'; // Placeholder for chart
+import { SalaryDistributionChart } from '@/components/salary-distribution-chart';
 import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
+import { PercentileBands, CompMixBreakdown, YoeProgression, DataConfidence, FAQSection, ExternalLinksSection, DataDisclaimer } from '@/components/entity-value-modules';
+import { Breadcrumbs } from '@/components/breadcrumbs';
 import { buildCanonicalUrl } from '@/lib/canonical';
 
 interface JobDetails {
@@ -34,6 +36,11 @@ interface JobDetails {
   enrichmentStatus?: string;
   indexing?: { shouldNoIndex?: boolean };
   faq?: { question: string; answer: string }[];
+  percentiles?: { p10: number; p25: number; p50: number; p75: number; p90: number };
+  compMix?: { avgBasePct: number; avgEquityPct: number; avgBonusPct: number };
+  yoeProgression?: { yoeRange: string; medianComp: number; count: number }[];
+  dataConfidence?: { submissionCount: number; diversityScore: number; hasPercentileData: boolean; confidenceLabel: string };
+  externalLinks?: { href: string; label: string; source: string; description: string }[];
 }
 
 export default function JobDetailPage() {
@@ -144,17 +151,27 @@ export default function JobDetailPage() {
     '@type': 'WebPage',
     name: `${jobData.title} salary intelligence`,
     description: `${jobData.title} compensation intelligence from self-reported and public salary datasets.`,
-    url: `https://avgpay.com/jobs/${encodeURIComponent(jobData.title)}`
+    url: `https://avgpay.com/jobs/${encodeURIComponent(jobData.title)}`,
   };
 
   const datasetSchema = {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
     name: `${jobData.title} compensation dataset`,
-    description: `Normalized compensation submissions for ${jobData.title} roles`,
-    creator: { '@type': 'Organization', name: 'AvgPay' },
+    description: `Total compensation data for ${jobData.title} roles including base salary, equity, and bonus.`,
+    creator: { '@type': 'Organization', name: 'AvgPay', url: 'https://avgpay.com' },
     variableMeasured: ['base salary', 'bonus', 'equity', 'total compensation'],
-    measurementTechnique: 'Self-reported + public compensation normalization',
+    measurementTechnique: 'Self-reported submissions, H-1B visa data, BLS occupational data',
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avgpay.com' },
+      { '@type': 'ListItem', position: 2, name: 'Salaries', item: 'https://avgpay.com/salaries' },
+      { '@type': 'ListItem', position: 3, name: jobData.title, item: `https://avgpay.com/jobs/${encodeURIComponent(jobData.title)}` },
+    ],
   };
 
   const canonicalUrl = buildCanonicalUrl(`/jobs/${encodeURIComponent(jobData.title)}`);
@@ -182,19 +199,26 @@ export default function JobDetailPage() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
         {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
       </Head>
       <main className="min-h-screen bg-white">
         <div className="max-w-6xl mx-auto px-6 py-12 space-y-8">
-          <Button variant="ghost" onClick={() => router.back()} className="text-emerald-600 hover:text-emerald-700 -ml-4">
-            <ChevronLeft className="w-4 h-4 mr-1" /> Back to Salaries
-          </Button>
+          <Breadcrumbs items={[
+            { label: 'Salaries', href: '/salaries' },
+            { label: jobData.title },
+          ]} />
 
           {/* Hero Section */}
           <div className="text-left space-y-4">
             <h1 className="text-4xl font-bold tracking-tight text-slate-900">{jobData.title} Salary & Career Data</h1>
             <p className="text-xl text-slate-600 max-w-3xl">{jobData.description}</p>
           </div>
+
+          {/* Data Confidence */}
+          {data.dataConfidence && (
+            <DataConfidence confidence={data.dataConfidence} entityName={jobData.title} />
+          )}
 
           {/* Aggregated Statistics */}
           <Card className="bg-white border-emerald-500/50 shadow-sm">
@@ -226,6 +250,23 @@ export default function JobDetailPage() {
             </CardContent>
           </Card>
 
+          {/* Percentile Bands */}
+          {data.percentiles && (
+            <PercentileBands
+              percentiles={data.percentiles}
+              entityName={jobData.title}
+              submissionCount={jobData.global_count}
+            />
+          )}
+
+          {/* Comp Mix */}
+          {data.compMix && <CompMixBreakdown compMix={data.compMix} entityName={jobData.title} />}
+
+          {/* YoE Progression */}
+          {data.yoeProgression && (
+            <YoeProgression yoeProgression={data.yoeProgression} entityName={jobData.title} />
+          )}
+
           {/* Salary Distribution */}
           <Card className="bg-white border-slate-200">
             <CardHeader>
@@ -235,7 +276,6 @@ export default function JobDetailPage() {
               <SalaryDistributionChart data={salaryDistribution.map(s => s.total_comp)} />
             </CardContent>
           </Card>
-
 
           <EnrichmentDebugBanner
             entityType="Job"
@@ -294,7 +334,6 @@ export default function JobDetailPage() {
             </CardContent>
           </Card>
 
-          {/* The Analyst View (Dynamic Insights) */}
           {jobData.analysis && (
             <InsightCards analysis={jobData.analysis} entityName={jobData.title} />
           )}
@@ -372,6 +411,19 @@ export default function JobDetailPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* FAQ Section */}
+          {data.faq && data.faq.length > 0 && (
+            <FAQSection faqs={data.faq} entityName={jobData.title} />
+          )}
+
+          {/* External Links */}
+          {data.externalLinks && data.externalLinks.length > 0 && (
+            <ExternalLinksSection links={data.externalLinks} />
+          )}
+
+          {/* Data Disclaimer */}
+          <DataDisclaimer />
         </div>
       </main>
     </>
