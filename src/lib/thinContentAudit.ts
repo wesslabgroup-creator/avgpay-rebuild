@@ -6,6 +6,7 @@ interface BaseEntity {
   id: string;
   analysis?: unknown;
   enrichmentStatus?: string;
+  [key: string]: unknown;
 }
 
 interface EntityRiskDetail {
@@ -46,8 +47,7 @@ async function computeDetailedRiskForEntities(
       .eq(salaryField, entity.id);
 
     const submissions = count ?? 0;
-    const entityRecord = entity as Record<string, unknown>;
-    const entityName = String(entityRecord[nameField] || entity.id);
+    const entityName = String(entity[nameField] || entity.id);
     const analysisPresent = hasRenderableAnalysis(entity.analysis, entityType);
     const analysisKeyCount = analysisPresent && typeof entity.analysis === 'object'
       ? Object.keys(entity.analysis as Record<string, unknown>).length
