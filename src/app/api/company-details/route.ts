@@ -2,9 +2,15 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
 import { buildEntityFaq, evaluateIndexingEligibility, shouldTriggerEnrichment } from '@/lib/seo';
+import { generateIntentDrivenFaqs } from '@/lib/intentClassifier';
+import { getCompanyExternalLinks } from '@/lib/externalLinks';
 
 type SalarySummaryRow = {
   totalComp: number;
+  baseSalary: number | null;
+  equity: number | null;
+  bonus: number | null;
+  yearsExp: number | null;
   level: string | null;
   Role: { title: string } | { title: string }[] | null;
   Location?: { city: string; state: string } | { city: string; state: string }[] | null;
@@ -42,7 +48,7 @@ export async function GET(request: Request) {
 
     const { data: rawSalaries, error: summaryError } = await supabaseAdmin
       .from('Salary')
-      .select('totalComp, level, Role!inner(title), Location(city, state)')
+      .select('totalComp, baseSalary, equity, bonus, yearsExp, level, Role!inner(title), Location(city, state)')
       .eq('companyId', companyData.id);
 
     if (summaryError) throw new Error(`Error fetching salary summary: ${summaryError.message}`);
@@ -96,6 +102,14 @@ export async function GET(request: Request) {
     const submissionCount = salaryRows.length;
     const allComp = salaryRows.map((row) => row.totalComp).sort((a, b) => a - b);
     const medianComp = allComp.length > 0 ? allComp[Math.floor(allComp.length / 2)] : 0;
+    const p25 = allComp.length > 0 ? allComp[Math.floor(allComp.length * 0.25)] : 0;
+    const p75 = allComp.length > 0 ? allComp[Math.floor(allComp.length * 0.75)] : 0;
+
+    // Comp Mix
+    const withComp = salaryRows.filter((r) => r.totalComp > 0);
+    const avgBasePct = withComp.length > 0 ? withComp.reduce((sum, r) => sum + ((r.baseSalary || 0) / r.totalComp) * 100, 0) / withComp.length : 0;
+    const avgEquityPct = withComp.length > 0 ? withComp.reduce((sum, r) => sum + ((r.equity || 0) / r.totalComp) * 100, 0) / withComp.length : 0;
+    const avgBonusPct = withComp.length > 0 ? withComp.reduce((sum, r) => sum + ((r.bonus || 0) / r.totalComp) * 100, 0) / withComp.length : 0;
 
     const indexing = evaluateIndexingEligibility({
       entityType: 'Company',
@@ -109,6 +123,20 @@ export async function GET(request: Request) {
       enrichmentStatus = 'pending';
     }
 
+    // Build enriched FAQ
+    const intentFaqs = generateIntentDrivenFaqs('Company', companyData.name, {
+      medianComp: medianComp,
+      submissionCount,
+      p25,
+      p75,
+      topPayingEntity: topJobs[0]?.role,
+    });
+    const genericFaqs = buildEntityFaq(companyData.name, 'Company', submissionCount, medianComp);
+    const seenQuestions = new Set(intentFaqs.map((f) => f.question));
+    const combinedFaqs = [...intentFaqs, ...genericFaqs.filter((f) => !seenQuestions.has(f.question))];
+
+    const externalLinks = getCompanyExternalLinks(companyData.name);
+
     return NextResponse.json({
       companyData: {
         ...companyData,
@@ -120,7 +148,20 @@ export async function GET(request: Request) {
       topCities,
       enrichmentStatus,
       indexing,
-      faq: buildEntityFaq(companyData.name, 'Company', submissionCount, medianComp),
+      faq: combinedFaqs,
+      percentiles: { p25, p50: medianComp, p75 },
+      compMix: {
+        avgBasePct: Math.round(avgBasePct * 10) / 10,
+        avgEquityPct: Math.round(avgEquityPct * 10) / 10,
+        avgBonusPct: Math.round(avgBonusPct * 10) / 10,
+      },
+      dataConfidence: {
+        submissionCount,
+        roleCount: Object.keys(roleMap).length,
+        cityCount: cityMap.size,
+        confidenceLabel: submissionCount >= 50 ? 'high' : submissionCount >= 20 ? 'moderate' : submissionCount >= 5 ? 'limited' : 'insufficient',
+      },
+      externalLinks,
     });
   } catch (error: unknown) {
     console.error('API Error:', error);

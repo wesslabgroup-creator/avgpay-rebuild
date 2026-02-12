@@ -11,6 +11,8 @@ import { DataTable } from "@/components/data-table";
 import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
 import { buildCanonicalUrl } from '@/lib/canonical';
+import { PercentileBands, CompMixBreakdown, DataConfidence, FAQSection, ExternalLinksSection, DataDisclaimer } from '@/components/entity-value-modules';
+import { Breadcrumbs } from '@/components/breadcrumbs';
 
 interface SalarySummary {
   role: string;
@@ -42,6 +44,10 @@ interface CompanyInfo {
   topCities?: { city: string; medianComp: number; dataPoints: number }[];
   indexing?: { shouldNoIndex?: boolean };
   faq?: { question: string; answer: string }[];
+  percentiles?: { p25: number; p50: number; p75: number };
+  compMix?: { avgBasePct: number; avgEquityPct: number; avgBonusPct: number };
+  dataConfidence?: { submissionCount: number; roleCount?: number; cityCount?: number; confidenceLabel: string };
+  externalLinks?: { href: string; label: string; source: string; description: string }[];
 }
 
 const CompanyDetailPage = () => {
@@ -83,6 +89,10 @@ const CompanyDetailPage = () => {
           topCities,
           indexing,
           faq,
+          percentiles: payload.percentiles,
+          compMix: payload.compMix,
+          dataConfidence: payload.dataConfidence,
+          externalLinks: payload.externalLinks,
         });
         setEnrichmentStatus(initialEnrichmentStatus || 'none');
 
@@ -211,6 +221,31 @@ const CompanyDetailPage = () => {
     variableMeasured: ['base salary', 'bonus', 'equity', 'total compensation'],
   };
 
+  const breadcrumbListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://avgpay.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Companies',
+        item: 'https://avgpay.com/companies',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: companyData.name,
+        item: `https://avgpay.com/company/${encodeURIComponent(companyData.name)}`,
+      },
+    ],
+  };
+
   const canonicalUrl = buildCanonicalUrl(`/company/${encodeURIComponent(companyData.name)}`);
 
   const faqSchema = companyData.faq && companyData.faq.length > 0 ? {
@@ -228,6 +263,7 @@ const CompanyDetailPage = () => {
         <meta name="robots" content={companyData.indexing?.shouldNoIndex ? 'noindex,follow' : 'index,follow'} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListSchema) }} />
         {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
       </Head>
     <main className="min-h-screen bg-white">
@@ -263,6 +299,22 @@ const CompanyDetailPage = () => {
             </CardContent>
           </Card>
 
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { label: 'Companies', href: '/companies' },
+              { label: companyData.name },
+            ]}
+          />
+
+          {/* Data Confidence */}
+          {companyData.dataConfidence && (
+            <DataConfidence
+              confidence={companyData.dataConfidence}
+              entityName={companyData.name}
+            />
+          )}
+
           {/* Consolidated Salary Overview */}
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
@@ -280,6 +332,22 @@ const CompanyDetailPage = () => {
             </CardContent>
           </Card>
 
+          {/* Percentile Bands */}
+          {companyData.percentiles && (
+            <PercentileBands
+              percentiles={companyData.percentiles}
+              entityName={companyData.name}
+              submissionCount={companyData.dataConfidence?.submissionCount ?? 0}
+            />
+          )}
+
+          {/* Compensation Mix Breakdown */}
+          {companyData.compMix && (
+            <CompMixBreakdown
+              compMix={companyData.compMix}
+              entityName={companyData.name}
+            />
+          )}
 
           <EnrichmentDebugBanner
             entityType="Company"
@@ -407,6 +475,16 @@ const CompanyDetailPage = () => {
             </CardContent>
           </Card>
 
+          {/* FAQ Section */}
+          {companyData.faq && companyData.faq.length > 0 && (
+            <FAQSection faqs={companyData.faq} entityName={companyData.name} />
+          )}
+
+          {/* External Links Section */}
+          {companyData.externalLinks && companyData.externalLinks.length > 0 && (
+            <ExternalLinksSection links={companyData.externalLinks} />
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link href="/salaries">
               <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700 w-full">
@@ -419,6 +497,9 @@ const CompanyDetailPage = () => {
               </Button>
             </Link>
           </div>
+
+          {/* Data Disclaimer */}
+          <DataDisclaimer />
         </div>
       </div>
     </main>

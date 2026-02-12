@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/data-table';
 import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
+import { PercentileBands, CompMixBreakdown, DataConfidence, FAQSection, ExternalLinksSection, DataDisclaimer, RelatedCities } from '@/components/entity-value-modules';
+import { Breadcrumbs } from '@/components/breadcrumbs';
 import { buildCanonicalUrl } from '@/lib/canonical';
 import {
   ChevronLeft,
@@ -25,8 +27,10 @@ interface CityStats {
   median: number;
   min: number;
   max: number;
+  p10?: number;
   p25: number;
   p75: number;
+  p90?: number;
 }
 
 interface TopCompany {
@@ -60,7 +64,28 @@ interface CityDetailsResponse {
   enrichmentStatus?: string;
   indexing?: { shouldNoIndex?: boolean };
   faq?: { question: string; answer: string }[];
+  compMix?: { avgBasePct: number; avgEquityPct: number; avgBonusPct: number };
+  dataConfidence?: {
+    submissionCount: number;
+    companyCount?: number;
+    roleCount?: number;
+    confidenceLabel: string;
+  };
+  externalLinks?: { href: string; label: string; source: string; description: string }[];
 }
+
+const CITY_CLUSTERS: Record<string, string[]> = {
+  'san francisco': ['san jose', 'oakland', 'seattle', 'los angeles', 'new york'],
+  'new york': ['boston', 'philadelphia', 'chicago', 'san francisco', 'washington'],
+  'seattle': ['portland', 'san francisco', 'austin', 'denver', 'san jose'],
+  'austin': ['dallas', 'houston', 'denver', 'san antonio', 'raleigh'],
+  'chicago': ['detroit', 'minneapolis', 'st. louis', 'indianapolis', 'new york'],
+  'boston': ['new york', 'cambridge', 'philadelphia', 'hartford', 'providence'],
+  'los angeles': ['san diego', 'san francisco', 'irvine', 'orange county', 'phoenix'],
+  'denver': ['boulder', 'colorado springs', 'austin', 'salt lake city', 'seattle'],
+  'atlanta': ['charlotte', 'raleigh', 'nashville', 'tampa', 'miami'],
+  'dallas': ['austin', 'houston', 'san antonio', 'fort worth', 'denver'],
+};
 
 export default function CityPage() {
   const router = useRouter();
@@ -96,7 +121,6 @@ export default function CityPage() {
 
     fetchData();
   }, [citySlug]);
-
 
   useEffect(() => {
     if (!data?.cityData?.id || data.cityData.analysis) return;
@@ -172,7 +196,6 @@ export default function CityPage() {
   const { cityData, stats, topCompanies, topJobs } = data;
   const cityLabel = `${cityData.city}, ${cityData.state}`;
 
-  // Schema.org structured data for SEO
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Place',
@@ -190,15 +213,27 @@ export default function CityPage() {
     '@type': 'WebPage',
     name: `${cityLabel} salary intelligence`,
     description: `Compensation intelligence for ${cityLabel}.`,
-    url: `https://avgpay.com/salaries/city/${cityData.slug}`
+    url: `https://avgpay.com/salaries/city/${cityData.slug}`,
   };
 
   const datasetSchema = {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
     name: `${cityLabel} compensation dataset`,
-    creator: { '@type': 'Organization', name: 'AvgPay' },
+    description: `Total compensation data for tech professionals in ${cityLabel}, including base salary, equity, and bonus.`,
+    creator: { '@type': 'Organization', name: 'AvgPay', url: 'https://avgpay.com' },
     variableMeasured: ['base salary', 'bonus', 'equity', 'total compensation'],
+    measurementTechnique: 'Self-reported submissions, H-1B visa data, BLS occupational data',
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avgpay.com' },
+      { '@type': 'ListItem', position: 2, name: 'Salaries', item: 'https://avgpay.com/salaries' },
+      { '@type': 'ListItem', position: 3, name: cityLabel, item: `https://avgpay.com/salaries/city/${cityData.slug}` },
+    ],
   };
 
   const canonicalUrl = buildCanonicalUrl(`/salaries/city/${cityData.slug}`);
@@ -208,6 +243,14 @@ export default function CityPage() {
     '@type': 'FAQPage',
     mainEntity: data.faq.map((item) => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })),
   } : null;
+
+  const normalizedCity = cityData.city.toLowerCase().trim();
+  const nearbyCityNames = CITY_CLUSTERS[normalizedCity] || [];
+  const nearbyCities = nearbyCityNames.map((city) => ({
+    href: `/salaries/city/${city.replace(/\s+/g, '-')}`,
+    label: city.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+    context: `Compare salaries: ${cityLabel} vs ${city}`,
+  }));
 
   return (
     <>
@@ -222,21 +265,17 @@ export default function CityPage() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
         {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
       </Head>
 
       <main className="min-h-screen bg-white">
         <div className="max-w-6xl mx-auto px-6 py-12 space-y-8">
-          {/* Back button */}
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="text-emerald-600 hover:text-emerald-700 -ml-4"
-          >
-            <ChevronLeft className="w-4 h-4 mr-1" /> Back to Salaries
-          </Button>
+          <Breadcrumbs items={[
+            { label: 'Salaries', href: '/salaries' },
+            { label: cityLabel },
+          ]} />
 
-          {/* City Hero */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-emerald-600">
               <MapPin className="h-5 w-5" />
@@ -250,7 +289,10 @@ export default function CityPage() {
             </p>
           </div>
 
-          {/* Hero Stats (Hard Numbers from DB) */}
+          {data.dataConfidence && (
+            <DataConfidence confidence={data.dataConfidence} entityName={cityLabel} />
+          )}
+
           <Card className="bg-white border-emerald-500/50 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
@@ -280,7 +322,14 @@ export default function CityPage() {
             </CardContent>
           </Card>
 
-          {/* Debug Banner (dev-only) */}
+          <PercentileBands
+            percentiles={{ p10: stats.p10, p25: stats.p25, p50: stats.median, p75: stats.p75, p90: stats.p90 }}
+            entityName={cityLabel}
+            submissionCount={stats.count}
+          />
+
+          {data.compMix && <CompMixBreakdown compMix={data.compMix} entityName={cityLabel} />}
+
           <EnrichmentDebugBanner
             entityType="City"
             entityName={cityLabel}
@@ -290,7 +339,6 @@ export default function CityPage() {
             enrichedAt={cityData.analysisGeneratedAt}
           />
 
-          {/* The Analyst View (Gemini Analysis Insight Cards) */}
           {cityData.analysis ? (
             <InsightCards analysis={cityData.analysis} entityName={cityLabel} />
           ) : (enrichmentStatus === 'pending' || enrichmentStatus === 'processing') ? (
@@ -307,7 +355,6 @@ export default function CityPage() {
             </Card>
           )}
 
-          {/* Top Companies in this City */}
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
@@ -343,7 +390,6 @@ export default function CityPage() {
             </CardContent>
           </Card>
 
-          {/* Top Jobs in this City (SEO Internal Linking) */}
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
@@ -379,7 +425,16 @@ export default function CityPage() {
             </CardContent>
           </Card>
 
-          {/* Related Markets / Internal Links */}
+          <RelatedCities nearbyCities={nearbyCities} cityName={cityData.city} />
+
+          {data.faq && data.faq.length > 0 && (
+            <FAQSection faqs={data.faq} entityName={cityLabel} />
+          )}
+
+          {data.externalLinks && data.externalLinks.length > 0 && (
+            <ExternalLinksSection links={data.externalLinks} />
+          )}
+
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
@@ -413,6 +468,8 @@ export default function CityPage() {
               </div>
             </CardContent>
           </Card>
+
+          <DataDisclaimer />
         </div>
       </main>
     </>
