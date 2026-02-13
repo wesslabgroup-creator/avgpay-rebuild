@@ -453,6 +453,32 @@ export default function CityPage() {
 
           <RelatedCities nearbyCities={nearbyCities} cityName={cityData.city} />
 
+          {/* Compare vs Peer Cities */}
+          <Card className="bg-white border-slate-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-emerald-600" />
+                Compare {cityData.city} vs Related Cities
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {nearbyCities.slice(0, 6).map((city) => (
+                  <Link
+                    key={city.label}
+                    href={`/compare/${encodeURIComponent(cityData.city.toLowerCase().replace(/ /g, '-'))}-vs-${encodeURIComponent(city.label.toLowerCase().replace(/ /g, '-'))}`}
+                    className="block rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-slate-900">{cityData.city} vs {city.label}</span>
+                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Compare</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           {data.faq && data.faq.length > 0 && (
             <FAQSection faqs={data.faq} entityName={cityLabel} />
           )}

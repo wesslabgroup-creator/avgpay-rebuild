@@ -426,6 +426,61 @@ export interface ComparisonMetadata {
 }
 
 export function generateComparisonMetadata(entityA: string, entityB: string): ComparisonMetadata {
+  // Simple heuristic to detect type
+  const isCity = (s: string) => s.includes(',') && /[A-Z]{2}/.test(s); // e.g. "Austin, TX"
+  const isJob = (s: string) => /Engineer|Manager|Director|Analyst|Developer|Designer/i.test(s) && !isCity(s);
+
+  let type = 'Company';
+  if (isCity(entityA) || isCity(entityB)) type = 'City';
+  else if (isJob(entityA) || isJob(entityB)) type = 'Job';
+
+  if (type === 'City') {
+    return {
+      title: `${entityA} vs ${entityB} Cost of Living & Salary Comparison`,
+      description: `Compare salaries and cost of living between ${entityA} vs ${entityB}. See where your paycheck goes further based on location-adjusted compensation data.`,
+      whyPopular: `${entityA} and ${entityB} are common relocation options for tech professionals considering detailed cost-of-living adjustments.`,
+      faqs: [
+        {
+          question: `Is the cost of living higher in ${entityA} or ${entityB}?`,
+          answer: `Salary data suggests distinct market rates. Review the median total compensation breakdown to see which location offers better purchasing power for your role.`
+        },
+        {
+          question: `Which city pays more: ${entityA} or ${entityB}?`,
+          answer: `While gross salaries may differ, consider the 'effective' take-home pay after factoring in state taxes and housing costs in ${entityA} vs ${entityB}.`
+        }
+      ],
+      takeaways: [
+        `Compare not just base salary but total compensation locally available in each market.`,
+        `Consider remote work opportunities that might allow you to earn ${entityA} rates while living in a lower cost area.`,
+        `Look at the volume of data points to gauge the activity level of the tech scene in each city.`
+      ]
+    };
+  }
+
+  if (type === 'Job') {
+    return {
+      title: `${entityA} vs ${entityB} Salary & Career Path Comparison`,
+      description: `Compare ${entityA} vs ${entityB} compensation packages. Understand the career trajectory, pay ceiling, and demand for these roles.`,
+      whyPopular: `Professionals often evaluate the switch between ${entityA} and ${entityB} to maximize earnings and career growth.`,
+      faqs: [
+        {
+          question: `Does ${entityA} pay more than ${entityB}?`,
+          answer: `Generally, compensation bands vary by specialization. Check the median and 75th percentile data on this page to see the earnings potential for each role.`
+        },
+        {
+          question: `Is it hard to switch from ${entityA} to ${entityB}?`,
+          answer: `Many skills overlap. Compare the 'Skills & Requirements' trends implies by the top paying employers for these roles.`
+        }
+      ],
+      takeaways: [
+        `Review the spread between the 25th and 75th percentiles to understand the pay range width for each role.`,
+        `Consider the equity component, as some roles (like ${entityA}) may rely more heavily on stock grants than others.`,
+        `Check the hiring volume to see which role has more open opportunities in the current market.`
+      ]
+    };
+  }
+
+  // Default to Company
   return {
     title: `${entityA} vs ${entityB} Compensation Comparison`,
     description: `Compare ${entityA} vs ${entityB} salaries, bonuses, and stock grants. See which company pays more for your role and level based on verified data.`,
