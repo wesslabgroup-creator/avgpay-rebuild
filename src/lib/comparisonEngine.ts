@@ -40,8 +40,9 @@ function getNarrativeField(record: Record<string, unknown>, keys: string[], fall
 }
 
 
-function shouldSkipLlmDuringBuild(): boolean {
-  return process.env.NEXT_PHASE === 'phase-production-build' || process.env.SKIP_LLM_DURING_BUILD === 'true';
+function shouldSkipLiveLlmComparison(): boolean {
+  if (process.env.ENABLE_LIVE_COMPARE_LLM === 'true') return false;
+  return true;
 }
 
 function normalizeComparisonNarrative(analysis: AnalysisResult, entityA: string, entityB: string): ComparisonAnalysis {
@@ -134,7 +135,7 @@ export async function generateComparisonAnalysis(entityA: string, entityB: strin
       `Interpret trade-offs explicitly using comparative language. Focus on what candidates gain and lose between ${entityA} and ${entityB} for ${role}.`,
   };
 
-  if (shouldSkipLlmDuringBuild()) {
+  if (shouldSkipLiveLlmComparison()) {
     const deterministic: ComparisonAnalysis = {
       philosophical_divergence: `${entityA} and ${entityB} reward different compensation priorities, whereas one tends to emphasize stable cash flow and the other leans on upside-heavy components.`,
       cultural_tradeoff: `In contrast, candidates choosing between ${entityA} and ${entityB} usually trade predictability for operating velocity, alternatively prioritizing day-to-day certainty over growth optionality.`,
@@ -888,4 +889,3 @@ export function generateComparisonMetadata(entityA: string, entityB: string): Co
     ]
   };
 }
-
