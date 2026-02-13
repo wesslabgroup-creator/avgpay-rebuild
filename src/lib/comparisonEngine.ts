@@ -413,6 +413,392 @@ export async function getCityPeers(city: string, state: string, limit = 6): Prom
 }
 
 
+// ── Job Similarity Engine ──────────────────────────────────────────────
+// getSimilarJobs: deterministic similarity based on salary band overlap
+// and job family heuristics (shared keywords in role titles).
+
+export interface SimilarJobMatch {
+  jobTitle: string;
+  slug: string;
+  medianComp: number;
+  sampleSize: number;
+  similarityScore: number;
+  reason: string;
+}
+
+interface RoleAggregate {
+  roleId: string;
+  title: string;
+  medianComp: number;
+  p25Comp: number;
+  p75Comp: number;
+  sampleSize: number;
+  slug: string;
+}
+
+// Heuristic: extract key "family" tokens from a job title
+function extractJobFamilyTokens(title: string): string[] {
+  const normalized = title.toLowerCase();
+  const stopwords = new Set(['of', 'the', 'and', 'a', 'an', 'in', 'for', 'at', 'to', 'or', 'with', 'i', 'ii', 'iii', 'iv', 'v', 'vi']);
+  return normalized
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(t => t.length > 1 && !stopwords.has(t));
+}
+
+function jobFamilyOverlap(tokensA: string[], tokensB: string[]): number {
+  if (!tokensA.length || !tokensB.length) return 0;
+  const setB = new Set(tokensB);
+  const shared = tokensA.filter(t => setB.has(t)).length;
+  return shared / Math.max(tokensA.length, tokensB.length);
+}
+
+export async function getSimilarJobs(jobSlugOrTitle: string, limit = 6, cityFilter?: string): Promise<SimilarJobMatch[]> {
+  // Build query — optionally filter by city
+  let query = supabaseAdmin
+    .from('Salary')
+    .select('totalComp, roleId, Role!inner(title), Location!inner(city, state)')
+    .not('totalComp', 'is', null)
+    .limit(10000);
+
+  if (cityFilter) {
+    query = query.ilike('Location.city', cityFilter);
+  }
+
+  const { data: rows, error } = await query;
+  if (error || !rows?.length) return [];
+
+  // Group salary data by role
+  const grouped = new Map<string, { title: string; totals: number[] }>();
+  for (const row of rows as Array<{ totalComp: number; roleId: string; Role?: { title?: string } | { title?: string }[] }>) {
+    const role = Array.isArray(row.Role) ? row.Role[0] : row.Role;
+    if (!role?.title || typeof row.totalComp !== 'number') continue;
+    const key = row.roleId;
+    const existing = grouped.get(key) ?? { title: role.title, totals: [] };
+    existing.totals.push(row.totalComp);
+    grouped.set(key, existing);
+  }
+
+  // Build role aggregates
+  const aggregates: RoleAggregate[] = Array.from(grouped.entries())
+    .map(([roleId, info]) => {
+      const sorted = [...info.totals].sort((a, b) => a - b);
+      return {
+        roleId,
+        title: info.title,
+        medianComp: median(sorted),
+        p25Comp: percentile(sorted, 25),
+        p75Comp: percentile(sorted, 75),
+        sampleSize: sorted.length,
+        slug: slugifyEntity(info.title),
+      };
+    })
+    .filter(a => a.sampleSize >= 1);
+
+  // Find the source job
+  const normalizedInput = jobSlugOrTitle.toLowerCase().replace(/-/g, ' ');
+  const source = aggregates.find(
+    a => a.title.toLowerCase() === normalizedInput || a.slug === jobSlugOrTitle.toLowerCase()
+  );
+
+  if (!source) {
+    // Fallback: return top roles by sample size
+    return aggregates
+      .sort((a, b) => b.sampleSize - a.sampleSize)
+      .slice(0, limit)
+      .map(a => ({
+        jobTitle: a.title,
+        slug: a.slug,
+        medianComp: a.medianComp,
+        sampleSize: a.sampleSize,
+        similarityScore: 50,
+        reason: 'Top role by data volume',
+      }));
+  }
+
+  const sourceTokens = extractJobFamilyTokens(source.title);
+
+  // Score each other role against source
+  const scored = aggregates
+    .filter(a => a.roleId !== source.roleId)
+    .map(target => {
+      // Salary band similarity (same formula as company similarity)
+      const salaryScore = computeSimilarityScore(
+        { companyId: '', companyName: '', ...source, medianComp: source.medianComp, p25Comp: source.p25Comp, p75Comp: source.p75Comp, sampleSize: source.sampleSize },
+        { companyId: '', companyName: '', ...target, medianComp: target.medianComp, p25Comp: target.p25Comp, p75Comp: target.p75Comp, sampleSize: target.sampleSize }
+      );
+
+      // Job family overlap
+      const targetTokens = extractJobFamilyTokens(target.title);
+      const familyScore = jobFamilyOverlap(sourceTokens, targetTokens) * 100;
+
+      // Combined: 40% salary similarity + 60% family overlap
+      const combinedScore = Number((salaryScore * 0.4 + familyScore * 0.6).toFixed(1));
+
+      let reason = 'Similar compensation band';
+      if (familyScore > 50) reason = 'Same job family';
+      else if (familyScore > 20 && salaryScore > 70) reason = 'Related role & similar pay';
+
+      return {
+        jobTitle: target.title,
+        slug: target.slug,
+        medianComp: target.medianComp,
+        sampleSize: target.sampleSize,
+        similarityScore: combinedScore,
+        reason,
+      };
+    })
+    .sort((a, b) => b.similarityScore - a.similarityScore);
+
+  return scored.slice(0, limit);
+}
+
+// ── Dynamic Compare Data Fetcher ──────────────────────────────────────
+// Fetch comparison data for any two entities (job, company, or city)
+// with optional city filter
+
+export interface CompareEntityProfile {
+  name: string;
+  slug: string;
+  medianTotalComp: number;
+  medianBaseSalary: number;
+  medianNonBaseComp: number;
+  p25TotalComp: number;
+  p75TotalComp: number;
+  minTotalComp: number;
+  maxTotalComp: number;
+  sampleSize: number;
+  topLocations: { location: string; sampleSize: number }[];
+  topCompanies: { company: string; sampleSize: number }[];
+}
+
+type CompareEntityType = 'job' | 'company' | 'city';
+
+function detectEntityType(entity: string): CompareEntityType {
+  const jobKeywords = /engineer|manager|director|analyst|developer|designer|scientist|architect|lead|coordinator|specialist|consultant|administrator|intern|vp|head|chief/i;
+  const cityPattern = /,\s*[A-Z]{2}$/;
+  if (cityPattern.test(entity)) return 'city';
+  if (jobKeywords.test(entity)) return 'job';
+  return 'company';
+}
+
+export async function getCompareProfile(entityName: string, cityFilter?: string): Promise<CompareEntityProfile> {
+  const entityType = detectEntityType(entityName);
+  const empty: CompareEntityProfile = {
+    name: entityName,
+    slug: slugifyEntity(entityName),
+    medianTotalComp: 0, medianBaseSalary: 0, medianNonBaseComp: 0,
+    p25TotalComp: 0, p75TotalComp: 0, minTotalComp: 0, maxTotalComp: 0,
+    sampleSize: 0, topLocations: [], topCompanies: [],
+  };
+
+  let query = supabaseAdmin
+    .from('Salary')
+    .select('totalComp, baseSalary, Company!inner(name), Role!inner(title), Location!inner(city, state)')
+    .not('totalComp', 'is', null)
+    .limit(2000);
+
+  if (entityType === 'company') {
+    query = query.ilike('Company.name', entityName);
+  } else if (entityType === 'job') {
+    query = query.ilike('Role.title', entityName);
+  } else {
+    const [cityName, state] = entityName.split(',').map(s => s.trim());
+    query = query.ilike('Location.city', cityName);
+    if (state) query = query.ilike('Location.state', state);
+  }
+
+  if (cityFilter && entityType !== 'city') {
+    query = query.ilike('Location.city', cityFilter);
+  }
+
+  const { data, error } = await query;
+  if (error || !data?.length) return empty;
+
+  type SalaryRow = {
+    totalComp: number;
+    baseSalary: number | null;
+    Company?: { name?: string } | { name?: string }[];
+    Role?: { title?: string } | { title?: string }[];
+    Location?: { city?: string; state?: string } | { city?: string; state?: string }[];
+  };
+
+  const records = data as unknown as SalaryRow[];
+
+  const totalCompValues = records.map(r => r.totalComp).filter((v): v is number => typeof v === 'number');
+  const baseValues = records.map(r => r.baseSalary ?? 0).filter((v): v is number => typeof v === 'number');
+
+  if (!totalCompValues.length) return empty;
+
+  const sorted = [...totalCompValues].sort((a, b) => a - b);
+  const medTotal = median(totalCompValues);
+  const medBase = median(baseValues);
+
+  // Top locations
+  const locCounts = new Map<string, number>();
+  for (const r of records) {
+    const loc = Array.isArray(r.Location) ? r.Location[0] : r.Location;
+    if (!loc?.city) continue;
+    const label = loc.state ? `${loc.city}, ${loc.state}` : loc.city;
+    locCounts.set(label, (locCounts.get(label) ?? 0) + 1);
+  }
+
+  // Top companies
+  const compCounts = new Map<string, number>();
+  for (const r of records) {
+    const comp = Array.isArray(r.Company) ? r.Company[0] : r.Company;
+    if (!comp?.name) continue;
+    compCounts.set(comp.name, (compCounts.get(comp.name) ?? 0) + 1);
+  }
+
+  return {
+    name: entityName,
+    slug: slugifyEntity(entityName),
+    medianTotalComp: medTotal,
+    medianBaseSalary: medBase,
+    medianNonBaseComp: Math.max(medTotal - medBase, 0),
+    p25TotalComp: percentile(sorted, 25),
+    p75TotalComp: percentile(sorted, 75),
+    minTotalComp: sorted[0] ?? 0,
+    maxTotalComp: sorted[sorted.length - 1] ?? 0,
+    sampleSize: totalCompValues.length,
+    topLocations: Array.from(locCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([location, sampleSize]) => ({ location, sampleSize })),
+    topCompanies: Array.from(compCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([company, sampleSize]) => ({ company, sampleSize })),
+  };
+}
+
+// ── Confidence & Indexing for Compare Pages ───────────────────────────
+
+export interface ComparePageConfidence {
+  totalSampleSize: number;
+  confidenceScore: number;
+  shouldIndex: boolean;
+  confidenceLabel: 'high' | 'moderate' | 'limited' | 'insufficient';
+}
+
+export function computeCompareConfidence(sampleA: number, sampleB: number): ComparePageConfidence {
+  const total = sampleA + sampleB;
+  const minSide = Math.min(sampleA, sampleB);
+
+  // Score: based on total and balance between sides
+  let score = 0;
+  if (total >= 100) score += 40;
+  else if (total >= 50) score += 30;
+  else if (total >= 20) score += 20;
+  else if (total >= 10) score += 10;
+
+  if (minSide >= 20) score += 30;
+  else if (minSide >= 10) score += 20;
+  else if (minSide >= 5) score += 10;
+
+  // Both sides need data
+  if (sampleA > 0 && sampleB > 0) score += 30;
+  else score += 0;
+
+  const confidenceLabel: ComparePageConfidence['confidenceLabel'] =
+    score >= 80 ? 'high' :
+    score >= 50 ? 'moderate' :
+    score >= 25 ? 'limited' :
+    'insufficient';
+
+  // Index if total >= 20 and both sides have data
+  const shouldIndex = total >= 20 && sampleA > 0 && sampleB > 0;
+
+  return { totalSampleSize: total, confidenceScore: score, shouldIndex, confidenceLabel };
+}
+
+// ── Popular Comparisons (Dynamic) ─────────────────────────────────────
+
+export interface PopularComparison {
+  entityA: string;
+  entityB: string;
+  slug: string;
+  type: 'company' | 'job';
+  totalSampleSize: number;
+}
+
+export async function getPopularComparisons(limit = 12): Promise<PopularComparison[]> {
+  // Fetch top entities by data volume and pair them
+  const { data: companyRows } = await supabaseAdmin
+    .from('Salary')
+    .select('Company!inner(name)')
+    .not('totalComp', 'is', null)
+    .limit(5000);
+
+  const { data: roleRows } = await supabaseAdmin
+    .from('Salary')
+    .select('Role!inner(title)')
+    .not('totalComp', 'is', null)
+    .limit(5000);
+
+  // Count companies
+  const companyCounts = new Map<string, number>();
+  for (const row of (companyRows || []) as Array<{ Company?: { name?: string } | { name?: string }[] }>) {
+    const comp = Array.isArray(row.Company) ? row.Company[0] : row.Company;
+    if (!comp?.name) continue;
+    companyCounts.set(comp.name, (companyCounts.get(comp.name) ?? 0) + 1);
+  }
+
+  // Count roles
+  const roleCounts = new Map<string, number>();
+  for (const row of (roleRows || []) as Array<{ Role?: { title?: string } | { title?: string }[] }>) {
+    const role = Array.isArray(row.Role) ? row.Role[0] : row.Role;
+    if (!role?.title) continue;
+    roleCounts.set(role.title, (roleCounts.get(role.title) ?? 0) + 1);
+  }
+
+  const topCompanies = Array.from(companyCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+  const topRoles = Array.from(roleCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+
+  const comparisons: PopularComparison[] = [];
+
+  // Pair top companies
+  for (let i = 0; i < topCompanies.length && comparisons.length < limit; i++) {
+    for (let j = i + 1; j < topCompanies.length && comparisons.length < limit; j++) {
+      const [nameA, countA] = topCompanies[i];
+      const [nameB, countB] = topCompanies[j];
+      comparisons.push({
+        entityA: nameA,
+        entityB: nameB,
+        slug: ensureComparisonSlug(nameA, nameB),
+        type: 'company',
+        totalSampleSize: countA + countB,
+      });
+    }
+  }
+
+  // Pair top roles
+  for (let i = 0; i < topRoles.length && comparisons.length < limit * 2; i++) {
+    for (let j = i + 1; j < topRoles.length && comparisons.length < limit * 2; j++) {
+      const [titleA, countA] = topRoles[i];
+      const [titleB, countB] = topRoles[j];
+      comparisons.push({
+        entityA: titleA,
+        entityB: titleB,
+        slug: ensureComparisonSlug(titleA, titleB),
+        type: 'job',
+        totalSampleSize: countA + countB,
+      });
+    }
+  }
+
+  // Sort by total data and return top N
+  return comparisons
+    .sort((a, b) => b.totalSampleSize - a.totalSampleSize)
+    .slice(0, limit);
+}
+
 export function getComparisonSlug(entityA: string, entityB: string) {
   return ensureComparisonSlug(entityA, entityB);
 }

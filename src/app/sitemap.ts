@@ -3,6 +3,7 @@ import { CURATED_COMPARISONS } from '@/app/compare/data/curated-comparisons';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { evaluateIndexingEligibility } from '@/lib/seo';
 import { thinContentScoreToSitemapPriority, hasMinimumViableContent } from '@/lib/thinContentScoring';
+import { getPopularComparisons } from '@/lib/comparisonEngine';
 
 const baseUrl = 'https://avgpay.com';
 
@@ -43,12 +44,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  const comparisons = CURATED_COMPARISONS.map((comparison) => ({
+  const curatedComparisons = CURATED_COMPARISONS.map((comparison) => ({
     url: `${baseUrl}/compare/${comparison.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.85,
   }));
+
+  // Dynamic popular comparisons (only those with sufficient data)
+  let dynamicComparisons: MetadataRoute.Sitemap = [];
+  try {
+    const popular = await getPopularComparisons(20);
+    const curatedSlugs = new Set(CURATED_COMPARISONS.map(c => c.slug));
+    dynamicComparisons = popular
+      .filter(c => !curatedSlugs.has(c.slug) && c.totalSampleSize >= 20)
+      .map(c => ({
+        url: `${baseUrl}/compare/${c.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }));
+  } catch {
+    // Non-critical: skip dynamic comparisons in sitemap
+  }
+
+  const comparisons = [...curatedComparisons, ...dynamicComparisons];
 
   const entityRoutes: MetadataRoute.Sitemap = [];
 
