@@ -24,6 +24,8 @@ interface RuntimeComparison {
   cta: { label: string; href: string };
 }
 
+import { generateComparisonMetadata } from "@/lib/comparisonEngine";
+
 function toDisplayEntity(raw: string) {
   return raw
     .split('-')
@@ -38,29 +40,17 @@ function parseDynamicComparison(slug: string): RuntimeComparison | null {
 
   const entityA = toDisplayEntity(left);
   const entityB = toDisplayEntity(right);
+  const metadata = generateComparisonMetadata(entityA, entityB);
 
   return {
     slug,
-    title: `${entityA} vs ${entityB}`,
-    description: `Data-backed compensation and market narrative comparison for ${entityA} and ${entityB}.`,
-    whyPopular: 'This page is generated on-demand when users compare two entities with overlapping salary bands.',
+    title: metadata.title,
+    description: metadata.description,
+    whyPopular: metadata.whyPopular,
     companies: [entityA, entityB],
-    roles: ['Software Engineer'],
-    takeaways: [
-      `Compare pay mix, compensation volatility, and expected promotion cadence between ${entityA} and ${entityB}.`,
-      'Use median and distribution deltas to benchmark both short-term cash flow and long-term upside.',
-      'Treat candidate-market fit as a first-order variable when two packages are close on headline compensation.',
-    ],
-    faqs: [
-      {
-        question: `How should I compare ${entityA} vs ${entityB} beyond salary?`,
-        answer: 'Evaluate base salary, variable compensation mix, expected vesting horizon, and operating culture trade-offs together instead of isolating one metric.',
-      },
-      {
-        question: 'Why do median compensation numbers differ from my offer?',
-        answer: 'Offer outcomes vary by level, team, market, and timing. Use medians as a baseline and anchor negotiations with your scope and leveling evidence.',
-      },
-    ],
+    roles: ['Software Engineer'], // Defaulting to Software Engineer for now, could be dynamic later
+    takeaways: metadata.takeaways,
+    faqs: metadata.faqs,
     cta: {
       label: 'Analyze my offer',
       href: '/tools/offer-analyzer',

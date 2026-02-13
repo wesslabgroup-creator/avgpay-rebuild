@@ -386,6 +386,39 @@ export async function getCityPeers(city: string, state: string, limit = 6): Prom
   return peers;
 }
 
+
 export function getComparisonSlug(entityA: string, entityB: string) {
   return ensureComparisonSlug(entityA, entityB);
 }
+
+export interface ComparisonMetadata {
+  title: string;
+  description: string;
+  whyPopular: string;
+  faqs: { question: string; answer: string }[];
+  takeaways: string[];
+}
+
+export function generateComparisonMetadata(entityA: string, entityB: string): ComparisonMetadata {
+  return {
+    title: `${entityA} vs ${entityB} Compensation Comparison`,
+    description: `Compare ${entityA} vs ${entityB} salaries, bonuses, and stock grants. See which company pays more for your role and level based on verified data.`,
+    whyPopular: `${entityA} and ${entityB} are frequently compared by candidates evaluating offers in the same market sector.`,
+    faqs: [
+      {
+        question: `Does ${entityA} pay more than ${entityB}?`,
+        answer: `Compensation varies by role and level. Review the specific salary bands on this page to see which company leads for your target position.`
+      },
+      {
+        question: `How do I negotiate between ${entityA} and ${entityB}?`,
+        answer: `Use the median total compensation and percentile data here to anchor your expectations. Competing offers from peer companies like these are your strongest leverage.`
+      }
+    ],
+    takeaways: [
+      `Compare the total compensation mix (Base vs. Equity) to understand risk/reward profiles.`,
+      `Look at the salary ranges (spread) to gauge how much flexibility each company has for your level.`,
+      `Consider recent submission volume as a signal of active hiring and data freshness.`
+    ]
+  };
+}
+
