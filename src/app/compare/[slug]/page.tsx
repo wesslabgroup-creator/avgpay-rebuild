@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
+import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, AlertTriangle } from "lucide-react";
 import { ComparisonInsights } from "@/components/comparison-insights";
@@ -43,6 +44,31 @@ function parseSlug(slug: string): { entityA: string; entityB: string } | null {
 }
 
 export const dynamicParams = true;
+export const revalidate = 21600;
+
+function getCachedCompareProfile(entityName: string) {
+  return unstable_cache(
+    async () => getCompareProfile(entityName),
+    ["compare-profile", entityName.toLowerCase()],
+    { revalidate: 21600, tags: ["compare-profile"] },
+  )();
+}
+
+function getCachedSimilarJobs(entityName: string, limit: number) {
+  return unstable_cache(
+    async () => getSimilarJobs(entityName, limit),
+    ["compare-similar-jobs", entityName.toLowerCase(), String(limit)],
+    { revalidate: 21600, tags: ["compare-similar-jobs"] },
+  )();
+}
+
+function getCachedComparisonAnalysis(entityA: string, entityB: string, slug: string) {
+  return unstable_cache(
+    async () => generateComparisonAnalysis(entityA, entityB, "All Roles", slug),
+    ["compare-analysis", slug],
+    { revalidate: 604800, tags: ["compare-analysis"] },
+  )();
+}
 
 export async function generateMetadata({ params }: ComparisonPageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -58,18 +84,11 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     ? { title: curated.title, description: curated.description }
     : generateComparisonMetadata(parsed.entityA, parsed.entityB);
 
-  // Pre-check data confidence for robots directive
-  const [metaProfileA, metaProfileB] = await Promise.all([
-    getCompareProfile(parsed.entityA),
-    getCompareProfile(parsed.entityB),
-  ]);
-  const metaConfidence = computeCompareConfidence(metaProfileA.sampleSize, metaProfileB.sampleSize);
-
   return {
     title: `${metadata.title} | AvgPay`,
     description: metadata.description,
     alternates: { canonical: `/compare/${slug}` },
-    robots: metaConfidence.shouldIndex ? "index,follow" : "noindex,follow",
+    robots: "index,follow",
     openGraph: {
       title: `${metadata.title} | AvgPay`,
       description: metadata.description,
@@ -97,8 +116,8 @@ export default async function ComparisonPage({ params }: ComparisonPageProps) {
 
   // Fetch profiles concurrently using the new universal compare engine
   const [profileA, profileB] = await Promise.all([
-    getCompareProfile(entityA),
-    getCompareProfile(entityB),
+    getCachedCompareProfile(entityA),
+    getCachedCompareProfile(entityB),
   ]);
 
   const confidence = computeCompareConfidence(profileA.sampleSize, profileB.sampleSize);
@@ -125,7 +144,7 @@ export default async function ComparisonPage({ params }: ComparisonPageProps) {
 
   if (confidence.totalSampleSize >= 5) {
     try {
-      const generated = await generateComparisonAnalysis(entityA, entityB, "All Roles", slug);
+      const generated = await getCachedComparisonAnalysis(entityA, entityB, slug);
       if (generated.philosophical_divergence) narrative.philosophicalDivergence = generated.philosophical_divergence;
       if (generated.cultural_tradeoff) narrative.culturalTradeOff = generated.cultural_tradeoff;
       if (generated.winner_profile) {
@@ -141,7 +160,7 @@ export default async function ComparisonPage({ params }: ComparisonPageProps) {
   // Fetch similar jobs for internal linking
   let similarSuggestions: { jobTitle: string; slug: string }[] = [];
   try {
-    const similar = await getSimilarJobs(entityA, 4);
+    const similar = await getCachedSimilarJobs(entityA, 4);
     similarSuggestions = similar
       .filter((s) => s.jobTitle.toLowerCase() !== entityB.toLowerCase())
       .slice(0, 4);
