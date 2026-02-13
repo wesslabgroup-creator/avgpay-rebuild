@@ -74,14 +74,22 @@ async function getCityData(citySlug: string) {
   if (bySlug) {
     locationData = bySlug;
   } else {
-    // Fallback: match by city name
-    const cityName = citySlug.replace(/-/g, " ");
-    const { data: fallback } = await supabaseAdmin
+    // Fallback: parse slug as "city-name-ST" (e.g. "new-york-ny")
+    // State abbreviation is always the last segment
+    const parts = citySlug.split("-");
+    const stateAbbrev = parts.length >= 2 ? parts[parts.length - 1] : "";
+    const cityName = parts.slice(0, -1).join(" ");
+
+    let fallbackQuery = supabaseAdmin
       .from("Location")
       .select("*")
-      .ilike("city", cityName)
-      .limit(1)
-      .maybeSingle();
+      .ilike("city", cityName);
+
+    if (stateAbbrev.length === 2) {
+      fallbackQuery = fallbackQuery.ilike("state", stateAbbrev);
+    }
+
+    const { data: fallback } = await fallbackQuery.limit(1).maybeSingle();
     locationData = fallback;
   }
 
