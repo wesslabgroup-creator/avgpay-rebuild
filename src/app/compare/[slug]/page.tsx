@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
@@ -7,7 +8,7 @@ import { ComparisonInsights } from "@/components/comparison-insights";
 import {
   getCompareProfile,
   computeCompareConfidence,
-  generateComparisonAnalysis,
+  getCachedComparisonAnalysis,
   generateComparisonMetadata,
   getSimilarJobs,
   getComparisonSlug,
@@ -15,6 +16,9 @@ import {
 import {
   getComparisonBySlug,
 } from "@/app/compare/data/curated-comparisons";
+
+// Deduplicate getCompareProfile between generateMetadata and page component
+const getCachedProfile = cache(getCompareProfile);
 
 interface ComparisonPageProps {
   params: Promise<{ slug: string }>;
@@ -43,6 +47,7 @@ function parseSlug(slug: string): { entityA: string; entityB: string } | null {
 }
 
 export const dynamicParams = true;
+export const revalidate = 3600; // ISR: revalidate every hour
 
 export async function generateMetadata({ params }: ComparisonPageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -58,10 +63,10 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     ? { title: curated.title, description: curated.description }
     : generateComparisonMetadata(parsed.entityA, parsed.entityB);
 
-  // Pre-check data confidence for robots directive
+  // Pre-check data confidence for robots directive (shares cache with page component)
   const [metaProfileA, metaProfileB] = await Promise.all([
-    getCompareProfile(parsed.entityA),
-    getCompareProfile(parsed.entityB),
+    getCachedProfile(parsed.entityA),
+    getCachedProfile(parsed.entityB),
   ]);
   const metaConfidence = computeCompareConfidence(metaProfileA.sampleSize, metaProfileB.sampleSize);
 
@@ -95,13 +100,20 @@ export default async function ComparisonPage({ params }: ComparisonPageProps) {
 
   const { entityA, entityB } = parsed;
 
-  // Fetch profiles concurrently using the new universal compare engine
-  const [profileA, profileB] = await Promise.all([
-    getCompareProfile(entityA),
-    getCompareProfile(entityB),
+  // Fetch profiles (deduplicated with generateMetadata via React.cache),
+  // cached narrative, and similar jobs — all in parallel
+  const [profileA, profileB, cachedNarrative, similarRaw] = await Promise.all([
+    getCachedProfile(entityA),
+    getCachedProfile(entityB),
+    getCachedComparisonAnalysis(entityA, entityB, slug).catch(() => null),
+    getSimilarJobs(entityA, 4).catch(() => [] as { jobTitle: string; slug: string }[]),
   ]);
 
   const confidence = computeCompareConfidence(profileA.sampleSize, profileB.sampleSize);
+
+  const similarSuggestions = similarRaw
+    .filter((s) => s.jobTitle.toLowerCase() !== entityB.toLowerCase())
+    .slice(0, 4);
 
   // Get metadata (curated or dynamic)
   const curated = getComparisonBySlug(slug);
@@ -114,40 +126,15 @@ export default async function ComparisonPage({ params }: ComparisonPageProps) {
   const ctaHref = curated?.cta?.href || "/tools/offer-analyzer";
   const ctaLabel = curated?.cta?.label || "Analyze my offer";
 
-  // Generate comparison narrative (only if enough data)
+  // Use cached narrative if available, otherwise use deterministic defaults
+  // (never blocks on LLM — narratives are generated offline via enrichment queue)
   const narrative = {
-    philosophicalDivergence: `${entityA} and ${entityB} typically optimize compensation in different ways: one skews toward stable annual cash while the other leans into variable upside and performance-linked growth.`,
-    culturalTradeOff: "The core trade-off is execution pace versus predictability. Team environment fit often compounds over multiple promotion cycles and can outweigh small first-year cash deltas.",
-    winnerProfileA: `${entityA}-fit: candidates who prioritize this package usually value this entity's operating model and compensation cadence.`,
-    winnerProfileB: `${entityB}-fit: candidates who choose this package usually prefer the alternative risk/reward profile.`,
-    tradeOffSummary: "The better offer depends on whether you optimize for predictable annual cash flow or for potentially higher upside through equity, bonus, and long-term vesting outcomes.",
+    philosophicalDivergence: cachedNarrative?.philosophical_divergence || `${entityA} and ${entityB} typically optimize compensation in different ways: one skews toward stable annual cash while the other leans into variable upside and performance-linked growth.`,
+    culturalTradeOff: cachedNarrative?.cultural_tradeoff || "The core trade-off is execution pace versus predictability. Team environment fit often compounds over multiple promotion cycles and can outweigh small first-year cash deltas.",
+    winnerProfileA: cachedNarrative?.winner_profile ? `${entityA}-fit: ${cachedNarrative.winner_profile}` : `${entityA}-fit: candidates who prioritize this package usually value this entity's operating model and compensation cadence.`,
+    winnerProfileB: cachedNarrative?.winner_profile ? `${entityB}-fit: ${cachedNarrative.winner_profile}` : `${entityB}-fit: candidates who choose this package usually prefer the alternative risk/reward profile.`,
+    tradeOffSummary: cachedNarrative?.cultural_tradeoff || "The better offer depends on whether you optimize for predictable annual cash flow or for potentially higher upside through equity, bonus, and long-term vesting outcomes.",
   };
-
-  if (confidence.totalSampleSize >= 5) {
-    try {
-      const generated = await generateComparisonAnalysis(entityA, entityB, "All Roles", slug);
-      if (generated.philosophical_divergence) narrative.philosophicalDivergence = generated.philosophical_divergence;
-      if (generated.cultural_tradeoff) narrative.culturalTradeOff = generated.cultural_tradeoff;
-      if (generated.winner_profile) {
-        narrative.winnerProfileA = `${entityA}-fit: ${generated.winner_profile}`;
-        narrative.winnerProfileB = `${entityB}-fit: ${generated.winner_profile}`;
-      }
-      if (generated.cultural_tradeoff) narrative.tradeOffSummary = generated.cultural_tradeoff;
-    } catch {
-      // Use default narrative
-    }
-  }
-
-  // Fetch similar jobs for internal linking
-  let similarSuggestions: { jobTitle: string; slug: string }[] = [];
-  try {
-    const similar = await getSimilarJobs(entityA, 4);
-    similarSuggestions = similar
-      .filter((s) => s.jobTitle.toLowerCase() !== entityB.toLowerCase())
-      .slice(0, 4);
-  } catch {
-    // Non-critical
-  }
 
   const statsA = {
     medianTotalComp: profileA.medianTotalComp,

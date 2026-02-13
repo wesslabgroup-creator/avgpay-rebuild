@@ -4,6 +4,8 @@ import { ArrowRight, Scale, Building2, Briefcase } from "lucide-react";
 import { getPopularComparisons } from "@/lib/comparisonEngine";
 import { CompareSearchForm } from "@/components/compare-search-form";
 
+export const revalidate = 3600; // ISR: revalidate every hour
+
 export const metadata: Metadata = {
   title: "Compare Salaries | AvgPay",
   description:

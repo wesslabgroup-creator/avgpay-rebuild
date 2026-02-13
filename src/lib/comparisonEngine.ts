@@ -107,6 +107,15 @@ async function cacheComparisonNarrative(slug: string, payload: ComparisonAnalysi
   }
 }
 
+/**
+ * Read-only: returns cached comparison narrative or null.
+ * Never triggers LLM generation — safe for use in page renders.
+ */
+export async function getCachedComparisonAnalysis(entityA: string, entityB: string, slug?: string): Promise<ComparisonAnalysis | null> {
+  const comparisonSlug = slug ?? ensureComparisonSlug(entityA, entityB);
+  return readCachedComparison(comparisonSlug);
+}
+
 export async function generateComparisonAnalysis(entityA: string, entityB: string, role: string, slug?: string): Promise<ComparisonAnalysis> {
   const comparisonSlug = slug ?? ensureComparisonSlug(entityA, entityB);
 
