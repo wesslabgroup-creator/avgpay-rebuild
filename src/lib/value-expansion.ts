@@ -1,17 +1,27 @@
-
 import { supabaseAdmin } from './supabaseClient';
 
 export interface ValueBlock {
     title: string;
     type: 'market_position' | 'trend' | 'geographic_context' | 'top_payers' | 'related_entities';
-    data: any;
+    data: unknown;
     narrative?: string;
+}
+
+interface SalaryWithCompany {
+    totalComp: number;
+    Company: { name: string } | { name: string }[] | null;
+}
+
+interface SalaryWithRole {
+    totalComp: number;
+    Role: { title: string } | { title: string }[] | null;
 }
 
 export async function buildPageValueBlocks(
     entityType: 'Company' | 'Role' | 'Location',
     entityId: string,
-    entityName: string
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _entityName: string
 ): Promise<ValueBlock[]> {
     const blocks: ValueBlock[] = [];
 
@@ -69,9 +79,6 @@ async function buildMarketPositionBlock(entityType: string, entityId: string): P
 
 async function buildAggregationBlock(entityType: string, entityId: string): Promise<ValueBlock | null> {
     if (entityType === 'Role') {
-        // Top Paying Companies for this Role
-        // Simulation of aggregation: "select companyId, median(totalComp) ... group by companyId"
-        // PostgREST doesn't do this easily. We will fetch top salaries and client-side aggregate for now (limited fetch).
         const { data } = await supabaseAdmin.from('Salary')
             .select('totalComp, Company(name)')
             .eq('roleId', entityId)
@@ -82,8 +89,8 @@ async function buildAggregationBlock(entityType: string, entityId: string): Prom
 
         // Naive aggregation
         const map = new Map<string, number[]>();
-        data.forEach((d: any) => {
-            const name = d.Company?.name;
+        (data as SalaryWithCompany[]).forEach((d) => {
+            const name = Array.isArray(d.Company) ? d.Company[0]?.name : d.Company?.name;
             if (name) {
                 if (!map.has(name)) map.set(name, []);
                 map.get(name)?.push(d.totalComp);
@@ -105,7 +112,6 @@ async function buildAggregationBlock(entityType: string, entityId: string): Prom
 }
 
 async function buildGeographicContextBlock(locationId: string): Promise<ValueBlock | null> {
-    // Top paying jobs in this location
     const { data } = await supabaseAdmin.from('Salary')
         .select('totalComp, Role(title)')
         .eq('locationId', locationId)
@@ -115,8 +121,8 @@ async function buildGeographicContextBlock(locationId: string): Promise<ValueBlo
     if (!data || data.length === 0) return null;
 
     const map = new Map<string, number[]>();
-    data.forEach((d: any) => {
-        const title = d.Role?.title;
+    (data as SalaryWithRole[]).forEach((d) => {
+        const title = Array.isArray(d.Role) ? d.Role[0]?.title : d.Role?.title;
         if (title) {
             if (!map.has(title)) map.set(title, []);
             map.get(title)?.push(d.totalComp);
@@ -145,8 +151,8 @@ async function buildRoleBreakdownBlock(companyId: string): Promise<ValueBlock | 
     if (!data || data.length === 0) return null;
 
     const map = new Map<string, number[]>();
-    data.forEach((d: any) => {
-        const title = d.Role?.title;
+    (data as SalaryWithRole[]).forEach((d) => {
+        const title = Array.isArray(d.Role) ? d.Role[0]?.title : d.Role?.title;
         if (title) {
             if (!map.has(title)) map.set(title, []);
             map.get(title)?.push(d.totalComp);

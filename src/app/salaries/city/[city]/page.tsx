@@ -65,10 +65,8 @@ interface CityDetailsResponse {
   topCompanies: TopCompany[];
   topJobs: TopJob[];
   enrichmentStatus?: string;
-<<<<<<< HEAD
   valueBlocks: ValueBlock[];
   nearbyCities?: { text: string; url: string; type: string }[];
-=======
   indexing?: { shouldNoIndex?: boolean };
   faq?: { question: string; answer: string }[];
   compMix?: { avgBasePct: number; avgEquityPct: number; avgBonusPct: number };
@@ -79,7 +77,6 @@ interface CityDetailsResponse {
     confidenceLabel: string;
   };
   externalLinks?: { href: string; label: string; source: string; description: string }[];
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
 }
 
 const CITY_CLUSTERS: Record<string, string[]> = {
@@ -201,7 +198,7 @@ export default function CityPage() {
     );
   }
 
-  const { cityData, stats, topCompanies, topJobs, valueBlocks, nearbyCities } = data;
+  const { cityData, stats, topCompanies, topJobs, valueBlocks, nearbyCities: apiNearbyCities } = data;
   const cityLabel = `${cityData.city}, ${cityData.state}`;
 
   const jsonLd = {
@@ -253,12 +250,17 @@ export default function CityPage() {
   } : null;
 
   const normalizedCity = cityData.city.toLowerCase().trim();
-  const nearbyCityNames = CITY_CLUSTERS[normalizedCity] || [];
-  const nearbyCities = nearbyCityNames.map((city) => ({
-    href: `/salaries/city/${city.replace(/\s+/g, '-')}`,
-    label: city.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-    context: `Compare salaries: ${cityLabel} vs ${city}`,
-  }));
+  const nearbyCities = apiNearbyCities
+    ? apiNearbyCities.map(c => ({
+      href: c.url,
+      label: c.text,
+      context: 'Nearby City'
+    }))
+    : (CITY_CLUSTERS[normalizedCity] || []).map((city) => ({
+      href: `/salaries/city/${city.replace(/\s+/g, '-')}`,
+      label: city.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+      context: `Compare salaries: ${cityLabel} vs ${city}`,
+    }));
 
   return (
     <>
@@ -330,12 +332,9 @@ export default function CityPage() {
             </CardContent>
           </Card>
 
-<<<<<<< HEAD
           {/* Generated Value Blocks */}
           <ValueBlockRenderer blocks={valueBlocks || []} />
 
-          {/* Debug Banner (dev-only) */}
-=======
           <PercentileBands
             percentiles={{ p10: stats.p10, p25: stats.p25, p50: stats.median, p75: stats.p75, p90: stats.p90 }}
             entityName={cityLabel}
@@ -343,8 +342,6 @@ export default function CityPage() {
           />
 
           {data.compMix && <CompMixBreakdown compMix={data.compMix} entityName={cityLabel} />}
-
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
           <EnrichmentDebugBanner
             entityType="City"
             entityName={cityLabel}
@@ -440,7 +437,6 @@ export default function CityPage() {
             </CardContent>
           </Card>
 
-<<<<<<< HEAD
           {/* Trusted Resources */}
           <Card className="bg-slate-50 border-slate-200">
             <CardHeader>
@@ -461,8 +457,6 @@ export default function CityPage() {
             </CardContent>
           </Card>
 
-          {/* Related Markets / Internal Links */}
-=======
           <RelatedCities nearbyCities={nearbyCities} cityName={cityData.city} />
 
           {data.faq && data.faq.length > 0 && (
@@ -472,8 +466,6 @@ export default function CityPage() {
           {data.externalLinks && data.externalLinks.length > 0 && (
             <ExternalLinksSection links={data.externalLinks} />
           )}
-
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">

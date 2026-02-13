@@ -37,9 +37,7 @@ interface JobDetails {
   salaryDistribution: { total_comp: number }[];
   relatedJobs: { title: string }[];
   enrichmentStatus?: string;
-<<<<<<< HEAD
   valueBlocks: ValueBlock[];
-=======
   indexing?: { shouldNoIndex?: boolean };
   faq?: { question: string; answer: string }[];
   percentiles?: { p10: number; p25: number; p50: number; p75: number; p90: number };
@@ -47,7 +45,6 @@ interface JobDetails {
   yoeProgression?: { yoeRange: string; medianComp: number; count: number }[];
   dataConfidence?: { submissionCount: number; diversityScore: number; hasPercentileData: boolean; confidenceLabel: string };
   externalLinks?: { href: string; label: string; source: string; description: string }[];
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
 }
 
 export default function JobDetailPage() {
@@ -256,10 +253,9 @@ export default function JobDetailPage() {
             </CardContent>
           </Card>
 
-<<<<<<< HEAD
           {/* Generated Value Blocks */}
           <ValueBlockRenderer blocks={valueBlocks} />
-=======
+
           {/* Percentile Bands */}
           {data.percentiles && (
             <PercentileBands
@@ -276,7 +272,6 @@ export default function JobDetailPage() {
           {data.yoeProgression && (
             <YoeProgression yoeProgression={data.yoeProgression} entityName={jobData.title} />
           )}
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
 
           {/* Salary Distribution */}
           <Card className="bg-white border-slate-200">
@@ -423,7 +418,6 @@ export default function JobDetailPage() {
             </CardContent>
           </Card>
 
-<<<<<<< HEAD
           {/* Trusted Resources */}
           <Card className="bg-slate-50 border-slate-200">
             <CardHeader>
@@ -443,7 +437,7 @@ export default function JobDetailPage() {
               ))}
             </CardContent>
           </Card>
-=======
+
           {/* FAQ Section */}
           {data.faq && data.faq.length > 0 && (
             <FAQSection faqs={data.faq} entityName={jobData.title} />
@@ -456,7 +450,6 @@ export default function JobDetailPage() {
 
           {/* Data Disclaimer */}
           <DataDisclaimer />
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
         </div>
       </main>
     </>

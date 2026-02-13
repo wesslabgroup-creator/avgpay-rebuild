@@ -3,10 +3,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ValueBlock } from '@/lib/value-expansion';
-import { TrendingUp, MapPin, Building2, DollarSign } from 'lucide-react';
+import { TrendingUp, Building2 } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
-import Link from 'next/link';
-import { SalaryDistributionChart } from './salary-distribution-chart';
 
 function formatCurrency(n: number) {
     return `$${(n / 1000).toFixed(0)}k`;
@@ -19,7 +17,7 @@ export function ValueBlockRenderer({ blocks }: { blocks: ValueBlock[] }) {
         <div className="space-y-8 my-8">
             {blocks.map((block, index) => {
                 if (block.type === 'market_position') {
-                    const { p25, median, p75, count } = block.data;
+                    const { p25, median, p75, count } = block.data as { p25: number; median: number; p75: number; count: number };
                     return (
                         <Card key={index} className="bg-white border-emerald-500/50 shadow-sm">
                             <CardHeader>
@@ -58,6 +56,7 @@ export function ValueBlockRenderer({ blocks }: { blocks: ValueBlock[] }) {
                 }
 
                 if (block.type === 'top_payers') {
+                    const payers = block.data as { name: string; median: number }[];
                     return (
                         <Card key={index} className="bg-white border-slate-200 shadow-sm">
                             <CardHeader>
@@ -69,7 +68,7 @@ export function ValueBlockRenderer({ blocks }: { blocks: ValueBlock[] }) {
                             <CardContent>
                                 <DataTable
                                     headers={[{ label: "Name", key: "name" }, { label: "Median Comp", key: "median" }]}
-                                    rows={block.data.map((r: any) => [
+                                    rows={payers.map((r) => [
                                         <span key={r.name} className="font-medium text-slate-900">{r.name}</span>,
                                         formatCurrency(r.median)
                                     ])}

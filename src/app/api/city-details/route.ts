@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server';
 import { buildCityContextData, getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
 import { supabaseAdmin } from '@/lib/supabaseClient';
-<<<<<<< HEAD
 import { getNearbyCities } from '@/lib/internal-linking';
 import { buildPageValueBlocks } from '@/lib/value-expansion';
-=======
 import { buildEntityFaq, evaluateIndexingEligibility, shouldTriggerEnrichment } from '@/lib/seo';
 import { generateIntentDrivenFaqs } from '@/lib/intentClassifier';
 import { getCityExternalLinks } from '@/lib/externalLinks';
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
 
 type SalaryWithCompanyAndRole = {
   totalComp: number;
@@ -240,10 +237,8 @@ async function buildCityResponse(locationData: {
     topCompanies,
     topJobs,
     enrichmentStatus,
-<<<<<<< HEAD
     nearbyCities: await getNearbyCities(locationData.city, locationData.state, locationData.id),
     valueBlocks: await buildPageValueBlocks('Location', locationData.id, `${locationData.city}, ${locationData.state}`),
-=======
     indexing,
     faq: combinedFaqs,
     compMix: {
@@ -258,6 +253,5 @@ async function buildCityResponse(locationData: {
       confidenceLabel: count >= 50 ? 'high' : count >= 20 ? 'moderate' : count >= 5 ? 'limited' : 'insufficient',
     },
     externalLinks,
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
   });
 }

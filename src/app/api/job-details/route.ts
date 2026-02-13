@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
-<<<<<<< HEAD
 import { buildPageValueBlocks } from '@/lib/value-expansion';
-=======
 import { buildEntityFaq, evaluateIndexingEligibility, shouldTriggerEnrichment } from '@/lib/seo';
 import { generateIntentDrivenFaqs } from '@/lib/intentClassifier';
 import { getJobExternalLinks } from '@/lib/externalLinks';
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
 
 type CompanySalaryRow = { totalComp: number; Company: { name: string } | { name: string }[] | null };
 type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string } | { city: string; state: string }[] | null };
@@ -254,9 +251,7 @@ export async function GET(request: Request) {
       salaryDistribution: salaries.map((s: number) => ({ total_comp: s })),
       relatedJobs,
       enrichmentStatus,
-<<<<<<< HEAD
       valueBlocks: await buildPageValueBlocks('Role', jobData.id, jobTitle),
-=======
       indexing,
       faq: combinedFaqs,
       // New DB-derived value modules
@@ -274,7 +269,6 @@ export async function GET(request: Request) {
         confidenceLabel: count >= 50 ? 'high' : count >= 20 ? 'moderate' : count >= 5 ? 'limited' : 'insufficient',
       },
       externalLinks,
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
     });
 
   } catch (error: unknown) {

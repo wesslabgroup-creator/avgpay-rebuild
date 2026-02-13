@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
-<<<<<<< HEAD
 import { buildPageValueBlocks } from '@/lib/value-expansion';
-=======
 import { buildEntityFaq, evaluateIndexingEligibility, shouldTriggerEnrichment } from '@/lib/seo';
 import { generateIntentDrivenFaqs } from '@/lib/intentClassifier';
 import { getCompanyExternalLinks } from '@/lib/externalLinks';
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
 
 type SalarySummaryRow = {
   totalComp: number;
@@ -151,9 +148,7 @@ export async function GET(request: Request) {
       topJobs,
       topCities,
       enrichmentStatus,
-<<<<<<< HEAD
       valueBlocks: await buildPageValueBlocks('Company', companyData.id, companyData.name),
-=======
       indexing,
       faq: combinedFaqs,
       percentiles: { p25, p50: medianComp, p75 },
@@ -169,7 +164,6 @@ export async function GET(request: Request) {
         confidenceLabel: submissionCount >= 50 ? 'high' : submissionCount >= 20 ? 'moderate' : submissionCount >= 5 ? 'limited' : 'insufficient',
       },
       externalLinks,
->>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
     });
   } catch (error: unknown) {
     console.error('API Error:', error);

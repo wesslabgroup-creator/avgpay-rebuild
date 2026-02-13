@@ -25,7 +25,8 @@ export async function getNearbyCities(city: string, state: string, currentId: st
     }));
 }
 
-export async function getSimilarJobs(jobTitle: string, currentId: string): Promise<InternalLink[]> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function getSimilarJobs(_jobTitle: string, _currentId: string): Promise<InternalLink[]> {
     // This logic is partially in the API already, but we can centralize strict "Related" logic here
     // For now, let's just return a placeholder or reuse specific query logic if we want to replace API logic
     // But since API has it, we might not need this unless we want "Other Jobs in this Department"

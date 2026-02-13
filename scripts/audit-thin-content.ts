@@ -100,7 +100,7 @@ async function auditEntities(type: 'Company' | 'Role' | 'Location', table: strin
     // But Supabase JS doesn't do group by easily.
     // We will just do a loop for this MVP script.
 
-    for (const e of entities) {
+    for (const e of (entities as any[])) {
         const name = type === 'Role' ? e.title : (type === 'Company' ? e.name : `${e.city}`);
 
         const { count } = await supabase.from('Salary').select('*', { count: 'exact', head: true }).eq(salaryFk, e.id);
