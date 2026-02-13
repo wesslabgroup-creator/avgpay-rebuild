@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { buildCityContextData, getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+import { getNearbyCities } from '@/lib/internal-linking';
+import { buildPageValueBlocks } from '@/lib/value-expansion';
 
 type SalaryWithCompanyAndRole = {
   totalComp: number;
@@ -184,5 +186,7 @@ async function buildCityResponse(locationData: {
     topCompanies,
     topJobs,
     enrichmentStatus,
+    nearbyCities: await getNearbyCities(locationData.city, locationData.state, locationData.id),
+    valueBlocks: await buildPageValueBlocks('Location', locationData.id, `${locationData.city}, ${locationData.state}`),
   });
 }

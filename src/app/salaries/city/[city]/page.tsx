@@ -18,6 +18,9 @@ import {
   DollarSign,
   Users,
 } from 'lucide-react';
+import { ValueBlockRenderer } from '@/components/value-block-renderer';
+import { ValueBlock } from '@/lib/value-expansion';
+import { getAuthoritativeLinks } from '@/lib/authority-links';
 
 interface CityStats {
   count: number;
@@ -57,6 +60,8 @@ interface CityDetailsResponse {
   topCompanies: TopCompany[];
   topJobs: TopJob[];
   enrichmentStatus?: string;
+  valueBlocks: ValueBlock[];
+  nearbyCities?: { text: string; url: string; type: string }[];
 }
 
 export default function CityPage() {
@@ -166,7 +171,7 @@ export default function CityPage() {
     );
   }
 
-  const { cityData, stats, topCompanies, topJobs } = data;
+  const { cityData, stats, topCompanies, topJobs, valueBlocks, nearbyCities } = data;
   const cityLabel = `${cityData.city}, ${cityData.state}`;
 
   // Schema.org structured data for SEO
@@ -250,6 +255,9 @@ export default function CityPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Generated Value Blocks */}
+          <ValueBlockRenderer blocks={valueBlocks || []} />
 
           {/* Debug Banner (dev-only) */}
           <EnrichmentDebugBanner
@@ -347,6 +355,26 @@ export default function CityPage() {
                   No job data available for {cityData.city} yet.
                 </p>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Trusted Resources */}
+          <Card className="bg-slate-50 border-slate-200">
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-900">Trusted Resources</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {getAuthoritativeLinks('Location', cityData.city).map((link, i) => (
+                <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-md border border-slate-200">
+                  <div>
+                    <p className="font-medium text-slate-900">{link.text}</p>
+                    <p className="text-xs text-slate-500">Source: {link.source}</p>
+                  </div>
+                  <a href={link.url} target="_blank" rel={link.rel} className="text-sm font-medium text-emerald-600 hover:text-emerald-700 mt-2 sm:mt-0">
+                    Visit Source &rarr;
+                  </a>
+                </div>
+              ))}
             </CardContent>
           </Card>
 

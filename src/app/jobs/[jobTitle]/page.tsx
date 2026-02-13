@@ -12,6 +12,10 @@ import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { SalaryDistributionChart } from '@/components/salary-distribution-chart'; // Placeholder for chart
 import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
 
+import { ValueBlockRenderer } from '@/components/value-block-renderer';
+import { ValueBlock } from '@/lib/value-expansion';
+import { getAuthoritativeLinks } from '@/lib/authority-links';
+
 interface JobDetails {
   jobData: {
     id: string;
@@ -31,6 +35,7 @@ interface JobDetails {
   salaryDistribution: { total_comp: number }[];
   relatedJobs: { title: string }[];
   enrichmentStatus?: string;
+  valueBlocks: ValueBlock[];
 }
 
 export default function JobDetailPage() {
@@ -108,7 +113,7 @@ export default function JobDetailPage() {
   if (isLoading) return <div className="flex justify-center items-center min-h-screen">Loading job details...</div>;
   if (error || !data) return <div className="flex justify-center items-center min-h-screen text-red-500">{error || "No data available."}</div>;
 
-  const { jobData, topCompanies, topLocations, bottomLocations, salaryDistribution, relatedJobs } = data;
+  const { jobData, topCompanies, topLocations, bottomLocations, salaryDistribution, relatedJobs, valueBlocks } = data;
 
   const spread = (jobData.global_max_comp || 0) - (jobData.global_min_comp || 0);
   const topCompany = topCompanies[0];
@@ -190,6 +195,9 @@ export default function JobDetailPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Generated Value Blocks */}
+          <ValueBlockRenderer blocks={valueBlocks} />
 
           {/* Salary Distribution */}
           <Card className="bg-white border-slate-200">
@@ -335,6 +343,26 @@ export default function JobDetailPage() {
                   </Link>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Trusted Resources */}
+          <Card className="bg-slate-50 border-slate-200">
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-900">Trusted Resources</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {getAuthoritativeLinks('Role', jobData.title).map((link, i) => (
+                <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-md border border-slate-200">
+                  <div>
+                    <p className="font-medium text-slate-900">{link.text}</p>
+                    <p className="text-xs text-slate-500">Source: {link.source}</p>
+                  </div>
+                  <a href={link.url} target="_blank" rel={link.rel} className="text-sm font-medium text-emerald-600 hover:text-emerald-700 mt-2 sm:mt-0">
+                    Visit Source &rarr;
+                  </a>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </div>

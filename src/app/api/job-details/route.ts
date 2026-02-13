@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
+import { buildPageValueBlocks } from '@/lib/value-expansion';
 
 type CompanySalaryRow = { totalComp: number; Company: { name: string } | { name: string }[] | null };
 type LocationSalaryRow = { totalComp: number; Location: { city: string; state: string } | { city: string; state: string }[] | null };
@@ -181,6 +182,7 @@ export async function GET(request: Request) {
       salaryDistribution: salaries.map((s: number) => ({ total_comp: s })),
       relatedJobs,
       enrichmentStatus,
+      valueBlocks: await buildPageValueBlocks('Role', jobData.id, jobTitle),
     });
 
   } catch (error: unknown) {

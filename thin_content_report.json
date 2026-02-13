@@ -1,0 +1,505 @@
+{
+  "summary": {
+    "totalEntities": 38,
+    "highRiskCount": 28,
+    "companies": {
+      "total": 15,
+      "highRisk": 10
+    },
+    "roles": {
+      "total": 12,
+      "highRisk": 10
+    },
+    "locations": {
+      "total": 11,
+      "highRisk": 8
+    },
+    "timestamp": "2026-02-13T02:01:42.079Z"
+  },
+  "details": [
+    {
+      "entityType": "Company",
+      "id": "02c7042b-f8f5-438b-8a7d-e513e12df00b",
+      "name": "Google",
+      "slug": "google",
+      "salaryCount": 20,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "bfcd3b51-1ad9-45b7-ad77-63eec643cbe8",
+      "name": "Meta",
+      "slug": "meta",
+      "salaryCount": 20,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "f3a37c8b-4c2b-4c1a-9067-601db026a92d",
+      "name": "Amazon",
+      "slug": "amazon",
+      "salaryCount": 20,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "9e244076-36a8-4e56-9888-ef7d21541222",
+      "name": "Microsoft",
+      "slug": "microsoft",
+      "salaryCount": 20,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "bf9a9aae-1728-4b68-be4a-5b68f48dd882",
+      "name": "Snowflake",
+      "slug": "snowflake",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "e87fe17e-27f3-4f98-a500-65186ce7be79",
+      "name": "ServiceNow",
+      "slug": "servicenow",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "fc4d391d-aa60-49d9-b0fb-9b25704d5fd5",
+      "name": "Chick-fil-A",
+      "slug": "chick-fil-a",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "40e9cdfc-d9eb-4cb5-88b3-f1d83d4366ec",
+      "name": "Delta Air Lines",
+      "slug": "delta-air-lines",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "d8da98e5-8af6-4c9c-893d-9539ff079a3a",
+      "name": "Zendesk",
+      "slug": "zendesk",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "87edeab0-e086-45ea-91cd-fab28f0d838c",
+      "name": "Turner Construction",
+      "slug": "turner-construction",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "f8501208-3512-4773-bddf-e822954120c6",
+      "name": "UnitedHealth Group",
+      "slug": "unitedhealth-group",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "72a77cca-1aec-497b-bfc9-78d8943f1885",
+      "name": "Cox Communications",
+      "slug": "cox-communications",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "39bac72c-35c2-4c66-9872-704fdd7bde3e",
+      "name": "Medtronic",
+      "slug": "medtronic",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "c9cfe516-a177-4a81-b67c-8c8f99c429ab",
+      "name": "CBRE",
+      "slug": "cbre",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Company",
+      "id": "911526e3-dc49-4030-97bf-731a258abdb7",
+      "name": "Apple",
+      "slug": "apple",
+      "salaryCount": 20,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "384b2621-c7d3-4f33-9566-59fcb5e2fdfb",
+      "name": "Territory Sales Rep",
+      "slug": "territory-sales-rep",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "6364cb6a-49d5-4921-807e-f807ae445cc9",
+      "name": "Construction Project Manager",
+      "slug": "construction-project-manager",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "f9012465-68e6-4ec7-b6c8-9489b34d6f80",
+      "name": "Data Engineer",
+      "slug": "data-engineer",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "91603b68-976e-4c85-b520-039f2f2a32bc",
+      "name": "Senior Business Analyst",
+      "slug": "senior-business-analyst",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "d1555170-3bb9-4b54-9fca-e350c6e53fde",
+      "name": "Software Engineer",
+      "slug": "software-engineer",
+      "salaryCount": 60,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "d581f457-32d8-4569-b0a9-8f460617e878",
+      "name": "Product Manager",
+      "slug": "product-manager",
+      "salaryCount": 40,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "3aad5449-52f7-444b-8482-22e24756bb45",
+      "name": "Senior Software Engineer",
+      "slug": "senior-software-engineer",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "b75dd687-cbf7-4e77-b3d9-52871fee053d",
+      "name": "IT Project Manager",
+      "slug": "it-project-manager",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "eab78933-46bb-4840-940d-297feba53bb6",
+      "name": "Senior Data Analyst",
+      "slug": "senior-data-analyst",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "fe54be1c-9fb7-4588-921e-b72aed0d2dcc",
+      "name": "Customer Success Manager",
+      "slug": "customer-success-manager",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "fd89576c-9c2e-4c86-b18d-e04099185a27",
+      "name": "Real Estate Analyst",
+      "slug": "real-estate-analyst",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Role",
+      "id": "da1eb834-685f-4702-b1c7-a63736bf2e05",
+      "name": "Senior Product Manager",
+      "slug": "senior-product-manager",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "5253066c-6c07-4010-98ad-b694917bee6e",
+      "name": "San Francisco",
+      "slug": "san-francisco",
+      "salaryCount": 40,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "096ce76e-676f-48ec-99b5-24e70f9734e5",
+      "name": "New York",
+      "slug": "new-york",
+      "salaryCount": 40,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "a8e44ff6-f3f1-4cd8-83f0-9a94e000dc21",
+      "name": "Seattle",
+      "slug": "seattle",
+      "salaryCount": 20,
+      "hasAnalysis": false,
+      "riskScore": 30,
+      "issues": [
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "358a18c7-bbed-44eb-9517-3864738020fa",
+      "name": "San Mateo",
+      "slug": "san-mateo-ca",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "9dcea282-6b8b-4316-a509-aceb10dbbcbc",
+      "name": "Santa Clara",
+      "slug": "santa-clara-ca",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "ab37f3e9-b641-4448-b254-1d0b3c526090",
+      "name": "Nashville",
+      "slug": "nashville-tn",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "a26c614a-1cb1-451c-8b39-0716efe3f92d",
+      "name": "Remote",
+      "slug": "remote-remote",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "87caea8f-6291-47c1-ba6e-14d0904b5669",
+      "name": "Charlotte",
+      "slug": "charlotte-nc",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "52dcd61c-e34d-4a33-9221-912ae1bb6618",
+      "name": "Minneapolis",
+      "slug": "minneapolis-mn",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "0ec28f56-516c-4f2f-acdb-952f57d7d249",
+      "name": "Dallas",
+      "slug": "dallas-tx",
+      "salaryCount": 1,
+      "hasAnalysis": false,
+      "riskScore": 80,
+      "issues": [
+        "Very low salary data (< 3)",
+        "Missing AI analysis"
+      ]
+    },
+    {
+      "entityType": "Location",
+      "id": "9ad45eea-ee34-49a4-bc53-fbb12ef26117",
+      "name": "Atlanta",
+      "slug": "atlanta-ga",
+      "salaryCount": 3,
+      "hasAnalysis": false,
+      "riskScore": 50,
+      "issues": [
+        "Low salary data (< 10)",
+        "Missing AI analysis"
+      ]
+    }
+  ]
+}

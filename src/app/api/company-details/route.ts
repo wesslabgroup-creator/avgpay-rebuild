@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
+import { buildPageValueBlocks } from '@/lib/value-expansion';
 
 type SalarySummaryRow = {
   totalComp: number;
@@ -87,6 +88,7 @@ export async function GET(request: Request) {
       },
       salarySummary: aggregatedSummary,
       enrichmentStatus,
+      valueBlocks: await buildPageValueBlocks('Company', companyData.id, companyData.name),
     });
 
   } catch (error: unknown) {

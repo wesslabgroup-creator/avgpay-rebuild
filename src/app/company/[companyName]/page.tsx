@@ -9,6 +9,9 @@ import { ArrowLeft, ArrowRight, ExternalLink, Sparkles } from 'lucide-react';
 import { DataTable } from "@/components/data-table";
 import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
+import { ValueBlockRenderer } from '@/components/value-block-renderer';
+import { ValueBlock } from '@/lib/value-expansion';
+import { getAuthoritativeLinks } from '@/lib/authority-links';
 
 interface SalarySummary {
   role: string;
@@ -36,6 +39,7 @@ interface CompanyInfo {
   logoUrl?: string;
   analysis?: Record<string, string> | null;
   salarySummary?: SalarySummary[];
+  valueBlocks: ValueBlock[];
 }
 
 const CompanyDetailPage = () => {
@@ -72,6 +76,7 @@ const CompanyDetailPage = () => {
           logoUrl: fetchedData.logoUrl,
           analysis: fetchedData.analysis || null,
           salarySummary,
+          valueBlocks: fetchedData.valueBlocks || [],
         });
         setEnrichmentStatus(initialEnrichmentStatus || 'none');
 
@@ -235,6 +240,8 @@ const CompanyDetailPage = () => {
             </CardContent>
           </Card>
 
+          {/* Generated Value Blocks */}
+          <ValueBlockRenderer blocks={companyData.valueBlocks} />
 
           <EnrichmentDebugBanner
             entityType="Company"
@@ -302,6 +309,26 @@ const CompanyDetailPage = () => {
           {companyData.analysis && (
             <InsightCards analysis={companyData.analysis} entityName={companyData.name} />
           )}
+
+          {/* Trusted Resources */}
+          <Card className="bg-slate-50 border-slate-200">
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-900">Trusted Resources</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {getAuthoritativeLinks('Company', companyData.name).map((link, i) => (
+                <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-md border border-slate-200">
+                  <div>
+                    <p className="font-medium text-slate-900">{link.text}</p>
+                    <p className="text-xs text-slate-500">Source: {link.source}</p>
+                  </div>
+                  <a href={link.url} target="_blank" rel={link.rel} className="text-sm font-medium text-emerald-600 hover:text-emerald-700 mt-2 sm:mt-0">
+                    Visit Source &rarr;
+                  </a>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
 
           {/* Related Links / Action Section */}
           {similarCompanies.length > 0 && (
