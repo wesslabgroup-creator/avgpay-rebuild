@@ -428,39 +428,43 @@ const CompanyDetailPage = () => {
 
 
             {/* Related Links / Action Section */}
-            {similarCompanies.length > 0 && (
-              <Card className="bg-white border-slate-200 shadow-sm">
-                <CardHeader>
-                  <CardTitle className="text-slate-900">Compare {companyData.name} vs peers</CardTitle>
-                  <CardDescription className="text-slate-500">
-                    Dynamically discovered peers with the most similar salary bands in our dataset.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {similarCompanies.map((comparison) => (
-                      <Link
-                        key={comparison.slug}
-                        href={comparison.href}
-                        className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-semibold text-slate-900">{companyData.name} vs {comparison.company}</p>
-                            <p className="text-sm text-slate-500 mt-1">Median comp: {formatCurrency(comparison.medianComp)} · Samples: {comparison.sampleSize}</p>
-                          </div>
-                          {comparison.reason && (
-                            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
-                              {comparison.reason}
-                            </span>
-                          )}
+            <Card className="bg-white border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-slate-900">Compare {companyData.name} vs peers</CardTitle>
+                <CardDescription className="text-slate-500">
+                  {similarCompanies.length > 0
+                    ? "Dynamically discovered peers with the most similar salary bands in our dataset."
+                    : "No direct salary peers found yet. Compare with other popular companies below."}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {similarCompanies.length > 0 ? similarCompanies.map((comparison) => (
+                    <Link
+                      key={comparison.slug}
+                      href={comparison.href}
+                      className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold text-slate-900">{companyData.name} vs {comparison.company}</p>
+                          <p className="text-sm text-slate-500 mt-1">Median comp: {formatCurrency(comparison.medianComp)} · Samples: {comparison.sampleSize}</p>
                         </div>
-                      </Link>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                        {comparison.reason && (
+                          <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                            {comparison.reason}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  )) : (
+                    <div className="col-span-2 text-center py-6 text-slate-500 italic">
+                      Checking for peers... if none appear, try adding more salary data.
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
             <Card className="bg-white border-slate-200 shadow-sm">
               <CardHeader>

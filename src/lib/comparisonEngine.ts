@@ -237,12 +237,24 @@ export async function getTopSimilarCompaniesBySalaryBands(companyName: string, l
         p75Comp: percentile(totals, 75),
       };
     })
-    .filter((item) => item.sampleSize >= 5);
+    .filter((item) => item.sampleSize >= 1); // Loosened from 5 to 1 for visibility
 
   const source = aggregates.find((item) => item.companyName.toLowerCase() === companyName.toLowerCase());
-  if (!source) return [];
 
-  return aggregates
+  // Fallback: If source company has no data, or no peers found, just return top companies by sample size
+  if (!source) {
+    return aggregates
+      .sort((a, b) => b.sampleSize - a.sampleSize)
+      .slice(0, limit)
+      .map((item) => ({
+        company: item.companyName,
+        similarityScore: 50, // Default mid-score
+        medianComp: item.medianComp,
+        sampleSize: item.sampleSize,
+      }));
+  }
+
+  const peers = aggregates
     .filter((item) => item.companyId !== source.companyId)
     .map((item) => ({
       company: item.companyName,
@@ -250,8 +262,22 @@ export async function getTopSimilarCompaniesBySalaryBands(companyName: string, l
       medianComp: item.medianComp,
       sampleSize: item.sampleSize,
     }))
-    .sort((a, b) => b.similarityScore - a.similarityScore)
-    .slice(0, limit);
+    .sort((a, b) => b.similarityScore - a.similarityScore);
+
+  // If we found strict peers, return them.
+  if (peers.length > 0) return peers.slice(0, limit);
+
+  // If strict filtering yielded nothing, just return top other companies (fallback)
+  return aggregates
+    .filter((item) => item.companyId !== source.companyId)
+    .sort((a, b) => b.sampleSize - a.sampleSize)
+    .slice(0, limit)
+    .map((item) => ({
+      company: item.companyName,
+      similarityScore: 0,
+      medianComp: item.medianComp,
+      sampleSize: item.sampleSize,
+    }));
 }
 
 export async function getCompanyPeers(companyName: string, limit = 4): Promise<(CompanySimilarityMatch & { reason: string })[]> {
