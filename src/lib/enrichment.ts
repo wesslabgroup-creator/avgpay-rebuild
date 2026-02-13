@@ -1,5 +1,5 @@
 import 'server-only';
-import { genAI } from '@/lib/geminiClient';
+import { generateWithFallback } from '@/lib/llmClient';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import {
   buildComparisonMetricsContextBlock,
@@ -10,6 +10,7 @@ import {
 } from '@/lib/marketStats';
 import { buildEntityKey } from '@/lib/normalization';
 import { log } from '@/lib/enrichmentLogger';
+import { buildMetadataUpsertPayload, splitAnalysisAndMetadata } from '@/lib/enrichmentMetadata';
 
 // ============================================================
 // Types
@@ -72,6 +73,17 @@ Analyze the provided Entity ({{entityName}}) and return a JSON object with uniqu
     * *Good (Specific):* "Austin's 'Silicon Hills' status creates a salary floor that competes with the West Coast, specifically in semiconductor and SaaS sectors."
 3.  **DEPTH REQUIREMENT:** Each JSON value must be 2-3 sentences long and contain at least one "Why" statement (Cause & Effect). Surface-level content will be rejected as "thin."
 4.  **TIMELESSNESS:** Do not use dates (2024, 2025) or words like "currently/now." Use "Historically," "Typically," or "Market fundamentals."
+5.  **NO HYPE / NO FABRICATION:** Never invent compensation numbers, never claim verification, and never market the entity.
+6.  **DATA-CONTEXT ONLY:** Use only the provided context. If context is sparse, state constraints conservatively.
+
+**MANDATORY META FIELDS:**
+- Include "entity_summary" (2-3 sentence plain-language summary)
+- Include "faq_blocks" (array of 5-10 {"question":"...","answer":"..."})
+- Include "internal_linking_recommendations" (array of 5-10 concise anchor ideas)
+- Include "confidence_score" (number from 0 to 1)
+- Include "sources" (array of non-promotional external source URLs relevant to compensation methodology)
+- Include "disclaimer" (must mention self-reported/public salary data limitations)
+- Include "last_updated" (ISO timestamp string)
 
 **OUTPUT JSON STRUCTURE:**
 
@@ -132,8 +144,17 @@ const REQUIRED_KEYS: Record<EntityType, string[]> = {
 
 const COMPARATIVE_LANGUAGE_PATTERN = /\b(whereas|alternatively|in contrast|on the other hand|however)\b/i;
 
+
+const NON_LONGFORM_KEYS = new Set([
+  'confidence_score',
+  'sources',
+  'last_updated',
+  'faq_blocks',
+  'internal_linking_recommendations',
+]);
+
 export function validateAnalysis(
-  jsonResponse: Record<string, string>,
+  jsonResponse: Record<string, unknown>,
   entityType?: EntityType
 ): { valid: boolean; reason?: string } {
   const entries = Object.entries(jsonResponse);
@@ -150,10 +171,19 @@ export function validateAnalysis(
     }
   }
 
-  // Fail if any section is too short (Thin Content Risk)
-  const thinValues = entries.filter(([, text]) => typeof text === 'string' && text.length < 50);
+  // Fail if narrative sections are too short (Thin Content Risk).
+  // We intentionally exclude non-longform metadata fields such as timestamps, arrays, and scalar metrics.
+  const thinValues = entries.filter(([key, value]) => (
+    typeof value === 'string'
+    && !NON_LONGFORM_KEYS.has(key)
+    && value.trim().length < 50
+  ));
+
   if (thinValues.length > 0) {
-    return { valid: false, reason: `${thinValues.length} section(s) are too short (under 50 chars). Thin content risk.` };
+    return {
+      valid: false,
+      reason: `${thinValues.length} narrative section(s) are too short (under 50 chars). Thin content risk.`,
+    };
   }
 
   // Fail if it uses banned words (temporal references)
@@ -205,14 +235,6 @@ export async function generateTimelessAnalysis(
   entityName: string,
   contextData?: Record<string, unknown>
 ): Promise<{ analysis: AnalysisResult; statsSnapshot?: PromptContextSnapshot }> {
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    generationConfig: {
-      temperature: 0.3,
-      responseMimeType: 'application/json',
-    },
-  });
-
   // Build the prompt with entity-specific context
   const systemPrompt = MASTER_SYSTEM_PROMPT
     .replace('{{entityName}}', entityName);
@@ -288,11 +310,40 @@ export async function generateTimelessAnalysis(
   }
 
   userPrompt += `\nGenerate the timeless financial analysis JSON for this ${entityType}. Return ONLY valid JSON matching the schema for ENTITY_TYPE "${entityType}".`;
+  const llmPrompt = systemPrompt + '\n\n---\n\n' + userPrompt;
 
-  const result = await model.generateContent(systemPrompt + '\n\n---\n\n' + userPrompt);
+  const result = await generateWithFallback(llmPrompt, (content) => {
+    try {
+      const parsed = JSON.parse(content) as Record<string, unknown>;
+      const validation = validateAnalysis(parsed, entityType);
 
-  const responseText = result.response.text();
-  const analysis = JSON.parse(responseText) as AnalysisResult;
+      if (!validation.valid) {
+        return {
+          valid: false,
+          reasonType: 'low_quality',
+          reason: validation.reason,
+        };
+      }
+
+      return { valid: true };
+    } catch {
+      return {
+        valid: false,
+        reasonType: 'malformed_json',
+        reason: 'Malformed JSON response from model',
+      };
+    }
+  });
+
+  const analysis = JSON.parse(result.content) as AnalysisResult;
+
+  log('info', 'llm_generation_success', `Generated analysis with ${result.provider}:${result.model}`, {
+    provider: result.provider,
+    model: result.model,
+    previousFailures: result.attempts,
+    entityType,
+    entityName,
+  });
 
   return { analysis, statsSnapshot };
 }
@@ -329,6 +380,26 @@ function computeBackoffMs(attempts: number): number {
 }
 
 /** Map EntityType → DB table name */
+
+function buildQueueContextData(
+  entityType: EntityType,
+  entityName: string,
+  contextData?: Record<string, unknown>
+): Record<string, unknown> {
+  const baseContext: Record<string, unknown> = {
+    metricsScope: {
+      entityType: entityType === 'Company' || entityType === 'City' || entityType === 'Job' ? entityType : undefined,
+      entityName,
+    },
+    queuedAt: new Date().toISOString(),
+  };
+
+  return {
+    ...baseContext,
+    ...(contextData ?? {}),
+  };
+}
+
 function entityTableName(entityType: string): string | null {
   switch (entityType) {
     case 'City': return 'Location';
@@ -420,6 +491,7 @@ export async function queueEnrichment(
   contextData?: Record<string, unknown>
 ): Promise<string | null> {
   const entityKey = buildEntityKey(entityType, entityName);
+  const normalizedContextData = buildQueueContextData(entityType, entityName, contextData);
 
   log('info', 'queue_attempt', `Attempting to queue enrichment`, {
     entityType, entityId, entityName, entityKey,
@@ -459,7 +531,7 @@ export async function queueEnrichment(
         .update({
           status: 'pending',
           lastError: null,
-          contextData: contextData || null,
+          contextData: normalizedContextData,
           runAfter: new Date().toISOString(),
           lockedAt: null,
           lockedBy: null,
@@ -499,7 +571,7 @@ export async function queueEnrichment(
       entityId,
       entityName,
       entityKey,
-      contextData: contextData || null,
+      contextData: normalizedContextData,
       status: 'pending',
       attempts: 0,
       runAfter: new Date().toISOString(),
@@ -616,12 +688,12 @@ export async function processNextEnrichmentJob(): Promise<{
       job.contextData as Record<string, unknown> | undefined
     );
 
-    log('info', 'gemini_response', `Received Gemini response for ${job.entityType} "${job.entityName}"`, {
+    log('info', 'llm_response', `Received LLM response for ${job.entityType} "${job.entityName}"`, {
       jobId: job.id, keys: Object.keys(analysis),
     });
 
     // Validate the analysis
-    const validation = validateAnalysis(analysis as Record<string, string>, job.entityType as EntityType);
+    const validation = validateAnalysis(analysis as Record<string, unknown>, job.entityType as EntityType);
 
     if (!validation.valid) {
       log('warn', 'validation_failed', `Analysis validation failed for ${job.entityType} "${job.entityName}": ${validation.reason}`, {
@@ -686,13 +758,16 @@ export async function processNextEnrichmentJob(): Promise<{
       };
     }
 
+    const metadata = splitAnalysisAndMetadata(analysis);
+
     // Validation passed — save to queue result
     await supabaseAdmin
       .from('EnrichmentQueue')
       .update({
         status: 'completed',
         result: {
-          analysis,
+          analysis: metadata.analysisCore,
+          metadata,
           statsSnapshot: statsSnapshot || null,
         },
         processedAt: now.toISOString(),
@@ -705,10 +780,10 @@ export async function processNextEnrichmentJob(): Promise<{
     if (entityTable) {
       const analysisPayload = statsSnapshot
         ? {
-          ...(analysis as Record<string, unknown>),
+          ...metadata.analysisCore,
           source_context_snapshot: statsSnapshot,
         }
-        : analysis;
+        : metadata.analysisCore;
 
       await supabaseAdmin
         .from(entityTable)
@@ -720,6 +795,19 @@ export async function processNextEnrichmentJob(): Promise<{
           enrichmentError: null,
         })
         .eq('id', job.entityId);
+
+      try {
+        await supabaseAdmin
+          .from('EntityEnrichmentMetadata')
+          .upsert(buildMetadataUpsertPayload(job.entityType as EntityType, job.entityId, metadata), { onConflict: 'entityType,entityId' });
+      } catch (metaError) {
+        log('warn', 'metadata_persist_failed', 'Failed to persist structured enrichment metadata', {
+          jobId: job.id,
+          entityType: job.entityType,
+          entityId: job.entityId,
+          error: metaError instanceof Error ? metaError.message : 'unknown',
+        });
+      }
     }
 
     log('info', 'worker_complete', `Enrichment completed for ${job.entityType} "${job.entityName}"`, {

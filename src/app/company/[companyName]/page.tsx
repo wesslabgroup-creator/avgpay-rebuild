@@ -3,15 +3,22 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Head from 'next/head';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, ExternalLink, Sparkles } from 'lucide-react';
 import { DataTable } from "@/components/data-table";
 import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
+<<<<<<< HEAD
 import { ValueBlockRenderer } from '@/components/value-block-renderer';
 import { ValueBlock } from '@/lib/value-expansion';
 import { getAuthoritativeLinks } from '@/lib/authority-links';
+=======
+import { buildCanonicalUrl } from '@/lib/canonical';
+import { PercentileBands, CompMixBreakdown, DataConfidence, FAQSection, ExternalLinksSection, DataDisclaimer } from '@/components/entity-value-modules';
+import { Breadcrumbs } from '@/components/breadcrumbs';
+>>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
 
 interface SalarySummary {
   role: string;
@@ -39,7 +46,18 @@ interface CompanyInfo {
   logoUrl?: string;
   analysis?: Record<string, string> | null;
   salarySummary?: SalarySummary[];
+<<<<<<< HEAD
   valueBlocks: ValueBlock[];
+=======
+  topJobs?: { role: string; medianComp: number; dataPoints: number }[];
+  topCities?: { city: string; medianComp: number; dataPoints: number }[];
+  indexing?: { shouldNoIndex?: boolean };
+  faq?: { question: string; answer: string }[];
+  percentiles?: { p25: number; p50: number; p75: number };
+  compMix?: { avgBasePct: number; avgEquityPct: number; avgBonusPct: number };
+  dataConfidence?: { submissionCount: number; roleCount?: number; cityCount?: number; confidenceLabel: string };
+  externalLinks?: { href: string; label: string; source: string; description: string }[];
+>>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
 }
 
 const CompanyDetailPage = () => {
@@ -66,7 +84,8 @@ const CompanyDetailPage = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const { companyData: fetchedData, salarySummary, enrichmentStatus: initialEnrichmentStatus } = await response.json();
+        const payload = await response.json();
+        const { companyData: fetchedData, salarySummary, topJobs, topCities, enrichmentStatus: initialEnrichmentStatus, indexing, faq } = payload;
 
         setCompanyData({
           id: fetchedData.id,
@@ -76,7 +95,18 @@ const CompanyDetailPage = () => {
           logoUrl: fetchedData.logoUrl,
           analysis: fetchedData.analysis || null,
           salarySummary,
+<<<<<<< HEAD
           valueBlocks: fetchedData.valueBlocks || [],
+=======
+          topJobs,
+          topCities,
+          indexing,
+          faq,
+          percentiles: payload.percentiles,
+          compMix: payload.compMix,
+          dataConfidence: payload.dataConfidence,
+          externalLinks: payload.externalLinks,
+>>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
         });
         setEnrichmentStatus(initialEnrichmentStatus || 'none');
 
@@ -189,7 +219,67 @@ const CompanyDetailPage = () => {
     s.dataPoints.toLocaleString()
   ]) || [];
 
+  const webpageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `${companyData.name} salary intelligence`,
+    description: `Compensation intelligence for ${companyData.name} built from self-reported and public salary records.`,
+    url: `https://avgpay.com/company/${encodeURIComponent(companyData.name)}`
+  };
+
+  const datasetSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: `${companyData.name} compensation dataset`,
+    creator: { '@type': 'Organization', name: 'AvgPay' },
+    variableMeasured: ['base salary', 'bonus', 'equity', 'total compensation'],
+  };
+
+  const breadcrumbListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://avgpay.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Companies',
+        item: 'https://avgpay.com/companies',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: companyData.name,
+        item: `https://avgpay.com/company/${encodeURIComponent(companyData.name)}`,
+      },
+    ],
+  };
+
+  const canonicalUrl = buildCanonicalUrl(`/company/${encodeURIComponent(companyData.name)}`);
+
+  const faqSchema = companyData.faq && companyData.faq.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: companyData.faq.map((item) => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })),
+  } : null;
+
   return (
+    <>
+      <Head>
+        <title>{`${companyData.name} Salaries & Compensation Intelligence | AvgPay`}</title>
+        <meta name="description" content={`Salary intelligence for ${companyData.name}: role medians, spread analysis, and peer benchmarks.`} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content={companyData.indexing?.shouldNoIndex ? 'noindex,follow' : 'index,follow'} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListSchema) }} />
+        {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
+      </Head>
     <main className="min-h-screen bg-white">
       <div className="px-6 py-12">
         <div className="max-w-6xl mx-auto space-y-8">
@@ -223,6 +313,22 @@ const CompanyDetailPage = () => {
             </CardContent>
           </Card>
 
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { label: 'Companies', href: '/companies' },
+              { label: companyData.name },
+            ]}
+          />
+
+          {/* Data Confidence */}
+          {companyData.dataConfidence && (
+            <DataConfidence
+              confidence={companyData.dataConfidence}
+              entityName={companyData.name}
+            />
+          )}
+
           {/* Consolidated Salary Overview */}
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
@@ -240,8 +346,27 @@ const CompanyDetailPage = () => {
             </CardContent>
           </Card>
 
+<<<<<<< HEAD
           {/* Generated Value Blocks */}
           <ValueBlockRenderer blocks={companyData.valueBlocks} />
+=======
+          {/* Percentile Bands */}
+          {companyData.percentiles && (
+            <PercentileBands
+              percentiles={companyData.percentiles}
+              entityName={companyData.name}
+              submissionCount={companyData.dataConfidence?.submissionCount ?? 0}
+            />
+          )}
+
+          {/* Compensation Mix Breakdown */}
+          {companyData.compMix && (
+            <CompMixBreakdown
+              compMix={companyData.compMix}
+              entityName={companyData.name}
+            />
+          )}
+>>>>>>> eb7d5f5d3d22cb5cadb1aa47a83d0ebc4e6d001d
 
           <EnrichmentDebugBanner
             entityType="Company"
@@ -356,6 +481,49 @@ const CompanyDetailPage = () => {
             </Card>
           )}
 
+          <Card className="bg-white border-slate-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-slate-900">Explore related salary entities</CardTitle>
+              <CardDescription className="text-slate-500">Internal links generated from highest-density company salary records.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-3 gap-6">
+              <div>
+                <h3 className="font-semibold text-slate-900 mb-2">Top jobs at {companyData.name}</h3>
+                <ul className="space-y-1">
+                  {(companyData.topJobs || []).slice(0, 10).map((job) => (
+                    <li key={job.role}><Link className="text-emerald-600 hover:underline text-sm" href={`/jobs/${encodeURIComponent(job.role)}`}>{job.role}</Link></li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-900 mb-2">Top cities for {companyData.name}</h3>
+                <ul className="space-y-1">
+                  {(companyData.topCities || []).slice(0, 10).map((city) => (
+                    <li key={city.city}><Link className="text-emerald-600 hover:underline text-sm" href={`/salaries/city/${city.city.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>{city.city}</Link></li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-900 mb-2">Competitor companies</h3>
+                <ul className="space-y-1">
+                  {similarCompanies.slice(0, 10).map((comparison) => (
+                    <li key={comparison.slug}><Link className="text-emerald-600 hover:underline text-sm" href={comparison.href}>{comparison.company}</Link></li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* FAQ Section */}
+          {companyData.faq && companyData.faq.length > 0 && (
+            <FAQSection faqs={companyData.faq} entityName={companyData.name} />
+          )}
+
+          {/* External Links Section */}
+          {companyData.externalLinks && companyData.externalLinks.length > 0 && (
+            <ExternalLinksSection links={companyData.externalLinks} />
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link href="/salaries">
               <Button variant="outline" size="lg" className="h-auto py-6 justify-between bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700 w-full">
@@ -368,9 +536,13 @@ const CompanyDetailPage = () => {
               </Button>
             </Link>
           </div>
+
+          {/* Data Disclaimer */}
+          <DataDisclaimer />
         </div>
       </div>
     </main>
+    </>
   );
 };
 

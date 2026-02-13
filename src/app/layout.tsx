@@ -3,6 +3,8 @@ import "./globals.css";
 
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://avgpay.com"),
+  alternates: { canonical: "/" },
   title: "AvgPay - Know Your Worth in 60 Seconds",
   description: "Data-driven salary insights for tech workers. Compare your compensation against BLS, H-1B, and market data.",
   openGraph: {
