@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Scale, Search, TrendingUp, Building2, Briefcase } from "lucide-react";
-import { getPopularComparisons, getComparisonSlug } from "@/lib/comparisonEngine";
+import { ArrowRight, Scale, Building2, Briefcase } from "lucide-react";
+import { getPopularComparisons } from "@/lib/comparisonEngine";
 import { CompareSearchForm } from "@/components/compare-search-form";
 
 export const metadata: Metadata = {

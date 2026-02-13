@@ -115,7 +115,7 @@ export default async function ComparisonPage({ params }: ComparisonPageProps) {
   const ctaLabel = curated?.cta?.label || "Analyze my offer";
 
   // Generate comparison narrative (only if enough data)
-  let narrative = {
+  const narrative = {
     philosophicalDivergence: `${entityA} and ${entityB} typically optimize compensation in different ways: one skews toward stable annual cash while the other leans into variable upside and performance-linked growth.`,
     culturalTradeOff: "The core trade-off is execution pace versus predictability. Team environment fit often compounds over multiple promotion cycles and can outweigh small first-year cash deltas.",
     winnerProfileA: `${entityA}-fit: candidates who prioritize this package usually value this entity's operating model and compensation cadence.`,

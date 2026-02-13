@@ -4,7 +4,6 @@ import {
   computeCompareConfidence,
   generateComparisonAnalysis,
   generateComparisonMetadata,
-  type CompareEntityProfile,
 } from '@/lib/comparisonEngine';
 
 /**
