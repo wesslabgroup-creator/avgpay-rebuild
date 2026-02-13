@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { ValueBlockRenderer } from '@/components/value-block-renderer';
 import { ValueBlock } from '@/lib/value-expansion';
-import { getAuthoritativeLinks } from '@/lib/authority-links';
+
 
 interface CityStats {
   count: number;
@@ -79,18 +79,8 @@ interface CityDetailsResponse {
   externalLinks?: { href: string; label: string; source: string; description: string }[];
 }
 
-const CITY_CLUSTERS: Record<string, string[]> = {
-  'san francisco': ['san jose', 'oakland', 'seattle', 'los angeles', 'new york'],
-  'new york': ['boston', 'philadelphia', 'chicago', 'san francisco', 'washington'],
-  'seattle': ['portland', 'san francisco', 'austin', 'denver', 'san jose'],
-  'austin': ['dallas', 'houston', 'denver', 'san antonio', 'raleigh'],
-  'chicago': ['detroit', 'minneapolis', 'st. louis', 'indianapolis', 'new york'],
-  'boston': ['new york', 'cambridge', 'philadelphia', 'hartford', 'providence'],
-  'los angeles': ['san diego', 'san francisco', 'irvine', 'orange county', 'phoenix'],
-  'denver': ['boulder', 'colorado springs', 'austin', 'salt lake city', 'seattle'],
-  'atlanta': ['charlotte', 'raleigh', 'nashville', 'tampa', 'miami'],
-  'dallas': ['austin', 'houston', 'san antonio', 'fort worth', 'denver'],
-};
+
+// Removed static CITY_CLUSTERS in favor of dynamic /api/city-similar fetch
 
 export default function CityPage() {
   const router = useRouter();
@@ -101,6 +91,7 @@ export default function CityPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [enrichmentStatus, setEnrichmentStatus] = useState<string>('none');
+  const [dynamicNearbyCities, setDynamicNearbyCities] = useState<{ href: string; label: string; context: string }[]>([]);
 
   useEffect(() => {
     if (!citySlug) return;
@@ -126,6 +117,29 @@ export default function CityPage() {
 
     fetchData();
   }, [citySlug]);
+
+  useEffect(() => {
+    if (!data?.cityData) return;
+
+    const fetchPeers = async () => {
+      try {
+        const res = await fetch(`/api/city-similar?city=${encodeURIComponent(data.cityData.city)}&state=${encodeURIComponent(data.cityData.state)}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.peers && json.peers.length > 0) {
+            setDynamicNearbyCities(json.peers.map((p: { href: string; city: string; reason: string }) => ({
+              href: p.href,
+              label: p.city,
+              context: p.reason
+            })));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch city peers', e);
+      }
+    };
+    fetchPeers();
+  }, [data?.cityData]);
 
   useEffect(() => {
     if (!data?.cityData?.id || data.cityData.analysis) return;
@@ -249,18 +263,16 @@ export default function CityPage() {
     mainEntity: data.faq.map((item) => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })),
   } : null;
 
-  const normalizedCity = cityData.city.toLowerCase().trim();
+  // Removed unused normalizedCity and conditional hooks
+
+
   const nearbyCities = apiNearbyCities
     ? apiNearbyCities.map(c => ({
       href: c.url,
       label: c.text,
       context: 'Nearby City'
     }))
-    : (CITY_CLUSTERS[normalizedCity] || []).map((city) => ({
-      href: `/salaries/city/${city.replace(/\s+/g, '-')}`,
-      label: city.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-      context: `Compare salaries: ${cityLabel} vs ${city}`,
-    }));
+    : dynamicNearbyCities;
 
   return (
     <>
@@ -437,25 +449,7 @@ export default function CityPage() {
             </CardContent>
           </Card>
 
-          {/* Trusted Resources */}
-          <Card className="bg-slate-50 border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-lg text-slate-900">Trusted Resources</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {getAuthoritativeLinks('Location', cityData.city).map((link, i) => (
-                <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-md border border-slate-200">
-                  <div>
-                    <p className="font-medium text-slate-900">{link.text}</p>
-                    <p className="text-xs text-slate-500">Source: {link.source}</p>
-                  </div>
-                  <a href={link.url} target="_blank" rel={link.rel} className="text-sm font-medium text-emerald-600 hover:text-emerald-700 mt-2 sm:mt-0">
-                    Visit Source &rarr;
-                  </a>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+
 
           <RelatedCities nearbyCities={nearbyCities} cityName={cityData.city} />
 

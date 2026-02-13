@@ -254,6 +254,138 @@ export async function getTopSimilarCompaniesBySalaryBands(companyName: string, l
     .slice(0, limit);
 }
 
+export async function getCompanyPeers(companyName: string, limit = 4): Promise<(CompanySimilarityMatch & { reason: string })[]> {
+  // Use existing salary band logic as the primary signal for now
+  const salaryPeers = await getTopSimilarCompaniesBySalaryBands(companyName, limit * 2);
+
+  return salaryPeers
+    .map(peer => ({
+      ...peer,
+      reason: 'Similar compensation structure'
+    }))
+    .slice(0, limit);
+}
+
+export interface JobpeerMatch {
+  company: string;
+  medianComp: number;
+  sampleSize: number;
+  slug: string;
+  reason: string;
+}
+
+export async function getJobPeers(jobTitle: string, limit = 5): Promise<JobpeerMatch[]> {
+  // Find companies that hire for this specific job title
+  const { data: rows, error } = await supabaseAdmin
+    .from('Salary')
+    .select('totalComp, companyId, Company!inner(name), Role!inner(title)')
+    .eq('Role.title', jobTitle)
+    .not('totalComp', 'is', null)
+    .limit(2000);
+
+  if (error || !rows?.length) return [];
+
+  const grouped = new Map<string, { companyName: string; totals: number[] }>();
+
+  for (const row of rows as Array<{ totalComp: number; companyId: string; Company?: { name?: string } | { name?: string }[] }>) {
+    const totalComp = row.totalComp;
+    const relatedCompany = Array.isArray(row.Company) ? row.Company[0] : row.Company;
+    const companyName = relatedCompany?.name;
+
+    if (!companyName || typeof totalComp !== 'number') continue;
+
+    const existing = grouped.get(companyName) ?? { companyName, totals: [] };
+    existing.totals.push(totalComp);
+    grouped.set(companyName, existing);
+  }
+
+  const aggregates = Array.from(grouped.values())
+    .map(info => ({
+      company: info.companyName,
+      medianComp: median(info.totals),
+      sampleSize: info.totals.length,
+      slug: slugifyEntity(info.companyName),
+      reason: 'Hires for this role'
+    }))
+    .filter(item => item.sampleSize >= 2) // Filtering out very thin data
+    .sort((a, b) => b.sampleSize - a.sampleSize) // Prioritize volume for "Top Employers"
+    .slice(0, limit);
+
+  return aggregates;
+}
+
+export interface CityPeerMatch {
+  city: string;
+  state: string;
+  slug: string;
+  medianComp: number;
+  sampleSize: number;
+  reason: string;
+}
+
+export async function getCityPeers(city: string, state: string, limit = 6): Promise<CityPeerMatch[]> {
+  // Strategy: Find cities in the same state (Regional Peers) AND cities with similar median pay (COL Peers)
+  // For simplicity/performance in this iteration, we'll fetch a batch of city stats and filter in memory.
+
+  const { data: rows, error } = await supabaseAdmin
+    .from('Salary')
+    .select('totalComp, Location!inner(city, state)')
+    .not('totalComp', 'is', null)
+    .limit(5000);
+
+  if (error || !rows?.length) return [];
+
+  const cityStats = new Map<string, { city: string; state: string; totals: number[] }>();
+
+  for (const row of rows as Array<{ totalComp: number; Location?: { city?: string; state?: string } | { city?: string; state?: string }[] }>) {
+    const loc = Array.isArray(row.Location) ? row.Location[0] : row.Location;
+    if (!loc?.city || !loc?.state) continue;
+
+    const key = `${loc.city.toLowerCase()}-${loc.state.toLowerCase()}`;
+    const existing = cityStats.get(key) ?? { city: loc.city, state: loc.state, totals: [] };
+    existing.totals.push(row.totalComp);
+    cityStats.set(key, existing);
+  }
+
+  const targetKey = `${city.toLowerCase()}-${state.toLowerCase()}`;
+  const targetStats = cityStats.get(targetKey);
+  const targetMedian = targetStats ? median(targetStats.totals) : 0;
+
+  const peers = Array.from(cityStats.values())
+    .filter(c => `${c.city.toLowerCase()}-${c.state.toLowerCase()}` !== targetKey)
+    .map(c => {
+      const med = median(c.totals);
+      let reason = 'Market peer';
+      let score = 0;
+
+      if (c.state === state) {
+        reason = 'Regional peer';
+        score += 10;
+      }
+
+      const priceDiff = Math.abs(med - targetMedian);
+      if (targetMedian > 0 && priceDiff < targetMedian * 0.15) {
+        reason = c.state === state ? 'Regional & Pay peer' : 'Similar pay band';
+        score += 5;
+      }
+
+      return {
+        city: c.city,
+        state: c.state,
+        slug: `${slugifyEntity(c.city)}-${slugifyEntity(c.state)}`, // Standard city slug format
+        medianComp: med,
+        sampleSize: c.totals.length,
+        reason,
+        score
+      };
+    })
+    .filter(p => p.sampleSize >= 3)
+    .sort((a, b) => b.score - a.score || b.sampleSize - a.sampleSize)
+    .slice(0, limit);
+
+  return peers;
+}
+
 export function getComparisonSlug(entityA: string, entityB: string) {
   return ensureComparisonSlug(entityA, entityB);
 }

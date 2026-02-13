@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getTopSimilarCompaniesBySalaryBands, getComparisonSlug } from '@/lib/comparisonEngine';
+import { getCompanyPeers, getComparisonSlug } from '@/lib/comparisonEngine';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const similarCompanies = await getTopSimilarCompaniesBySalaryBands(companyName, 3);
+    const similarCompanies = await getCompanyPeers(companyName, 4);
 
     const links = similarCompanies.map((item) => ({
       ...item,

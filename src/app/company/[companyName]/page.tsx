@@ -12,7 +12,7 @@ import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
 import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
 import { ValueBlockRenderer } from '@/components/value-block-renderer';
 import { ValueBlock } from '@/lib/value-expansion';
-import { getAuthoritativeLinks } from '@/lib/authority-links';
+
 import { buildCanonicalUrl } from '@/lib/canonical';
 import { PercentileBands, CompMixBreakdown, DataConfidence, FAQSection, ExternalLinksSection, DataDisclaimer } from '@/components/entity-value-modules';
 import { Breadcrumbs } from '@/components/breadcrumbs';
@@ -33,6 +33,7 @@ interface SimilarCompanyLink {
   sampleSize: number;
   slug: string;
   href: string;
+  reason?: string;
 }
 
 interface CompanyInfo {
@@ -424,25 +425,7 @@ const CompanyDetailPage = () => {
               <InsightCards analysis={companyData.analysis} entityName={companyData.name} />
             )}
 
-            {/* Trusted Resources */}
-            <Card className="bg-slate-50 border-slate-200">
-              <CardHeader>
-                <CardTitle className="text-lg text-slate-900">Trusted Resources</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {getAuthoritativeLinks('Company', companyData.name).map((link, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-md border border-slate-200">
-                    <div>
-                      <p className="font-medium text-slate-900">{link.text}</p>
-                      <p className="text-xs text-slate-500">Source: {link.source}</p>
-                    </div>
-                    <a href={link.url} target="_blank" rel={link.rel} className="text-sm font-medium text-emerald-600 hover:text-emerald-700 mt-2 sm:mt-0">
-                      Visit Source &rarr;
-                    </a>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+
 
             {/* Related Links / Action Section */}
             {similarCompanies.length > 0 && (
@@ -461,8 +444,17 @@ const CompanyDetailPage = () => {
                         href={comparison.href}
                         className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
                       >
-                        <p className="font-semibold text-slate-900">{companyData.name} vs {comparison.company}</p>
-                        <p className="text-sm text-slate-500 mt-1">Similarity score: {comparison.similarityScore.toFixed(1)} · Median comp: {formatCurrency(comparison.medianComp)} · Samples: {comparison.sampleSize}</p>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-semibold text-slate-900">{companyData.name} vs {comparison.company}</p>
+                            <p className="text-sm text-slate-500 mt-1">Median comp: {formatCurrency(comparison.medianComp)} · Samples: {comparison.sampleSize}</p>
+                          </div>
+                          {comparison.reason && (
+                            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                              {comparison.reason}
+                            </span>
+                          )}
+                        </div>
                       </Link>
                     ))}
                   </div>

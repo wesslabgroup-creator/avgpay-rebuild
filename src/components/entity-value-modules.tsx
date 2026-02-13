@@ -288,7 +288,7 @@ export function ExternalLinksSection({ links }: ExternalLinksSectionProps) {
       <CardHeader>
         <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
           <ExternalLink className="w-5 h-5 text-slate-600" />
-          Authoritative Sources
+          Other Sources
         </CardTitle>
         <p className="text-sm text-slate-500">
           Verified external resources for additional compensation research

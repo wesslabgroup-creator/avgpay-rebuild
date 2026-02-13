@@ -250,76 +250,76 @@ export function generateIntentDrivenFaqs(
 
   if (entityType === 'Job') {
     faqs.push({
-      question: `What is the average ${entityName} salary?`,
+      question: `What is a typical ${entityName} salary?`,
       answer: data.medianComp
-        ? `Based on ${data.submissionCount?.toLocaleString() ?? 'available'} salary submissions, the median total compensation for ${entityName} is ${fmt(data.medianComp)}. The middle 50% of earners fall between ${data.p25 ? fmt(data.p25) : 'N/A'} and ${data.p75 ? fmt(data.p75) : 'N/A'}.`
-        : `We are still collecting enough salary data for ${entityName} to provide a reliable estimate. Submit your salary to help grow this dataset.`,
+        ? `The median total compensation for ${entityName} is ${fmt(data.medianComp)}, based on ${data.submissionCount?.toLocaleString() ?? 'available'} salary records. This figure represents the midpoint of the market, including base salary, stock grants, and bonuses. The middle 50% of earners typically range between ${data.p25 ? fmt(data.p25) : 'N/A'} and ${data.p75 ? fmt(data.p75) : 'N/A'}.`
+        : `We are currently aggregating salary data for ${entityName} to build a reliable market baseline. If you work in this role, submitting your salary helps improve transparency for everyone.`,
     });
     faqs.push({
-      question: `Is my ${entityName} offer competitive?`,
+      question: `Is my offer for ${entityName} competitive?`,
       answer: data.medianComp
-        ? `Compare your offer against the median of ${fmt(data.medianComp)}. If your total compensation (base + equity + bonus) is above the 75th percentile (${data.p75 ? fmt(data.p75) : 'N/A'}), your offer is strong. Below the 25th percentile signals room for negotiation.`
-        : `Use the percentile ranges on this page to benchmark your offer once we have sufficient data.`,
+        ? `To evaluate your offer, comparing against the median (${fmt(data.medianComp)}) is a good start. However, top-tier offers often fall above the 75th percentile (${data.p75 ? fmt(data.p75) : 'N/A'}). If your total package is below the 25th percentile (${data.p25 ? fmt(data.p25) : 'N/A'}), there may be significant room to negotiate, especially on equity or signing bonuses.`
+        : `Once we have sufficient data, you can use the percentile bands on this page to benchmark your offer against the market distribution.`,
     });
     faqs.push({
-      question: `Which company pays ${entityName} the most?`,
+      question: `Which companies pay the highest for ${entityName} roles?`,
       answer: data.topPayingEntity
-        ? `In our dataset, ${data.topPayingEntity} currently shows the highest median compensation for ${entityName} roles. However, total comp varies significantly by level, location, and equity structure.`
-        : `Browse the company rankings table on this page to see which employers offer the highest total compensation for ${entityName}.`,
+        ? `Our data indicates that ${data.topPayingEntity} is currently one of the top-paying employers for ${entityName}. However, compensation leadership often shifts between tech giants and specialized startups. Check the company rankings table on this page for the most current leaderboard.`
+        : `Browse the "Top Paying Companies" section on this page to see which employers are currently leading the market for ${entityName} compensation.`,
     });
     faqs.push({
-      question: `How should I negotiate a ${entityName} salary?`,
-      answer: `Use the percentile bands on this page to set your target range. Aim for the 75th percentile as your initial ask, and treat the median as your walk-away floor. Factor in equity, sign-on bonuses, and RSU vesting schedules beyond base salary alone.`,
+      question: `What factors influence ${entityName} compensation the most?`,
+      answer: `Beyond base salary, total compensation for ${entityName} is heavily driven by level (seniority), location (cost of labor), and equity performance. In many cases, stock grants (RSUs) can make up 30-50% of the total package at senior levels, creating a wide spread between cash-heavy and equity-heavy offers.`,
     });
   }
 
   if (entityType === 'City') {
     faqs.push({
-      question: `What is the average salary in ${entityName}?`,
+      question: `What is the average tech salary in ${entityName}?`,
       answer: data.medianComp
-        ? `The median total compensation in ${entityName} is ${fmt(data.medianComp)} across ${data.submissionCount?.toLocaleString() ?? 'available'} salary data points. The interquartile range spans ${data.p25 ? fmt(data.p25) : 'N/A'} to ${data.p75 ? fmt(data.p75) : 'N/A'}.`
-        : `We are building the ${entityName} salary dataset. Submit your salary to contribute.`,
+        ? `In ${entityName}, the median total compensation for technology professionals is ${fmt(data.medianComp)}. This figure is derived from ${data.submissionCount?.toLocaleString() ?? 'available'} verified data points and reflects the local market rate for combined base, equity, and bonus.`
+        : `We are actively building the salary dataset for ${entityName}. Contributing your compensation data helps create a clearer picture of the local market.`,
     });
     faqs.push({
-      question: `Is ${entityName} a good city for tech salaries?`,
+      question: `How does ${entityName} compare to other tech hubs?`,
       answer: data.medianComp
-        ? `${entityName} shows a median tech compensation of ${fmt(data.medianComp)}. To evaluate whether this is "good," compare against your current location's median and factor in local cost of living, state taxes, and housing costs.`
-        : `We need more salary submissions for ${entityName} before providing a reliable assessment.`,
+        ? `With a median of ${fmt(data.medianComp)}, ${entityName} offers a distinct compensation profile. To understand the real value, compare this against Tier 1 hubs like SF or NYC while factoring in ${entityName}'s specific cost of living, tax advantages, and quality of life.`
+        : `We need more data to provide a reliable comparison between ${entityName} and other major tech hubs.`,
     });
     faqs.push({
-      question: `Should I relocate to ${entityName} for a higher salary?`,
-      answer: `Headline salary numbers can be misleading without cost-of-living adjustments. A high nominal salary in an expensive city may yield lower disposable income than a moderate salary in an affordable market. Use this page's data alongside a cost-of-living calculator.`,
+      question: `Is it worth relocating to ${entityName} for work?`,
+      answer: `Relocation value depends on "effective income" rather than just the headline salary number. While ${entityName} may offer different nominal pay than coastal hubs, lower housing costs and taxes can often result in higher disposable income. Use the percentile data on this page to model your potential purchasing power.`,
     });
     faqs.push({
-      question: `What jobs pay the most in ${entityName}?`,
+      question: `Which jobs pay the best in ${entityName}?`,
       answer: data.topPayingEntity
-        ? `${data.topPayingEntity} is among the highest-paying roles in ${entityName}. See the full job rankings table on this page for a complete breakdown by role and median compensation.`
-        : `Check the job rankings table on this page for the most current data.`,
+        ? `${data.topPayingEntity} is currently among the highest-compensated roles in the ${entityName} area. For a complete list of top-earning positions, refer to the "Highest Paying Jobs" table on this page.`
+        : `Check the "Highest Paying Jobs" table on this page to see the current ranking of top-compensated roles in ${entityName}.`,
     });
   }
 
   if (entityType === 'Company') {
     faqs.push({
-      question: `What is the average salary at ${entityName}?`,
+      question: `How much does ${entityName} pay?`,
       answer: data.medianComp
-        ? `Across ${data.submissionCount?.toLocaleString() ?? 'available'} salary submissions, the median total compensation at ${entityName} is ${fmt(data.medianComp)}. This includes base salary, equity/RSUs, and annual bonuses.`
-        : `We are still collecting salary data for ${entityName}. Submit your compensation to help.`,
+        ? `The median total compensation at ${entityName} is ${fmt(data.medianComp)}, based on ${data.submissionCount?.toLocaleString() ?? 'our'} data points. This figure accounts for base salary as well as stock grants and bonuses, which are significant components of the package at this level.`
+        : `We are currently collecting more salary submissions for ${entityName} to provide a statistically significant estimate.`,
     });
     faqs.push({
-      question: `Does ${entityName} pay above market rate?`,
+      question: `Does ${entityName} pay above market rates?`,
       answer: data.medianComp
-        ? `At ${fmt(data.medianComp)} median total comp, compare ${entityName} to peer companies on this page. Above-market compensation depends on role, level, and location. Use the comparison links to benchmark against specific competitors.`
-        : `Once we have sufficient data, this page will show how ${entityName} compares to market medians.`,
+        ? `With a median package of ${fmt(data.medianComp)}, ${entityName} competes for top talent. Whether this is "above market" depends on the specific role and level. We recommend comparing these figures against direct competitors using the peer comparison tool on this page.`
+        : `Once sufficient data is available, you will be able to benchmark ${entityName} against industry medians directly on this page.`,
     });
     faqs.push({
-      question: `Is ${entityName} equity-heavy or base-heavy?`,
-      answer: `The compensation mix at ${entityName} varies by role and level. Senior roles and engineering positions typically carry more equity weighting. Check the compensation breakdown section for base/equity/bonus split details.`,
+      question: `What is the compensation philosophy at ${entityName}?`,
+      answer: `Companies like ${entityName} typically structure pay with a mix of guaranteed cash (base) and performance-based upside (equity/bonus). The "Compensation Mix" section on this page breaks down these components, showing whether ${entityName} leans more towards stable cash or high-growth equity.`,
     });
     faqs.push({
-      question: `What roles pay the most at ${entityName}?`,
+      question: `Which roles earn the most at ${entityName}?`,
       answer: data.topPayingEntity
-        ? `${data.topPayingEntity} is the highest-compensated role at ${entityName} in our dataset. Browse the salary overview table for a full role-by-role breakdown.`
-        : `See the salary overview table on this page for role-level compensation data at ${entityName}.`,
+        ? `At ${entityName}, the ${data.topPayingEntity} role currently tops our dataset for median compensation. You can view the full hierarchy of pay by role in the "Salary Overview" table below.`
+        : `Refer to the "Salary Overview" table to see a detailed breakdown of compensation by job title at ${entityName}.`,
     });
   }
 

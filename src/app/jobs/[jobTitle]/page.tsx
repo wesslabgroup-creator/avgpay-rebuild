@@ -16,7 +16,7 @@ import { buildCanonicalUrl } from '@/lib/canonical';
 
 import { ValueBlockRenderer } from '@/components/value-block-renderer';
 import { ValueBlock } from '@/lib/value-expansion';
-import { getAuthoritativeLinks } from '@/lib/authority-links';
+
 
 interface JobDetails {
   jobData: {
@@ -55,6 +55,24 @@ export default function JobDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [enrichmentStatus, setEnrichmentStatus] = useState<string>('none');
+  const [similarJobs, setSimilarJobs] = useState<{ company: string; medianComp: number; sampleSize: number; href: string; reason: string }[]>([]);
+
+  useEffect(() => {
+    if (!jobTitleSlug) return;
+
+    const fetchSimilar = async () => {
+      try {
+        const res = await fetch(`/api/job-similar?jobTitle=${jobTitleSlug}`);
+        if (res.ok) {
+          const json = await res.json();
+          setSimilarJobs(json.peers || []);
+        }
+      } catch (e) {
+        console.warn('Failed to fetch similar jobs', e);
+      }
+    };
+    fetchSimilar();
+  }, [jobTitleSlug]);
 
   useEffect(() => {
     if (!jobTitleSlug) return;
@@ -418,25 +436,7 @@ export default function JobDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Trusted Resources */}
-          <Card className="bg-slate-50 border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-lg text-slate-900">Trusted Resources</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {getAuthoritativeLinks('Role', jobData.title).map((link, i) => (
-                <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-md border border-slate-200">
-                  <div>
-                    <p className="font-medium text-slate-900">{link.text}</p>
-                    <p className="text-xs text-slate-500">Source: {link.source}</p>
-                  </div>
-                  <a href={link.url} target="_blank" rel={link.rel} className="text-sm font-medium text-emerald-600 hover:text-emerald-700 mt-2 sm:mt-0">
-                    Visit Source &rarr;
-                  </a>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+
 
           {/* FAQ Section */}
           {data.faq && data.faq.length > 0 && (
@@ -446,6 +446,41 @@ export default function JobDetailPage() {
           {/* External Links */}
           {data.externalLinks && data.externalLinks.length > 0 && (
             <ExternalLinksSection links={data.externalLinks} />
+          )}
+
+          {/* Top Employers for this Job */}
+          {similarJobs.length > 0 && (
+            <Card className="bg-white border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-emerald-600" />
+                  Top Employers for {jobData.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {similarJobs.map((job) => (
+                    <Link
+                      key={job.company}
+                      href={job.href}
+                      className="block rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold text-slate-900">{job.company}</p>
+                          <p className="text-sm text-slate-500 mt-1">
+                            Median: {formatCurrency(job.medianComp)} · {job.sampleSize} reports
+                          </p>
+                        </div>
+                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                          {job.reason}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Data Disclaimer */}
