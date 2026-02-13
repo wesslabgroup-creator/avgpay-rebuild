@@ -1,320 +1,495 @@
-"use client";
-
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Head from 'next/head';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/data-table';
-import { InsightCards, InsightCardsSkeleton } from '@/components/insight-cards';
-import { EnrichmentDebugBanner } from '@/components/enrichment-debug-banner';
-import { PercentileBands, CompMixBreakdown, DataConfidence, FAQSection, ExternalLinksSection, DataDisclaimer, RelatedCities } from '@/components/entity-value-modules';
-import { Breadcrumbs } from '@/components/breadcrumbs';
-import { buildCanonicalUrl } from '@/lib/canonical';
+import type { Metadata } from "next";
+import Link from "next/link";
+import Script from "next/script";
+import { notFound } from "next/navigation";
 import {
-  ChevronLeft,
   MapPin,
   Building2,
   Briefcase,
   TrendingUp,
   DollarSign,
   Users,
-} from 'lucide-react';
-import { ValueBlockRenderer } from '@/components/value-block-renderer';
-import { ValueBlock } from '@/lib/value-expansion';
+  AlertTriangle,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/data-table";
+import { InsightCards } from "@/components/insight-cards";
+import {
+  PercentileBands,
+  CompMixBreakdown,
+  DataConfidence,
+  FAQSection,
+  ExternalLinksSection,
+  DataDisclaimer,
+  RelatedCities,
+} from "@/components/entity-value-modules";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { ValueBlockRenderer } from "@/components/value-block-renderer";
+import { supabaseAdmin } from "@/lib/supabaseClient";
+import {
+  hasRenderableAnalysis,
+  getEnrichmentStatus,
+  buildCityContextData,
+  queueEnrichment,
+} from "@/lib/enrichment";
+import { buildPageValueBlocks } from "@/lib/value-expansion";
+import {
+  buildEntityFaq,
+  evaluateIndexingEligibility,
+  shouldTriggerEnrichment,
+} from "@/lib/seo";
+import { generateIntentDrivenFaqs } from "@/lib/intentClassifier";
+import { getCityExternalLinks } from "@/lib/externalLinks";
+import { getNearbyCities } from "@/lib/internal-linking";
+import { getCityPeers, getComparisonSlug } from "@/lib/comparisonEngine";
 
-
-interface CityStats {
-  count: number;
-  median: number;
-  min: number;
-  max: number;
-  p10?: number;
-  p25: number;
-  p75: number;
-  p90?: number;
+interface CityPageProps {
+  params: Promise<{ city: string }>;
 }
 
-interface TopCompany {
-  company_name: string;
-  median_comp: number;
-  data_points: number;
+type SalaryWithCompanyAndRole = {
+  totalComp: number;
+  baseSalary: number | null;
+  equity: number | null;
+  bonus: number | null;
+  level: string | null;
+  Company: { name: string } | { name: string }[] | null;
+  Role: { title: string } | { title: string }[] | null;
+};
+
+function formatCurrency(n: number | undefined | null) {
+  if (n === undefined || n === null || n === 0) return "$0k";
+  return `$${(n / 1000).toFixed(0)}k`;
 }
 
-interface TopJob {
-  job_title: string;
-  median_comp: number;
-  data_points: number;
-}
+async function getCityData(citySlug: string) {
+  // 1. Find Location by slug
+  let locationData = null;
+  const { data: bySlug } = await supabaseAdmin
+    .from("Location")
+    .select("*")
+    .ilike("slug", citySlug)
+    .single();
 
-interface CityData {
-  id: string;
-  city: string;
-  state: string;
-  country: string;
-  metro: string;
-  slug: string;
-  analysis: Record<string, string> | null;
-  analysisGeneratedAt: string | null;
-}
+  if (bySlug) {
+    locationData = bySlug;
+  } else {
+    // Fallback: match by city name
+    const cityName = citySlug.replace(/-/g, " ");
+    const { data: fallback } = await supabaseAdmin
+      .from("Location")
+      .select("*")
+      .ilike("city", cityName)
+      .limit(1)
+      .maybeSingle();
+    locationData = fallback;
+  }
 
-interface CityDetailsResponse {
-  cityData: CityData;
-  stats: CityStats;
-  topCompanies: TopCompany[];
-  topJobs: TopJob[];
-  enrichmentStatus?: string;
-  valueBlocks: ValueBlock[];
-  nearbyCities?: { text: string; url: string; type: string }[];
-  indexing?: { shouldNoIndex?: boolean };
-  faq?: { question: string; answer: string }[];
-  compMix?: { avgBasePct: number; avgEquityPct: number; avgBonusPct: number };
-  dataConfidence?: {
-    submissionCount: number;
-    companyCount?: number;
-    roleCount?: number;
-    confidenceLabel: string;
-  };
-  externalLinks?: { href: string; label: string; source: string; description: string }[];
-}
+  if (!locationData) return null;
 
+  const locationId = locationData.id;
+  const validAnalysis = hasRenderableAnalysis(locationData.analysis, "City")
+    ? locationData.analysis
+    : null;
 
-// Removed static CITY_CLUSTERS in favor of dynamic /api/city-similar fetch
+  // Check / trigger enrichment
+  let enrichmentStatus = "completed";
+  if (!validAnalysis) {
+    const status = await getEnrichmentStatus("City", locationId);
+    if (!status || status.status === "failed") {
+      const contextData = buildCityContextData({
+        city: locationData.city,
+        state: locationData.state,
+      });
+      await queueEnrichment(
+        "City",
+        locationId,
+        `${locationData.city}, ${locationData.state}`,
+        contextData
+      );
+      enrichmentStatus = "pending";
+    } else {
+      enrichmentStatus = status.status;
+    }
+  }
 
-export default function CityPage() {
-  const router = useRouter();
-  const params = useParams();
-  const citySlug = params.city as string;
+  // 2. Fetch salaries
+  const { data: rawSalaries } = await supabaseAdmin
+    .from("Salary")
+    .select(
+      "totalComp, baseSalary, equity, bonus, level, Company!inner(name), Role!inner(title)"
+    )
+    .eq("locationId", locationId)
+    .limit(500);
 
-  const [data, setData] = useState<CityDetailsResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [enrichmentStatus, setEnrichmentStatus] = useState<string>('none');
-  const [dynamicNearbyCities, setDynamicNearbyCities] = useState<{ href: string; label: string; context: string }[]>([]);
+  const salaries = (rawSalaries as SalaryWithCompanyAndRole[] | null) || [];
 
-  useEffect(() => {
-    if (!citySlug) return;
+  // 3. Stats
+  const allComps = salaries.map((s) => s.totalComp).sort((a, b) => a - b);
+  const count = allComps.length;
+  const median = count > 0 ? allComps[Math.floor(count / 2)] : 0;
+  const min = count > 0 ? allComps[0] : 0;
+  const max = count > 0 ? allComps[count - 1] : 0;
+  const p10 = count > 0 ? allComps[Math.floor(count * 0.1)] : 0;
+  const p25 = count > 0 ? allComps[Math.floor(count * 0.25)] : 0;
+  const p75 = count > 0 ? allComps[Math.floor(count * 0.75)] : 0;
+  const p90 = count > 0 ? allComps[Math.floor(count * 0.9)] : 0;
 
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(`/api/city-details?city=${encodeURIComponent(citySlug)}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const fetchedData: CityDetailsResponse = await response.json();
-        setData(fetchedData);
-        setEnrichmentStatus(fetchedData.enrichmentStatus || 'none');
-      } catch (err) {
-        console.error('Failed to fetch city data:', err);
-        setError('Could not load city details. Please try again later.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Comp mix
+  const withComp = salaries.filter((r) => r.totalComp > 0);
+  const avgBasePct =
+    withComp.length > 0
+      ? withComp.reduce(
+          (sum, r) => sum + ((r.baseSalary || 0) / r.totalComp) * 100,
+          0
+        ) / withComp.length
+      : 0;
+  const avgEquityPct =
+    withComp.length > 0
+      ? withComp.reduce(
+          (sum, r) => sum + ((r.equity || 0) / r.totalComp) * 100,
+          0
+        ) / withComp.length
+      : 0;
+  const avgBonusPct =
+    withComp.length > 0
+      ? withComp.reduce(
+          (sum, r) => sum + ((r.bonus || 0) / r.totalComp) * 100,
+          0
+        ) / withComp.length
+      : 0;
 
-    fetchData();
-  }, [citySlug]);
+  // 4. Top companies
+  const companyMap = new Map<string, number[]>();
+  salaries.forEach((s) => {
+    const name = Array.isArray(s.Company) ? s.Company[0]?.name : s.Company?.name;
+    if (name) {
+      if (!companyMap.has(name)) companyMap.set(name, []);
+      companyMap.get(name)!.push(s.totalComp);
+    }
+  });
 
-  useEffect(() => {
-    if (!data?.cityData) return;
+  const topCompanies = Array.from(companyMap.entries())
+    .map(([name, comps]) => {
+      const sorted = [...comps].sort((a, b) => a - b);
+      return {
+        company_name: name,
+        median_comp: sorted[Math.floor(sorted.length / 2)],
+        data_points: sorted.length,
+      };
+    })
+    .sort((a, b) => b.median_comp - a.median_comp)
+    .slice(0, 10);
 
-    const fetchPeers = async () => {
-      try {
-        const res = await fetch(`/api/city-similar?city=${encodeURIComponent(data.cityData.city)}&state=${encodeURIComponent(data.cityData.state)}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.peers && json.peers.length > 0) {
-            setDynamicNearbyCities(json.peers.map((p: { href: string; city: string; reason: string }) => ({
-              href: p.href,
-              label: p.city,
-              context: p.reason
-            })));
-          }
-        }
-      } catch (e) {
-        console.warn('Failed to fetch city peers', e);
-      }
-    };
-    fetchPeers();
-  }, [data?.cityData]);
+  // 5. Top jobs
+  const roleMap = new Map<string, number[]>();
+  salaries.forEach((s) => {
+    const title = Array.isArray(s.Role) ? s.Role[0]?.title : s.Role?.title;
+    if (title) {
+      if (!roleMap.has(title)) roleMap.set(title, []);
+      roleMap.get(title)!.push(s.totalComp);
+    }
+  });
 
-  useEffect(() => {
-    if (!data?.cityData?.id || data.cityData.analysis) return;
+  const topJobs = Array.from(roleMap.entries())
+    .map(([title, comps]) => {
+      const sorted = [...comps].sort((a, b) => a - b);
+      return {
+        job_title: title,
+        median_comp: sorted[Math.floor(sorted.length / 2)],
+        data_points: sorted.length,
+      };
+    })
+    .sort((a, b) => b.median_comp - a.median_comp)
+    .slice(0, 10);
 
-    const terminalStatuses = new Set(['completed', 'failed', 'none']);
-    if (terminalStatuses.has(enrichmentStatus)) return;
+  // 6. Indexing evaluation
+  const indexing = evaluateIndexingEligibility({
+    entityType: "City",
+    entityName: `${locationData.city}, ${locationData.state}`,
+    salarySubmissionCount: count,
+    hasRenderableAnalysis: !!validAnalysis,
+  });
 
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/enrichment-status?entityType=City&entityId=${data.cityData.id}`);
-        if (!response.ok) return;
-
-        const payload = await response.json();
-        setEnrichmentStatus(payload.status || 'none');
-
-        if (payload.analysis) {
-          setData(prev => prev ? {
-            ...prev,
-            cityData: { ...prev.cityData, analysis: payload.analysis },
-          } : prev);
-        }
-      } catch (pollErr) {
-        console.error('Failed to poll city enrichment status', pollErr);
-      }
-    }, 7000);
-
-    return () => clearInterval(interval);
-  }, [data?.cityData?.id, data?.cityData?.analysis, enrichmentStatus]);
-
-  const formatCurrency = (n: number | undefined | null) => {
-    if (n === undefined || n === null || n === 0) return '$0k';
-    return `$${(n / 1000).toFixed(0)}k`;
-  };
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-white">
-        <div className="max-w-6xl mx-auto px-6 py-12 space-y-8">
-          <div className="h-8 w-48 bg-slate-200 rounded animate-pulse" />
-          <div className="h-12 w-96 bg-slate-200 rounded animate-pulse" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="text-center space-y-2">
-                <div className="h-10 w-20 mx-auto bg-slate-200 rounded animate-pulse" />
-                <div className="h-4 w-24 mx-auto bg-slate-100 rounded animate-pulse" />
-              </div>
-            ))}
-          </div>
-          <InsightCardsSkeleton />
-        </div>
-      </main>
+  // 7. Re-queue enrichment if needed
+  const shouldQueue = shouldTriggerEnrichment({
+    hasRenderableAnalysis: !!validAnalysis,
+    analysisGeneratedAt: locationData.analysisGeneratedAt || null,
+    salarySubmissionCount: count,
+  });
+  if (shouldQueue && enrichmentStatus !== "processing") {
+    const contextData = buildCityContextData({
+      city: locationData.city,
+      state: locationData.state,
+    });
+    await queueEnrichment(
+      "City",
+      locationData.id,
+      `${locationData.city}, ${locationData.state}`,
+      contextData
     );
   }
 
-  if (error || !data) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <Card className="bg-white border-slate-200 p-8 w-96 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-red-500">City Not Found</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-500 mb-4">{error || 'No data available for this city.'}</p>
-            <Button variant="outline" onClick={() => router.back()}>
-              <ChevronLeft className="mr-2 h-4 w-4" /> Go Back
-            </Button>
-          </CardContent>
-        </Card>
-      </main>
-    );
+  const cityLabel = `${locationData.city}, ${locationData.state}`;
+
+  // FAQ
+  const intentFaqs = generateIntentDrivenFaqs("City", cityLabel, {
+    medianComp: median,
+    submissionCount: count,
+    p25,
+    p75,
+    topPayingEntity: topJobs[0]?.job_title,
+  });
+  const genericFaqs = buildEntityFaq(cityLabel, "City", count, median);
+  const seenQuestions = new Set(intentFaqs.map((f) => f.question));
+  const combinedFaqs = [
+    ...intentFaqs,
+    ...genericFaqs.filter((f) => !seenQuestions.has(f.question)),
+  ];
+
+  // External links
+  const externalLinks = getCityExternalLinks(locationData.city, locationData.state);
+
+  // Nearby cities and value blocks
+  const [nearbyCities, valueBlocks, cityPeers] = await Promise.all([
+    getNearbyCities(locationData.city, locationData.state, locationData.id),
+    buildPageValueBlocks(
+      "Location",
+      locationData.id,
+      `${locationData.city}, ${locationData.state}`
+    ),
+    getCityPeers(locationData.city, locationData.state, 6),
+  ]);
+
+  return {
+    locationData: {
+      id: locationData.id,
+      city: locationData.city,
+      state: locationData.state,
+      country: locationData.country || "US",
+      metro: locationData.metro || "",
+      slug: locationData.slug,
+      analysis: validAnalysis,
+      analysisGeneratedAt: locationData.analysisGeneratedAt || null,
+    },
+    stats: { count, median, min, max, p10, p25, p75, p90 },
+    topCompanies,
+    topJobs,
+    enrichmentStatus,
+    nearbyCities,
+    valueBlocks,
+    indexing,
+    faq: combinedFaqs,
+    compMix: {
+      avgBasePct: Math.round(avgBasePct * 10) / 10,
+      avgEquityPct: Math.round(avgEquityPct * 10) / 10,
+      avgBonusPct: Math.round(avgBonusPct * 10) / 10,
+    },
+    dataConfidence: {
+      submissionCount: count,
+      companyCount: companyMap.size,
+      roleCount: roleMap.size,
+      confidenceLabel:
+        count >= 50
+          ? "high"
+          : count >= 20
+            ? "moderate"
+            : count >= 5
+              ? "limited"
+              : "insufficient",
+    },
+    externalLinks,
+    cityPeers,
+  };
+}
+
+export async function generateMetadata({
+  params,
+}: CityPageProps): Promise<Metadata> {
+  const { city: citySlug } = await params;
+  const data = await getCityData(citySlug);
+
+  if (!data) {
+    return { title: "City Not Found | AvgPay" };
   }
 
-  const { cityData, stats, topCompanies, topJobs, valueBlocks, nearbyCities: apiNearbyCities } = data;
-  const cityLabel = `${cityData.city}, ${cityData.state}`;
+  const cityLabel = `${data.locationData.city}, ${data.locationData.state}`;
+  const robotsContent = data.indexing.shouldNoIndex
+    ? "noindex,follow"
+    : "index,follow";
 
+  return {
+    title: `${cityLabel} Salaries — Average Pay & Compensation Data | AvgPay`,
+    description: `Explore salary data for ${cityLabel}. Median total comp is ${formatCurrency(data.stats.median)}. See top companies, highest-paying jobs, and local market insights.`,
+    alternates: { canonical: `/salaries/city/${data.locationData.slug}` },
+    robots: robotsContent,
+    openGraph: {
+      title: `${cityLabel} Salary Data | AvgPay`,
+      description: `Compensation insights for ${cityLabel}. Median total comp: ${formatCurrency(data.stats.median)}.`,
+      url: `https://avgpay.com/salaries/city/${data.locationData.slug}`,
+      siteName: "AvgPay",
+    },
+  };
+}
+
+export default async function CityPage({ params }: CityPageProps) {
+  const { city: citySlug } = await params;
+  const data = await getCityData(citySlug);
+
+  if (!data) {
+    return notFound();
+  }
+
+  const { locationData, stats, topCompanies, topJobs, valueBlocks, cityPeers } =
+    data;
+  const cityLabel = `${locationData.city}, ${locationData.state}`;
+
+  // Schema.org
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Place',
+    "@context": "https://schema.org",
+    "@type": "Place",
     name: cityLabel,
     address: {
-      '@type': 'PostalAddress',
-      addressLocality: cityData.city,
-      addressRegion: cityData.state,
-      addressCountry: cityData.country,
+      "@type": "PostalAddress",
+      addressLocality: locationData.city,
+      addressRegion: locationData.state,
+      addressCountry: locationData.country,
     },
   };
 
-  const webpageSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: `${cityLabel} salary intelligence`,
-    description: `Compensation intelligence for ${cityLabel}.`,
-    url: `https://avgpay.com/salaries/city/${cityData.slug}`,
-  };
-
-  const datasetSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Dataset',
-    name: `${cityLabel} compensation dataset`,
-    description: `Total compensation data for tech professionals in ${cityLabel}, including base salary, equity, and bonus.`,
-    creator: { '@type': 'Organization', name: 'AvgPay', url: 'https://avgpay.com' },
-    variableMeasured: ['base salary', 'bonus', 'equity', 'total compensation'],
-    measurementTechnique: 'Self-reported submissions, H-1B visa data, BLS occupational data',
-  };
-
   const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://avgpay.com' },
-      { '@type': 'ListItem', position: 2, name: 'Salaries', item: 'https://avgpay.com/salaries' },
-      { '@type': 'ListItem', position: 3, name: cityLabel, item: `https://avgpay.com/salaries/city/${cityData.slug}` },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://avgpay.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Salaries",
+        item: "https://avgpay.com/salaries",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: cityLabel,
+        item: `https://avgpay.com/salaries/city/${locationData.slug}`,
+      },
     ],
   };
 
-  const canonicalUrl = buildCanonicalUrl(`/salaries/city/${cityData.slug}`);
+  const datasetSchema = {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: `${cityLabel} compensation dataset`,
+    description: `Total compensation data for professionals in ${cityLabel}.`,
+    creator: {
+      "@type": "Organization",
+      name: "AvgPay",
+      url: "https://avgpay.com",
+    },
+    variableMeasured: [
+      "base salary",
+      "bonus",
+      "equity",
+      "total compensation",
+    ],
+  };
 
-  const faqSchema = data.faq && data.faq.length > 0 ? {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: data.faq.map((item) => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })),
-  } : null;
+  const faqSchema =
+    data.faq && data.faq.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: data.faq.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: { "@type": "Answer", text: item.answer },
+          })),
+        }
+      : null;
 
-  // Removed unused normalizedCity and conditional hooks
-
-
-  const nearbyCities = apiNearbyCities
-    ? apiNearbyCities.map(c => ({
-      href: c.url,
-      label: c.text,
-      context: 'Nearby City'
-    }))
-    : dynamicNearbyCities;
+  // Nearby cities for linking
+  const nearbyCities = data.nearbyCities
+    ? data.nearbyCities.map(
+        (c: { url: string; text: string; type: string }) => ({
+          href: c.url,
+          label: c.text,
+          context: c.type || "Nearby City",
+        })
+      )
+    : [];
 
   return (
     <>
-      <Head>
-        <title>{`${cityLabel} Salaries — Average Pay & Compensation Data | AvgPay`}</title>
-        <meta
-          name="description"
-          content={`Explore salary data for ${cityLabel}. Median total comp is ${formatCurrency(stats.median)}. See top companies, highest-paying jobs, and local market insights.`}
-        />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta name="robots" content={data.indexing?.shouldNoIndex ? 'noindex,follow' : 'index,follow'} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-        {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
-      </Head>
+      <Script id="place-schema" type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </Script>
+      <Script id="breadcrumb-schema" type="application/ld+json">
+        {JSON.stringify(breadcrumbSchema)}
+      </Script>
+      <Script id="dataset-schema" type="application/ld+json">
+        {JSON.stringify(datasetSchema)}
+      </Script>
+      {faqSchema && (
+        <Script id="faq-schema" type="application/ld+json">
+          {JSON.stringify(faqSchema)}
+        </Script>
+      )}
 
       <main className="min-h-screen bg-white">
         <div className="max-w-6xl mx-auto px-6 py-12 space-y-8">
-          <Breadcrumbs items={[
-            { label: 'Salaries', href: '/salaries' },
-            { label: cityLabel },
-          ]} />
+          <Breadcrumbs
+            items={[
+              { label: "Salaries", href: "/salaries" },
+              { label: cityLabel },
+            ]}
+          />
 
+          {/* Header */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-emerald-600">
               <MapPin className="h-5 w-5" />
-              <span className="text-sm font-medium uppercase tracking-wide">City Salary Hub</span>
+              <span className="text-sm font-medium uppercase tracking-wide">
+                City Salary Hub
+              </span>
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-slate-900">
               {cityLabel} Salary Data
             </h1>
             <p className="text-xl text-slate-600 max-w-3xl">
-              Compensation insights for tech professionals in the {cityData.metro} metro area.
+              Compensation insights for professionals in the{" "}
+              {locationData.metro || locationData.city} metro area.
             </p>
           </div>
 
+          {/* Data confidence */}
           {data.dataConfidence && (
-            <DataConfidence confidence={data.dataConfidence} entityName={cityLabel} />
+            <DataConfidence
+              confidence={data.dataConfidence}
+              entityName={cityLabel}
+            />
           )}
 
+          {/* Low data warning */}
+          {data.dataConfidence?.confidenceLabel === "insufficient" && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+              <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold">Limited data for {locationData.city}</p>
+                <p>
+                  We have {stats.count} data points for this city. Results are
+                  preliminary and will improve as more salaries are reported.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Compensation overview */}
           <Card className="bg-white border-emerald-500/50 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
@@ -325,76 +500,87 @@ export default function CityPage() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-emerald-600">{formatCurrency(stats.median)}</p>
-                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">Median Total Comp</p>
+                  <p className="text-4xl font-bold text-emerald-600">
+                    {formatCurrency(stats.median)}
+                  </p>
+                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">
+                    Median Total Comp
+                  </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-800">{formatCurrency(stats.p25)}</p>
-                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">25th Percentile</p>
+                  <p className="text-3xl font-semibold text-slate-800">
+                    {formatCurrency(stats.p25)}
+                  </p>
+                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">
+                    25th Percentile
+                  </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-800">{formatCurrency(stats.p75)}</p>
-                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">75th Percentile</p>
+                  <p className="text-3xl font-semibold text-slate-800">
+                    {formatCurrency(stats.p75)}
+                  </p>
+                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">
+                    75th Percentile
+                  </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-800">{stats.count.toLocaleString()}</p>
-                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">Data Points</p>
+                  <p className="text-3xl font-semibold text-slate-800">
+                    {stats.count.toLocaleString()}
+                  </p>
+                  <p className="text-sm font-medium text-slate-500 uppercase mt-1">
+                    Data Points
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Generated Value Blocks */}
+          {/* Value blocks */}
           <ValueBlockRenderer blocks={valueBlocks || []} />
 
+          {/* Percentile bands */}
           <PercentileBands
-            percentiles={{ p10: stats.p10, p25: stats.p25, p50: stats.median, p75: stats.p75, p90: stats.p90 }}
+            percentiles={{
+              p10: stats.p10,
+              p25: stats.p25,
+              p50: stats.median,
+              p75: stats.p75,
+              p90: stats.p90,
+            }}
             entityName={cityLabel}
             submissionCount={stats.count}
           />
 
-          {data.compMix && <CompMixBreakdown compMix={data.compMix} entityName={cityLabel} />}
-          <EnrichmentDebugBanner
-            entityType="City"
-            entityName={cityLabel}
-            enrichmentStatus={enrichmentStatus}
-            analysisExists={!!cityData.analysis}
-            analysisKeys={cityData.analysis ? Object.keys(cityData.analysis) : []}
-            enrichedAt={cityData.analysisGeneratedAt}
-          />
-
-          {cityData.analysis ? (
-            <InsightCards analysis={cityData.analysis} entityName={cityLabel} />
-          ) : (enrichmentStatus === 'pending' || enrichmentStatus === 'processing') ? (
-            <InsightCardsSkeleton />
-          ) : (
-            <Card className="bg-slate-50 border-slate-200 border-dashed">
-              <CardContent className="py-8">
-                <p className="text-center text-slate-500">
-                  {enrichmentStatus === 'failed' || enrichmentStatus === 'error'
-                    ? `We couldn't generate market analysis for ${cityLabel} yet. It will be retried automatically.`
-                    : `Analysis pending for ${cityLabel}. Check back shortly.`}
-                </p>
-              </CardContent>
-            </Card>
+          {/* Comp mix */}
+          {data.compMix && (
+            <CompMixBreakdown compMix={data.compMix} entityName={cityLabel} />
           )}
 
+          {/* Analysis insights */}
+          {locationData.analysis && (
+            <InsightCards
+              analysis={locationData.analysis}
+              entityName={cityLabel}
+            />
+          )}
+
+          {/* Top Companies */}
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-slate-600" />
-                Top Companies in {cityData.city}
+                Top Companies in {locationData.city}
               </CardTitle>
             </CardHeader>
             <CardContent>
               {topCompanies.length > 0 ? (
                 <DataTable
                   headers={[
-                    { label: 'Company', key: 'company' },
-                    { label: 'Median Comp', key: 'median' },
-                    { label: 'Data Points', key: 'count' },
+                    { label: "Company", key: "company" },
+                    { label: "Median Comp", key: "median" },
+                    { label: "Data Points", key: "count" },
                   ]}
-                  rows={topCompanies.map(c => [
+                  rows={topCompanies.map((c) => [
                     <Link
                       key={c.company_name}
                       href={`/company/${encodeURIComponent(c.company_name)}`}
@@ -408,28 +594,29 @@ export default function CityPage() {
                 />
               ) : (
                 <p className="text-slate-500 text-center py-8">
-                  No company data available for {cityData.city} yet.
+                  No company data available for {locationData.city} yet.
                 </p>
               )}
             </CardContent>
           </Card>
 
+          {/* Top Jobs */}
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-slate-600" />
-                Highest Paying Jobs in {cityData.city}
+                Highest Paying Jobs in {locationData.city}
               </CardTitle>
             </CardHeader>
             <CardContent>
               {topJobs.length > 0 ? (
                 <DataTable
                   headers={[
-                    { label: 'Job Title', key: 'job' },
-                    { label: 'Median Comp', key: 'median' },
-                    { label: 'Data Points', key: 'count' },
+                    { label: "Job Title", key: "job" },
+                    { label: "Median Comp", key: "median" },
+                    { label: "Data Points", key: "count" },
                   ]}
-                  rows={topJobs.map(j => [
+                  rows={topJobs.map((j) => [
                     <Link
                       key={j.job_title}
                       href={`/jobs/${encodeURIComponent(j.job_title)}`}
@@ -443,49 +630,109 @@ export default function CityPage() {
                 />
               ) : (
                 <p className="text-slate-500 text-center py-8">
-                  No job data available for {cityData.city} yet.
+                  No job data available for {locationData.city} yet.
                 </p>
               )}
             </CardContent>
           </Card>
 
+          {/* Related Cities */}
+          <RelatedCities
+            nearbyCities={nearbyCities}
+            cityName={locationData.city}
+          />
 
+          {/* Compare vs Peer Cities (dynamic) */}
+          {cityPeers.length > 0 && (
+            <Card className="bg-white border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-emerald-600" />
+                  Compare {locationData.city} vs Related Cities
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {cityPeers.slice(0, 6).map((peer) => {
+                    const slug = getComparisonSlug(
+                      `${locationData.city}, ${locationData.state}`,
+                      `${peer.city}, ${peer.state}`
+                    );
+                    return (
+                      <Link
+                        key={peer.slug}
+                        href={`/compare/${slug}`}
+                        className="block rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="font-semibold text-slate-900">
+                              {locationData.city} vs {peer.city}
+                            </span>
+                            <p className="text-xs text-slate-500 mt-1">
+                              {peer.reason} · {peer.sampleSize} data points
+                            </p>
+                          </div>
+                          <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                            Compare
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-          <RelatedCities nearbyCities={nearbyCities} cityName={cityData.city} />
+          {/* Compare top jobs in this city vs national */}
+          {topJobs.length > 0 && (
+            <Card className="bg-white border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-emerald-600" />
+                  Compare Jobs in {locationData.city}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {topJobs.slice(0, 4).map((job, i) => {
+                    const nextJob = topJobs[i + 1];
+                    if (!nextJob) return null;
+                    const slug = getComparisonSlug(job.job_title, nextJob.job_title);
+                    return (
+                      <Link
+                        key={slug}
+                        href={`/compare/${slug}`}
+                        className="block rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold text-slate-900">
+                            {job.job_title} vs {nextJob.job_title}
+                          </span>
+                          <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                            Compare
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Compare vs Peer Cities */}
-          <Card className="bg-white border-slate-200 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-emerald-600" />
-                Compare {cityData.city} vs Related Cities
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {nearbyCities.slice(0, 6).map((city) => (
-                  <Link
-                    key={city.label}
-                    href={`/compare/${encodeURIComponent(cityData.city.toLowerCase().replace(/ /g, '-'))}-vs-${encodeURIComponent(city.label.toLowerCase().replace(/ /g, '-'))}`}
-                    className="block rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-slate-900">{cityData.city} vs {city.label}</span>
-                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Compare</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
+          {/* FAQs */}
           {data.faq && data.faq.length > 0 && (
             <FAQSection faqs={data.faq} entityName={cityLabel} />
           )}
 
+          {/* External links */}
           {data.externalLinks && data.externalLinks.length > 0 && (
             <ExternalLinksSection links={data.externalLinks} />
           )}
+
+          {/* Explore more */}
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
@@ -495,26 +742,41 @@ export default function CityPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <Link href="/salaries" className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors">
+                <Link
+                  href="/salaries"
+                  className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                >
                   <p className="font-semibold text-slate-900 flex items-center gap-2">
                     <Users className="h-4 w-4 text-slate-500" />
                     All Salary Data
                   </p>
-                  <p className="text-sm text-slate-500 mt-1">Browse salaries across all cities</p>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Browse salaries across all cities
+                  </p>
                 </Link>
-                <Link href="/companies" className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors">
+                <Link
+                  href="/companies"
+                  className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                >
                   <p className="font-semibold text-slate-900 flex items-center gap-2">
                     <Building2 className="h-4 w-4 text-slate-500" />
                     All Companies
                   </p>
-                  <p className="text-sm text-slate-500 mt-1">Compare compensation across employers</p>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Compare compensation across employers
+                  </p>
                 </Link>
-                <Link href="/contribute" className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors">
+                <Link
+                  href="/contribute"
+                  className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                >
                   <p className="font-semibold text-slate-900 flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-slate-500" />
                     Submit Your Salary
                   </p>
-                  <p className="text-sm text-slate-500 mt-1">Help grow the {cityData.city} dataset</p>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Help grow the {locationData.city} dataset
+                  </p>
                 </Link>
               </div>
             </CardContent>

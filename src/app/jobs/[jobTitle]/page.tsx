@@ -56,6 +56,7 @@ export default function JobDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [enrichmentStatus, setEnrichmentStatus] = useState<string>('none');
   const [similarJobs, setSimilarJobs] = useState<{ company: string; medianComp: number; sampleSize: number; href: string; reason: string }[]>([]);
+  const [similarRoles, setSimilarRoles] = useState<{ jobTitle: string; slug: string; medianComp: number; sampleSize: number; reason: string }[]>([]);
 
   useEffect(() => {
     if (!jobTitleSlug) return;
@@ -71,7 +72,21 @@ export default function JobDetailPage() {
         console.warn('Failed to fetch similar jobs', e);
       }
     };
+
+    const fetchSimilarRoles = async () => {
+      try {
+        const res = await fetch(`/api/similar-jobs?job=${encodeURIComponent(jobTitleSlug)}&limit=6`);
+        if (res.ok) {
+          const json = await res.json();
+          setSimilarRoles(json.similar || []);
+        }
+      } catch (e) {
+        console.warn('Failed to fetch similar roles', e);
+      }
+    };
+
     fetchSimilar();
+    fetchSimilarRoles();
   }, [jobTitleSlug]);
 
   useEffect(() => {
@@ -438,31 +453,70 @@ export default function JobDetailPage() {
 
 
 
-          {/* Compare vs Related Jobs */}
-          <Card className="bg-white border-slate-200 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
-                <Users className="w-5 h-5 text-emerald-600" />
-                Compare {jobData.title} vs Related Roles
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {relatedJobs.slice(0, 6).map((job) => (
-                  <Link
-                    key={job.title}
-                    href={`/compare/${encodeURIComponent(jobData.title.toLowerCase().replace(/ /g, '-'))}-vs-${encodeURIComponent(job.title.toLowerCase().replace(/ /g, '-'))}`}
-                    className="block rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-slate-900">{jobData.title} vs {job.title}</span>
-                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Compare</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Compare vs Similar Jobs (powered by similarity engine) */}
+          {similarRoles.length > 0 && (
+            <Card className="bg-white border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-emerald-600" />
+                  Compare {jobData.title} vs Similar Roles
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {similarRoles.map((role) => (
+                    <Link
+                      key={role.slug}
+                      href={`/compare/${encodeURIComponent(jobData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''))}-vs-${role.slug}`}
+                      className="block rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="font-semibold text-slate-900">{jobData.title} vs {role.jobTitle}</span>
+                          <p className="text-xs text-slate-500 mt-1">
+                            Median: {formatCurrency(role.medianComp)} · {role.sampleSize} reports
+                          </p>
+                        </div>
+                        <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full shrink-0">
+                          {role.reason}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Compare this job across companies (MVP) */}
+          {similarJobs.length > 1 && (
+            <Card className="bg-white border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-emerald-600" />
+                  Compare {jobData.title} Across Companies
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {similarJobs.slice(0, 5).map((jobA, i) =>
+                    similarJobs.slice(i + 1, i + 2).map((jobB) => (
+                      <Link
+                        key={`${jobA.company}-${jobB.company}`}
+                        href={`/compare/${encodeURIComponent(jobA.company.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''))}-vs-${encodeURIComponent(jobB.company.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''))}`}
+                        className="block rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-slate-50 transition-colors"
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold text-slate-900">{jobA.company} vs {jobB.company}</span>
+                          <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Compare</span>
+                        </div>
+                      </Link>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* FAQ Section */}
           {data.faq && data.faq.length > 0 && (
