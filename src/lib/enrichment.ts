@@ -429,6 +429,8 @@ export async function hasPendingEnrichmentJobs(): Promise<boolean> {
 
 /**
  * Best-effort local trigger so newly queued jobs don't rely solely on external cron/webhooks.
+ * Also recovers failed jobs each pass — this is the primary self-healing mechanism
+ * on Hobby plan where cron only runs once per day.
  */
 export async function triggerAutoQueueProcessor() {
   if (isAutoProcessorRunning) {
@@ -440,6 +442,11 @@ export async function triggerAutoQueueProcessor() {
   log('info', 'auto_processor_start', 'Auto queue processor started');
 
   try {
+    // Recover failed jobs first — makes them available for processing below.
+    // This is the key self-healing mechanism: every time someone visits a page
+    // and triggers enrichment, previously failed jobs also get a fresh chance.
+    await recoverFailedJobs(5);
+
     let processedInPass = 0;
 
     // Process up to MAX jobs, but stop if we run out of pending jobs

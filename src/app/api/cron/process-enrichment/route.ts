@@ -1,12 +1,29 @@
 import { NextResponse } from 'next/server';
-import { processNextEnrichmentJob, recoverFailedJobs, hasPendingEnrichmentJobs } from '@/lib/enrichment';
+import {
+    processNextEnrichmentJob,
+    recoverFailedJobs,
+    hasPendingEnrichmentJobs,
+    backfillMissingAnalysis,
+} from '@/lib/enrichment';
 import { log } from '@/lib/enrichmentLogger';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 300; // 5 min — LLM calls can take 60s+ per model
+// Hobby plan caps at 60s — keep this as high as the plan allows.
+// On Pro this becomes 300s. Vercel will clamp to the plan maximum.
+export const maxDuration = 300;
 
+/**
+ * Single daily cron (Hobby) or frequent cron (Pro).
+ *
+ * Runs three phases in order of priority:
+ *   1. Recovery  — reset failed jobs to pending (DB-only, fast)
+ *   2. Backfill  — queue entities that have no analysis yet (DB-only, fast)
+ *   3. Process   — actually run LLM generation for pending jobs
+ *
+ * On Hobby (60s cap), recovery + backfill finish in ~5s, leaving ~50s
+ * for 1 LLM job. The auto-processor handles the rest during page visits.
+ */
 export async function GET(request: Request) {
-    // Verify Vercel cron secret (if configured) to prevent unauthorized triggers
     const cronSecret = process.env.CRON_SECRET;
     if (cronSecret) {
         const authHeader = request.headers.get('authorization');
@@ -16,15 +33,18 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const limit = Math.min(parseInt(searchParams.get('limit') || '3', 10), 10);
+    const limit = Math.min(parseInt(searchParams.get('limit') || '1', 10), 10);
 
-    log('info', 'cron_process_start', `Starting enrichment processor via cron`, { limit });
+    log('info', 'cron_process_start', `Starting enrichment cron (recovery + backfill + process)`, { limit });
 
     try {
-        // Step 1: Recover failed jobs whose backoff has expired (gives them fresh retries)
-        const recovered = await recoverFailedJobs(10);
+        // Phase 1: Recover failed jobs (DB-only, ~1-2s)
+        const recovered = await recoverFailedJobs(20);
 
-        // Step 2: Process pending jobs
+        // Phase 2: Backfill entities missing analysis (DB-only, ~2-5s)
+        const backfill = await backfillMissingAnalysis(25);
+
+        // Phase 3: Process pending jobs (LLM calls — this is the slow part)
         const results = [];
         for (let i = 0; i < limit; i++) {
             const result = await processNextEnrichmentJob();
@@ -41,6 +61,7 @@ export async function GET(request: Request) {
 
         return NextResponse.json({
             recovered,
+            backfilled: backfill.enqueued,
             processed: results.length,
             remaining,
             results: results.map(r => ({
