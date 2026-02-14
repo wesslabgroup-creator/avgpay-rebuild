@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { backfillMissingAnalysis } from '@/lib/enrichment';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 120;
+
 /**
  * POST /api/enrichment-backfill
  *

@@ -72,7 +72,7 @@ Analyze the provided Entity ({{entityName}}) and return a JSON object with uniqu
     * *Bad (Generic):* "Austin is a tech hub with good jobs."
     * *Good (Specific):* "Austin's 'Silicon Hills' status creates a salary floor that competes with the West Coast, specifically in semiconductor and SaaS sectors."
 3.  **DEPTH REQUIREMENT:** Each JSON value must be 2-3 sentences long and contain at least one "Why" statement (Cause & Effect). Surface-level content will be rejected as "thin."
-4.  **TIMELESSNESS:** Do not use dates (2024, 2025) or words like "currently/now." Use "Historically," "Typically," or "Market fundamentals."
+4.  **TIMELESSNESS:** Do not use ANY specific years or dates. Do not use words like "currently," "now," "recent," or "as of." Use "Historically," "Typically," or "Market fundamentals."
 5.  **NO HYPE / NO FABRICATION:** Never invent compensation numbers, never claim verification, and never market the entity.
 6.  **DATA-CONTEXT ONLY:** Use only the provided context. If context is sparse, state constraints conservatively.
 
@@ -187,11 +187,14 @@ export function validateAnalysis(
   }
 
   // Fail if it uses banned words (temporal references)
+  // Dynamically ban current year ± 1 so this never needs manual updates.
   // Use word boundaries (\b) so "known", "knowledge", "innovation" don't false-positive on "now"
-  const bannedPattern = /\b(2024|2025|currently|now)\b/i;
+  const currentYear = new Date().getFullYear();
+  const bannedYears = [currentYear - 2, currentYear - 1, currentYear];
+  const bannedPattern = new RegExp(`\\b(${bannedYears.join('|')}|currently|now)\\b`, 'i');
   const jsonStr = JSON.stringify(jsonResponse);
   if (bannedPattern.test(jsonStr)) {
-    return { valid: false, reason: 'Contains banned temporal words (2024, 2025, currently, now). Must be timeless.' };
+    return { valid: false, reason: `Contains banned temporal words (${bannedYears.join(', ')}, currently, now). Must be timeless.` };
   }
 
   if (entityType === 'Comparison' && !COMPARATIVE_LANGUAGE_PATTERN.test(jsonStr)) {
@@ -310,9 +313,8 @@ export async function generateTimelessAnalysis(
   }
 
   userPrompt += `\nGenerate the timeless financial analysis JSON for this ${entityType}. Return ONLY valid JSON matching the schema for ENTITY_TYPE "${entityType}".`;
-  const llmPrompt = systemPrompt + '\n\n---\n\n' + userPrompt;
 
-  const result = await generateWithFallback(llmPrompt, (content) => {
+  const result = await generateWithFallback(userPrompt, (content) => {
     try {
       const parsed = JSON.parse(content) as Record<string, unknown>;
       const validation = validateAnalysis(parsed, entityType);
@@ -333,7 +335,7 @@ export async function generateTimelessAnalysis(
         reason: 'Malformed JSON response from model',
       };
     }
-  });
+  }, { systemPrompt });
 
   const analysis = JSON.parse(result.content) as AnalysisResult;
 
@@ -363,8 +365,9 @@ const AUTO_PROCESS_DELAY_MS = 750;
 /** Unique worker ID for locking (per-instance) */
 const WORKER_ID = `worker-${crypto.randomUUID().slice(0, 8)}`;
 
-/** Lock timeout: if a job has been locked for longer than this, it's considered stale */
-const LOCK_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+/** Lock timeout: if a job has been locked for longer than this, it's considered stale.
+ *  Increased to 10 min to accommodate longer LLM timeouts (60s × up to 6 attempts). */
+const LOCK_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -525,11 +528,12 @@ export async function queueEnrichment(
   if (failedJob) {
     const runAfter = failedJob.runAfter ? new Date(failedJob.runAfter) : new Date(0);
     if (runAfter <= new Date()) {
-      // Reset the failed job back to pending
+      // Reset the failed job back to pending with fresh attempt counter
       await supabaseAdmin
         .from('EnrichmentQueue')
         .update({
           status: 'pending',
+          attempts: 0,
           lastError: null,
           contextData: normalizedContextData,
           runAfter: new Date().toISOString(),
@@ -916,6 +920,67 @@ export async function processAllPendingJobs(): Promise<{
 }
 
 /**
+ * Recover failed enrichment jobs by resetting them to pending with fresh attempts.
+ * Called by the process-enrichment cron before processing new jobs.
+ *
+ * Only recovers jobs whose backoff has expired. Resets `attempts` to 0
+ * so each recovery cycle gets a full set of retries.
+ */
+export async function recoverFailedJobs(limit = 10): Promise<number> {
+  const now = new Date().toISOString();
+
+  const { data: failedJobs, error } = await supabaseAdmin
+    .from('EnrichmentQueue')
+    .select('id, entityType, entityId, entityName, attempts')
+    .eq('status', 'failed')
+    .lte('runAfter', now)
+    .order('createdAt', { ascending: true })
+    .limit(limit);
+
+  if (error || !failedJobs || failedJobs.length === 0) {
+    return 0;
+  }
+
+  let recovered = 0;
+  for (const job of failedJobs) {
+    const { error: updateError } = await supabaseAdmin
+      .from('EnrichmentQueue')
+      .update({
+        status: 'pending',
+        attempts: 0,
+        lastError: null,
+        runAfter: now,
+        lockedAt: null,
+        lockedBy: null,
+      })
+      .eq('id', job.id)
+      .eq('status', 'failed'); // Optimistic lock
+
+    if (!updateError) {
+      recovered++;
+
+      const table = entityTableName(job.entityType);
+      if (table) {
+        await supabaseAdmin
+          .from(table)
+          .update({ enrichmentStatus: 'pending', enrichmentError: null })
+          .eq('id', job.entityId);
+      }
+
+      log('info', 'job_recovered', `Recovered failed job for ${job.entityType} "${job.entityName}"`, {
+        jobId: job.id, previousAttempts: job.attempts,
+      });
+    }
+  }
+
+  if (recovered > 0) {
+    log('info', 'recovery_complete', `Recovered ${recovered} failed jobs`, { recovered });
+  }
+
+  return recovered;
+}
+
+/**
  * Check the enrichment status for a specific entity.
  */
 export async function getEnrichmentStatus(
@@ -976,7 +1041,7 @@ export async function backfillMissingAnalysis(batchSize = 25): Promise<{
   const { data: companies } = await supabaseAdmin
     .from('Company')
     .select('id, name')
-    .or('analysis.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
+    .or('analysis.is.null,enrichmentStatus.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
     .limit(remaining());
 
   const companiesScanned = companies?.length ?? 0;
@@ -992,7 +1057,7 @@ export async function backfillMissingAnalysis(batchSize = 25): Promise<{
   const { data: roles } = await supabaseAdmin
     .from('Role')
     .select('id, title')
-    .or('analysis.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
+    .or('analysis.is.null,enrichmentStatus.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
     .limit(remaining());
 
   const rolesScanned = roles?.length ?? 0;
@@ -1008,7 +1073,7 @@ export async function backfillMissingAnalysis(batchSize = 25): Promise<{
   const { data: locations } = await supabaseAdmin
     .from('Location')
     .select('id, city, state')
-    .or('analysis.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
+    .or('analysis.is.null,enrichmentStatus.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
     .limit(remaining());
 
   const locationsScanned = locations?.length ?? 0;

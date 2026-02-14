@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/process-enrichment?limit=3",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/backfill-enrichment?limit=25",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}
