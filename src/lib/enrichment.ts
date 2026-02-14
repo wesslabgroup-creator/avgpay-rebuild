@@ -310,9 +310,8 @@ export async function generateTimelessAnalysis(
   }
 
   userPrompt += `\nGenerate the timeless financial analysis JSON for this ${entityType}. Return ONLY valid JSON matching the schema for ENTITY_TYPE "${entityType}".`;
-  const llmPrompt = systemPrompt + '\n\n---\n\n' + userPrompt;
 
-  const result = await generateWithFallback(llmPrompt, (content) => {
+  const result = await generateWithFallback(userPrompt, (content) => {
     try {
       const parsed = JSON.parse(content) as Record<string, unknown>;
       const validation = validateAnalysis(parsed, entityType);
@@ -333,7 +332,7 @@ export async function generateTimelessAnalysis(
         reason: 'Malformed JSON response from model',
       };
     }
-  });
+  }, { systemPrompt });
 
   const analysis = JSON.parse(result.content) as AnalysisResult;
 
@@ -363,8 +362,9 @@ const AUTO_PROCESS_DELAY_MS = 750;
 /** Unique worker ID for locking (per-instance) */
 const WORKER_ID = `worker-${crypto.randomUUID().slice(0, 8)}`;
 
-/** Lock timeout: if a job has been locked for longer than this, it's considered stale */
-const LOCK_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+/** Lock timeout: if a job has been locked for longer than this, it's considered stale.
+ *  Increased to 10 min to accommodate longer LLM timeouts (60s × up to 6 attempts). */
+const LOCK_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));

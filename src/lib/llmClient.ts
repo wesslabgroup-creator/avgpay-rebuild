@@ -40,7 +40,15 @@ const OPENROUTER_SECONDARY_MODEL = process.env.OPENROUTER_SECONDARY_MODEL ?? 'x-
 const OPENROUTER_TERTIARY_MODEL = process.env.OPENROUTER_TERTIARY_MODEL ?? 'stepfun/step-3.5-flash:free';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const OPENROUTER_TIMEOUT_MS = Number(process.env.OPENROUTER_TIMEOUT_MS ?? 12000);
+
+/** Per-model request timeout. Default 60s — LLM generation with complex prompts needs much more than 12s. */
+const OPENROUTER_TIMEOUT_MS = Number(process.env.OPENROUTER_TIMEOUT_MS ?? 60_000);
+
+/** How many times to retry the same model before falling back to the next one. */
+const OPENROUTER_RETRIES_PER_MODEL = Number(process.env.OPENROUTER_RETRIES_PER_MODEL ?? 1);
+
+/** Delay between retries of the same model (scales with retry index). */
+const OPENROUTER_RETRY_DELAY_MS = 3_000;
 
 const geminiClient = process.env.GEMINI_API_KEY
   ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
@@ -77,67 +85,96 @@ async function generateWithGemini(modelName: string, prompt: string): Promise<st
 
 
 function modelSupportsJsonResponseFormat(modelName: string): boolean {
-  return !/stepfun\/step-3\.5-flash:free/i.test(modelName);
+  // Models known to NOT support structured response_format
+  return !/stepfun\/step-3\.5-flash/i.test(modelName);
 }
 
-function withTimeoutSignal(timeoutMs: number): AbortSignal {
-  const controller = new AbortController();
-  setTimeout(() => controller.abort(), timeoutMs);
-  return controller.signal;
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function generateWithOpenRouter(modelName: string, prompt: string): Promise<string> {
+async function generateWithOpenRouter(
+  modelName: string,
+  prompt: string,
+  systemPrompt?: string,
+): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error('OPENROUTER_API_KEY is not configured.');
   }
 
-  const requestPayload: {
-    model: string;
-    messages: Array<{ role: 'user'; content: string }>;
-    temperature: number;
-    response_format?: { type: 'json_object' };
-  } = {
+  // Build messages — use proper system/user roles when a system prompt is provided
+  const messages: Array<{ role: string; content: string }> = [];
+  if (systemPrompt) {
+    messages.push({ role: 'system', content: systemPrompt });
+    messages.push({ role: 'user', content: prompt });
+  } else {
+    messages.push({ role: 'user', content: prompt });
+  }
+
+  const requestPayload: Record<string, unknown> = {
     model: modelName,
-    messages: [{ role: 'user', content: prompt }],
+    messages,
     temperature: 0.3,
+    max_tokens: 4096,
   };
 
   if (modelSupportsJsonResponseFormat(modelName)) {
     requestPayload.response_format = { type: 'json_object' };
   }
 
-  const response = await fetch(OPENROUTER_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    signal: withTimeoutSignal(OPENROUTER_TIMEOUT_MS),
-    body: JSON.stringify(requestPayload),
-  });
+  // Use AbortController with proper cleanup to prevent timer leaks
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), OPENROUTER_TIMEOUT_MS);
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`OpenRouter API error (${response.status}): ${errorText}`);
+  try {
+    const response = await fetch(OPENROUTER_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal,
+      body: JSON.stringify(requestPayload),
+    });
+
+    if (!response.ok) {
+      let errorText: string;
+      try {
+        errorText = await response.text();
+      } catch {
+        errorText = '(could not read error body)';
+      }
+      throw new Error(`OpenRouter API error (${response.status}): ${errorText}`);
+    }
+
+    const responsePayload = await response.json() as {
+      error?: { message?: string; code?: number };
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+
+    if (responsePayload.error?.message) {
+      throw new Error(`OpenRouter model error: ${responsePayload.error.message}`);
+    }
+
+    const content = responsePayload.choices?.[0]?.message?.content;
+
+    if (!content) {
+      throw new Error('OpenRouter returned no message content.');
+    }
+
+    return content;
+  } catch (err) {
+    // Provide a clear message for timeout aborts instead of generic "This operation was aborted"
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error(
+        `OpenRouter request timed out after ${OPENROUTER_TIMEOUT_MS}ms for model ${modelName}`
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
   }
-
-  const responsePayload = await response.json() as {
-    error?: { message?: string };
-    choices?: Array<{ message?: { content?: string } }>;
-  };
-
-  if (responsePayload.error?.message) {
-    throw new Error(`OpenRouter model error: ${responsePayload.error.message}`);
-  }
-
-  const content = responsePayload.choices?.[0]?.message?.content;
-
-  if (!content) {
-    throw new Error('OpenRouter returned no message content.');
-  }
-
-  return content;
 }
 
 function classifyFailure(error: unknown): Pick<LlmAttemptFailure, 'reason' | 'message'> {
@@ -147,58 +184,84 @@ function classifyFailure(error: unknown): Pick<LlmAttemptFailure, 'reason' | 'me
     return { reason: 'malformed_json', message };
   }
 
-  if (/api|status|network|timeout|abort/i.test(message)) {
+  if (/api|status|network|timeout|abort|timed out/i.test(message)) {
     return { reason: 'api_error', message };
   }
 
   return { reason: 'model_error', message };
 }
 
+/**
+ * Generate content using the configured LLM provider with fallback chain and per-model retries.
+ *
+ * @param prompt       The user/content prompt
+ * @param qualityGate  Validation function run on each model's output
+ * @param options.systemPrompt  Optional system prompt (sent as a separate system message for OpenRouter)
+ */
 export async function generateWithFallback(
   prompt: string,
-  qualityGate: (content: string) => QualityGateResult
+  qualityGate: (content: string) => QualityGateResult,
+  options?: { systemPrompt?: string },
 ): Promise<LlmGenerationResult> {
   const chain = buildModelChain();
   const failures: LlmAttemptFailure[] = [];
 
   for (const entry of chain) {
-    try {
-      const content = entry.provider === 'openrouter'
-        ? await generateWithOpenRouter(entry.model, prompt)
-        : await generateWithGemini(entry.model, prompt);
+    for (let retry = 0; retry <= OPENROUTER_RETRIES_PER_MODEL; retry++) {
+      try {
+        const content = entry.provider === 'openrouter'
+          ? await generateWithOpenRouter(entry.model, prompt, options?.systemPrompt)
+          : await generateWithGemini(
+              entry.model,
+              options?.systemPrompt
+                ? options.systemPrompt + '\n\n---\n\n' + prompt
+                : prompt,
+            );
 
-      const qualityCheck = qualityGate(content);
-      if (!qualityCheck.valid) {
+        const qualityCheck = qualityGate(content);
+        if (!qualityCheck.valid) {
+          failures.push({
+            provider: entry.provider,
+            model: entry.model,
+            reason: qualityCheck.reasonType ?? 'low_quality',
+            message: qualityCheck.reason ?? 'Generated content did not pass quality checks.',
+          });
+          // Quality failures won't improve with a simple retry — move to next model
+          break;
+        }
+
+        return {
+          content,
+          provider: entry.provider,
+          model: entry.model,
+          attempts: failures,
+        };
+      } catch (error) {
+        const failure = classifyFailure(error);
+
+        log('warn', 'llm_attempt_failed', `LLM attempt failed (model=${entry.model}, retry=${retry}/${OPENROUTER_RETRIES_PER_MODEL})`, {
+          provider: entry.provider,
+          model: entry.model,
+          retry,
+          maxRetries: OPENROUTER_RETRIES_PER_MODEL,
+          reason: failure.reason,
+          message: failure.message,
+        });
+
+        // If we have retries left for this model, wait and retry
+        if (retry < OPENROUTER_RETRIES_PER_MODEL) {
+          await sleep(OPENROUTER_RETRY_DELAY_MS * (retry + 1));
+          continue;
+        }
+
+        // No more retries for this model — record failure and move to next model
         failures.push({
           provider: entry.provider,
           model: entry.model,
-          reason: qualityCheck.reasonType ?? 'low_quality',
-          message: qualityCheck.reason ?? 'Generated content did not pass quality checks.',
+          reason: failure.reason,
+          message: failure.message,
         });
-        continue;
       }
-
-      return {
-        content,
-        provider: entry.provider,
-        model: entry.model,
-        attempts: failures,
-      };
-    } catch (error) {
-      const failure = classifyFailure(error);
-      failures.push({
-        provider: entry.provider,
-        model: entry.model,
-        reason: failure.reason,
-        message: failure.message,
-      });
-
-      log('warn', 'llm_attempt_failed', 'LLM generation attempt failed; moving to fallback model', {
-        provider: entry.provider,
-        model: entry.model,
-        reason: failure.reason,
-        message: failure.message,
-      });
     }
   }
 
