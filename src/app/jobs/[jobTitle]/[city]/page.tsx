@@ -37,10 +37,10 @@ function formatCurrency(value: number): string {
 export const dynamicParams = true;
 export const revalidate = 21600;
 
-function getCachedProfile(jobTitle: string, cityName: string) {
+function getCachedProfile(jobTitle: string, cityName?: string) {
   return unstable_cache(
     async () => getCompareProfile(jobTitle, cityName),
-    ["job-city-profile", jobTitle.toLowerCase(), cityName.toLowerCase()],
+    ["job-city-profile", jobTitle.toLowerCase(), (cityName ?? "global").toLowerCase()],
     { revalidate: 21600, tags: ["job-city-profile"] },
   )();
 }
