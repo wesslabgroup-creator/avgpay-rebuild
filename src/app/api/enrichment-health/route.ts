@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { getRecentEnrichmentJobs } from '@/lib/enrichment';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 30;
+
 /**
  * GET /api/enrichment-health
  *

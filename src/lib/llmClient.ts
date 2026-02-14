@@ -203,6 +203,14 @@ export async function generateWithFallback(
   qualityGate: (content: string) => QualityGateResult,
   options?: { systemPrompt?: string },
 ): Promise<LlmGenerationResult> {
+  // Fail fast if the API key is missing — don't burn through retries for a config error
+  if (DEFAULT_PROVIDER === 'openrouter' && !process.env.OPENROUTER_API_KEY) {
+    throw new Error('OPENROUTER_API_KEY is not configured. Set it in your environment variables.');
+  }
+  if (DEFAULT_PROVIDER === 'gemini' && !process.env.GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY is not configured. Set it in your environment variables.');
+  }
+
   const chain = buildModelChain();
   const failures: LlmAttemptFailure[] = [];
 

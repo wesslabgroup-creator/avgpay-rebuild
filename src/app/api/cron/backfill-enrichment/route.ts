@@ -22,6 +22,15 @@ export const maxDuration = 120; // Backfill only queues jobs (no LLM calls), but
 const NEEDS_ENRICHMENT_FILTER = 'analysis.is.null,enrichmentStatus.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none';
 
 export async function GET(request: Request) {
+    // Verify Vercel cron secret (if configured) to prevent unauthorized triggers
+    const cronSecret = process.env.CRON_SECRET;
+    if (cronSecret) {
+        const authHeader = request.headers.get('authorization');
+        if (authHeader !== `Bearer ${cronSecret}`) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+    }
+
     const { searchParams } = new URL(request.url);
     const limit = Math.min(parseInt(searchParams.get('limit') || '25', 10), 100);
     const entityTypeFilter = searchParams.get('type');

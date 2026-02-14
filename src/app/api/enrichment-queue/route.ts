@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { processNextEnrichmentJob, processAllPendingJobs } from '@/lib/enrichment';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 300; // LLM calls can take 60s+ per model
+
 /**
  * POST /api/enrichment-queue
  *

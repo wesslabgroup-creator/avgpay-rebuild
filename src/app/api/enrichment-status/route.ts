@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getEnrichmentStatus, type EntityType } from '@/lib/enrichment';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 30;
+
 /**
  * GET /api/enrichment-status?entityType=Company&entityId=xxx
  *

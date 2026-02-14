@@ -6,6 +6,15 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5 min — LLM calls can take 60s+ per model
 
 export async function GET(request: Request) {
+    // Verify Vercel cron secret (if configured) to prevent unauthorized triggers
+    const cronSecret = process.env.CRON_SECRET;
+    if (cronSecret) {
+        const authHeader = request.headers.get('authorization');
+        if (authHeader !== `Bearer ${cronSecret}`) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+    }
+
     const { searchParams } = new URL(request.url);
     const limit = Math.min(parseInt(searchParams.get('limit') || '3', 10), 10);
 

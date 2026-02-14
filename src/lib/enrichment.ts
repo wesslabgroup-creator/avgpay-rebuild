@@ -72,7 +72,7 @@ Analyze the provided Entity ({{entityName}}) and return a JSON object with uniqu
     * *Bad (Generic):* "Austin is a tech hub with good jobs."
     * *Good (Specific):* "Austin's 'Silicon Hills' status creates a salary floor that competes with the West Coast, specifically in semiconductor and SaaS sectors."
 3.  **DEPTH REQUIREMENT:** Each JSON value must be 2-3 sentences long and contain at least one "Why" statement (Cause & Effect). Surface-level content will be rejected as "thin."
-4.  **TIMELESSNESS:** Do not use dates (2024, 2025) or words like "currently/now." Use "Historically," "Typically," or "Market fundamentals."
+4.  **TIMELESSNESS:** Do not use ANY specific years or dates. Do not use words like "currently," "now," "recent," or "as of." Use "Historically," "Typically," or "Market fundamentals."
 5.  **NO HYPE / NO FABRICATION:** Never invent compensation numbers, never claim verification, and never market the entity.
 6.  **DATA-CONTEXT ONLY:** Use only the provided context. If context is sparse, state constraints conservatively.
 
@@ -187,11 +187,14 @@ export function validateAnalysis(
   }
 
   // Fail if it uses banned words (temporal references)
+  // Dynamically ban current year ± 1 so this never needs manual updates.
   // Use word boundaries (\b) so "known", "knowledge", "innovation" don't false-positive on "now"
-  const bannedPattern = /\b(2024|2025|currently|now)\b/i;
+  const currentYear = new Date().getFullYear();
+  const bannedYears = [currentYear - 2, currentYear - 1, currentYear];
+  const bannedPattern = new RegExp(`\\b(${bannedYears.join('|')}|currently|now)\\b`, 'i');
   const jsonStr = JSON.stringify(jsonResponse);
   if (bannedPattern.test(jsonStr)) {
-    return { valid: false, reason: 'Contains banned temporal words (2024, 2025, currently, now). Must be timeless.' };
+    return { valid: false, reason: `Contains banned temporal words (${bannedYears.join(', ')}, currently, now). Must be timeless.` };
   }
 
   if (entityType === 'Comparison' && !COMPARATIVE_LANGUAGE_PATTERN.test(jsonStr)) {
