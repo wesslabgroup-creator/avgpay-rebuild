@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Scale, Building2, Briefcase } from "lucide-react";
+import { ArrowRight, Search, Building2, Briefcase } from "lucide-react";
 import { getPopularComparisons } from "@/lib/comparisonEngine";
+import { JobCitySearchForm } from "@/components/job-city-search-form";
 import { CompareSearchForm } from "@/components/compare-search-form";
 
 export const metadata: Metadata = {
-  title: "Compare Salaries | AvgPay",
+  title: "Salary Search | AvgPay",
   description:
-    "Compare compensation between any two jobs, companies, or cities. Dynamic salary comparisons powered by real market data.",
+    "Search salary data by job title and city. Find compensation benchmarks for any role in any market, powered by real salary data.",
 };
 
 export default async function CompareIndexPage() {
@@ -24,19 +25,30 @@ export default async function CompareIndexPage() {
         {/* Hero */}
         <div className="text-center mb-10 space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
-            <Scale className="h-4 w-4" />
-            Salary Comparison Tool
+            <Search className="h-4 w-4" />
+            Salary Search
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
-            Compare Any Two Salaries
+            Find Salary by Job Title & City
           </h1>
           <p className="max-w-3xl mx-auto text-lg text-slate-600">
-            Select two jobs, companies, or cities to see a side-by-side compensation comparison powered by real salary data.
+            Search for any job title and city to see location-specific compensation data powered by real salary reports.
           </p>
         </div>
 
-        {/* Search Form */}
-        <CompareSearchForm />
+        {/* Job + City Search Form */}
+        <JobCitySearchForm />
+
+        {/* Compare section */}
+        <div className="mt-20">
+          <div className="text-center mb-8 space-y-2">
+            <h2 className="text-2xl font-bold text-slate-900">Compare Two Companies or Roles</h2>
+            <p className="text-slate-600">
+              Want to compare two companies or two job titles side by side? Use the comparison tool below.
+            </p>
+          </div>
+          <CompareSearchForm />
+        </div>
 
         {/* Popular Comparisons */}
         {popularComparisons.length > 0 && (
