@@ -525,11 +525,12 @@ export async function queueEnrichment(
   if (failedJob) {
     const runAfter = failedJob.runAfter ? new Date(failedJob.runAfter) : new Date(0);
     if (runAfter <= new Date()) {
-      // Reset the failed job back to pending
+      // Reset the failed job back to pending with fresh attempt counter
       await supabaseAdmin
         .from('EnrichmentQueue')
         .update({
           status: 'pending',
+          attempts: 0,
           lastError: null,
           contextData: normalizedContextData,
           runAfter: new Date().toISOString(),
@@ -916,6 +917,67 @@ export async function processAllPendingJobs(): Promise<{
 }
 
 /**
+ * Recover failed enrichment jobs by resetting them to pending with fresh attempts.
+ * Called by the process-enrichment cron before processing new jobs.
+ *
+ * Only recovers jobs whose backoff has expired. Resets `attempts` to 0
+ * so each recovery cycle gets a full set of retries.
+ */
+export async function recoverFailedJobs(limit = 10): Promise<number> {
+  const now = new Date().toISOString();
+
+  const { data: failedJobs, error } = await supabaseAdmin
+    .from('EnrichmentQueue')
+    .select('id, entityType, entityId, entityName, attempts')
+    .eq('status', 'failed')
+    .lte('runAfter', now)
+    .order('createdAt', { ascending: true })
+    .limit(limit);
+
+  if (error || !failedJobs || failedJobs.length === 0) {
+    return 0;
+  }
+
+  let recovered = 0;
+  for (const job of failedJobs) {
+    const { error: updateError } = await supabaseAdmin
+      .from('EnrichmentQueue')
+      .update({
+        status: 'pending',
+        attempts: 0,
+        lastError: null,
+        runAfter: now,
+        lockedAt: null,
+        lockedBy: null,
+      })
+      .eq('id', job.id)
+      .eq('status', 'failed'); // Optimistic lock
+
+    if (!updateError) {
+      recovered++;
+
+      const table = entityTableName(job.entityType);
+      if (table) {
+        await supabaseAdmin
+          .from(table)
+          .update({ enrichmentStatus: 'pending', enrichmentError: null })
+          .eq('id', job.entityId);
+      }
+
+      log('info', 'job_recovered', `Recovered failed job for ${job.entityType} "${job.entityName}"`, {
+        jobId: job.id, previousAttempts: job.attempts,
+      });
+    }
+  }
+
+  if (recovered > 0) {
+    log('info', 'recovery_complete', `Recovered ${recovered} failed jobs`, { recovered });
+  }
+
+  return recovered;
+}
+
+/**
  * Check the enrichment status for a specific entity.
  */
 export async function getEnrichmentStatus(
@@ -976,7 +1038,7 @@ export async function backfillMissingAnalysis(batchSize = 25): Promise<{
   const { data: companies } = await supabaseAdmin
     .from('Company')
     .select('id, name')
-    .or('analysis.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
+    .or('analysis.is.null,enrichmentStatus.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
     .limit(remaining());
 
   const companiesScanned = companies?.length ?? 0;
@@ -992,7 +1054,7 @@ export async function backfillMissingAnalysis(batchSize = 25): Promise<{
   const { data: roles } = await supabaseAdmin
     .from('Role')
     .select('id, title')
-    .or('analysis.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
+    .or('analysis.is.null,enrichmentStatus.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
     .limit(remaining());
 
   const rolesScanned = roles?.length ?? 0;
@@ -1008,7 +1070,7 @@ export async function backfillMissingAnalysis(batchSize = 25): Promise<{
   const { data: locations } = await supabaseAdmin
     .from('Location')
     .select('id, city, state')
-    .or('analysis.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
+    .or('analysis.is.null,enrichmentStatus.is.null,enrichmentStatus.eq.error,enrichmentStatus.eq.none')
     .limit(remaining());
 
   const locationsScanned = locations?.length ?? 0;

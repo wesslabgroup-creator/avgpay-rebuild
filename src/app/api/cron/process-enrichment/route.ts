@@ -1,25 +1,22 @@
 import { NextResponse } from 'next/server';
-import { processNextEnrichmentJob, hasPendingEnrichmentJobs } from '@/lib/enrichment';
+import { processNextEnrichmentJob, recoverFailedJobs, hasPendingEnrichmentJobs } from '@/lib/enrichment';
 import { log } from '@/lib/enrichmentLogger';
 
-export const dynamic = 'force-dynamic'; // Prevent static caching
-export const maxDuration = 60; // Allow longer run time for cron
+export const dynamic = 'force-dynamic';
+export const maxDuration = 300; // 5 min — LLM calls can take 60s+ per model
 
 export async function GET(request: Request) {
-    // Optional: Add CRON_SECRET verification if you set it up in Vercel/Environment
-    // const authHeader = request.headers.get('authorization');
-    // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    //   return new NextResponse('Unauthorized', { status: 401 });
-    // }
-
-    // Allow manual run via query param ?limit=10
     const { searchParams } = new URL(request.url);
-    const limit = Math.min(parseInt(searchParams.get('limit') || '5', 10), 20);
+    const limit = Math.min(parseInt(searchParams.get('limit') || '3', 10), 10);
 
     log('info', 'cron_process_start', `Starting enrichment processor via cron`, { limit });
 
-    const results = [];
     try {
+        // Step 1: Recover failed jobs whose backoff has expired (gives them fresh retries)
+        const recovered = await recoverFailedJobs(10);
+
+        // Step 2: Process pending jobs
+        const results = [];
         for (let i = 0; i < limit; i++) {
             const result = await processNextEnrichmentJob();
 
@@ -29,15 +26,12 @@ export async function GET(request: Request) {
             }
 
             results.push(result);
-
-            // If we hit an error, we might want to stop or continue. 
-            // For now, continue to try processing others unless it looks like a system-wide failure?
-            // Actually, processNextEnrichmentJob handles its own errors and returns result object.
         }
 
         const remaining = await hasPendingEnrichmentJobs();
 
         return NextResponse.json({
+            recovered,
             processed: results.length,
             remaining,
             results: results.map(r => ({
