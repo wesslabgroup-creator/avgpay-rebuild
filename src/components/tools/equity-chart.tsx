@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
     Line,
     XAxis,
@@ -20,8 +21,18 @@ interface EquityChartProps {
 }
 
 export function EquityChart({ data }: EquityChartProps) {
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+
+    if (!isMounted) {
+        return <div className="h-[400px] w-full" aria-hidden="true" />;
+    }
 
     return (
         <div className="h-[400px] w-full bg-white rounded-xl border border-slate-200 p-4 shadow-sm">

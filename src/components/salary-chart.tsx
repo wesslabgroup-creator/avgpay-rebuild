@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 interface SalaryChartProps {
@@ -9,6 +10,12 @@ interface SalaryChartProps {
 }
 
 export function SalaryChart({ yourSalary, marketMedian, blsMedian }: SalaryChartProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const data = [
     { name: "BLS Data", value: blsMedian, color: "#64748b" }, // Slate 500
     { name: "Market Median", value: marketMedian, color: "#34d399" }, // Emerald 400
@@ -18,6 +25,10 @@ export function SalaryChart({ yourSalary, marketMedian, blsMedian }: SalaryChart
   const formatCurrency = (value: number) => {
     return `$${(value / 1000).toFixed(0)}k`;
   };
+
+  if (!isMounted) {
+    return <div className="h-64 w-full" aria-hidden="true" />;
+  }
 
   return (
     <div className="h-64 w-full">
