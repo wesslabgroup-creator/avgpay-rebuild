@@ -109,7 +109,7 @@ export default async function JobCityPage({ params }: PageProps) {
   const profile = await getCachedProfile(jobTitle, cityFilter);
 
   // Also fetch the global job profile (no city filter) for comparison
-  const globalProfile = await getCachedProfile(jobTitle);
+  const globalProfile = await getCachedProfile(jobTitle, undefined);
 
   if (profile.sampleSize === 0 && globalProfile.sampleSize === 0) {
     return notFound();
