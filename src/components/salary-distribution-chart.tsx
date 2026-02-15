@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface SalaryDistributionChartProps {
@@ -7,8 +8,18 @@ interface SalaryDistributionChartProps {
 }
 
 export const SalaryDistributionChart = ({ data }: SalaryDistributionChartProps) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   if (!data || data.length === 0) {
     return <p className="text-slate-500 text-center">Not enough data to display a chart.</p>;
+  }
+
+  if (!isMounted) {
+    return <div className="h-[300px] w-full" aria-hidden="true" />;
   }
 
   // Simple histogram logic
@@ -29,7 +40,7 @@ export const SalaryDistributionChart = ({ data }: SalaryDistributionChartProps) 
 
   return (
     <div style={{ width: '100%', height: 300 }}>
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={bins}
           margin={{
