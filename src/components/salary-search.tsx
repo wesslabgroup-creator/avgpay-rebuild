@@ -14,10 +14,11 @@ interface JobResult {
 
 interface SalarySearchProps {
   onResultsChange?: (results: JobResult[]) => void;
+  initialQuery?: string;
 }
 
-export function SalarySearch({ onResultsChange }: SalarySearchProps) {
-  const [query, setQuery] = useState("");
+export function SalarySearch({ onResultsChange, initialQuery = "" }: SalarySearchProps) {
+  const [query, setQuery] = useState(initialQuery);
   const [allJobs, setAllJobs] = useState<JobResult[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<JobResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +43,10 @@ export function SalarySearch({ onResultsChange }: SalarySearchProps) {
     };
     fetchJobs();
   }, [onResultsChange]);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
   // Filter jobs as user types
   useEffect(() => {

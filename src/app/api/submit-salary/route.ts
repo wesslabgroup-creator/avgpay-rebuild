@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
-import { queueEnrichment, buildCityContextData } from '@/lib/enrichment';
+import { queueEnrichment, buildCityContextData, processNextEnrichmentJob, hasRenderableAnalysis } from '@/lib/enrichment';
 import { log } from '@/lib/enrichmentLogger';
 import { normalizeCompanyName, normalizeJobTitle, normalizeCityName } from '@/lib/normalization';
 
@@ -234,14 +234,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Method Not Allowed' }, { status: 405 });
   }
 
-  const { jobTitle, companyName, location, baseSalary, totalComp, level } = await request.json();
+  const payload = await request.json();
+  const {
+    jobTitle,
+    companyName,
+    location,
+    baseSalary,
+    totalComp,
+    level,
+    experienceLevel,
+  } = payload;
+
+  const normalizedLevel = level || experienceLevel;
 
   log('info', 'salary_submission_received', 'New salary submission', {
-    jobTitle, companyName, location, baseSalary, totalComp, level,
+    jobTitle, companyName, location, baseSalary, totalComp, level: normalizedLevel,
   });
 
   // Basic Validation
-  if (!jobTitle || !companyName || !totalComp || !location || !level) {
+  if (!jobTitle || !companyName || !totalComp || !location || !normalizedLevel) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
@@ -276,7 +287,7 @@ export async function POST(request: Request) {
           locationId: locationEntry.id,
           baseSalary: Math.round(cleanBaseSalary || 0),
           totalComp: Math.round(cleanTotalComp),
-          level: level,
+          level: normalizedLevel,
           source: 'user',
           verified: false,
         },
@@ -312,8 +323,10 @@ export async function POST(request: Request) {
       .eq('id', companyEntry.id)
       .single();
 
-    if (!companyRecord?.analysis || companyRecord.enrichmentStatus === 'error') {
-      log('info', 'enrichment_decision', `Enqueuing Company enrichment: analysis=${!!companyRecord?.analysis}, status=${companyRecord?.enrichmentStatus}`, {
+    const companyHasRenderableAnalysis = hasRenderableAnalysis(companyRecord?.analysis, 'Company');
+
+    if (!companyHasRenderableAnalysis || companyRecord?.enrichmentStatus === 'error') {
+      log('info', 'enrichment_decision', `Enqueuing Company enrichment: renderable=${companyHasRenderableAnalysis}, status=${companyRecord?.enrichmentStatus}`, {
         entityType: 'Company', entityId: companyEntry.id, entityName: companyEntry.name,
       });
       enrichmentPromises.push(
@@ -332,8 +345,10 @@ export async function POST(request: Request) {
       .eq('id', jobEntry.id)
       .single();
 
-    if (!roleRecord?.analysis || roleRecord.enrichmentStatus === 'error') {
-      log('info', 'enrichment_decision', `Enqueuing Job enrichment: analysis=${!!roleRecord?.analysis}, status=${roleRecord?.enrichmentStatus}`, {
+    const roleHasRenderableAnalysis = hasRenderableAnalysis(roleRecord?.analysis, 'Job');
+
+    if (!roleHasRenderableAnalysis || roleRecord?.enrichmentStatus === 'error') {
+      log('info', 'enrichment_decision', `Enqueuing Job enrichment: renderable=${roleHasRenderableAnalysis}, status=${roleRecord?.enrichmentStatus}`, {
         entityType: 'Job', entityId: jobEntry.id, entityName: jobEntry.title,
       });
       enrichmentPromises.push(
@@ -357,8 +372,10 @@ export async function POST(request: Request) {
       .eq('id', locationEntry.id)
       .single();
 
-    if (!locRecord?.analysis || locRecord.enrichmentStatus === 'error') {
-      log('info', 'enrichment_decision', `Enqueuing City enrichment: analysis=${!!locRecord?.analysis}, status=${locRecord?.enrichmentStatus}`, {
+    const cityHasRenderableAnalysis = hasRenderableAnalysis(locRecord?.analysis, 'City');
+
+    if (!cityHasRenderableAnalysis || locRecord?.enrichmentStatus === 'error') {
+      log('info', 'enrichment_decision', `Enqueuing City enrichment: renderable=${cityHasRenderableAnalysis}, status=${locRecord?.enrichmentStatus}`, {
         entityType: 'City', entityId: locationEntry.id, entityName: locationEntry.name,
       });
       const cityContext = buildCityContextData({ city, state });
@@ -379,6 +396,24 @@ export async function POST(request: Request) {
       const queued = results.filter(r => r.status === 'fulfilled' && r.value !== null).length;
       const skipped = results.length - queued;
       log('info', 'enrichment_queued', `Queued ${queued} enrichment job(s), ${skipped} skipped/deduped from salary submission`);
+
+      // Workaround for serverless fire-and-forget drops: eagerly process one job
+      // inline so fresh submissions and missing analysis both start immediately.
+      const eagerProcessingResult = await Promise.race([
+        processNextEnrichmentJob(),
+        new Promise<Awaited<ReturnType<typeof processNextEnrichmentJob>>>((resolve) => {
+          setTimeout(() => resolve({ processed: false, error: 'Eager processing timed out after 8s' }), 8000);
+        }),
+      ]);
+
+      log('info', 'enrichment_eager_processing', 'Eager queue processing attempt after salary submission', {
+        processed: eagerProcessingResult.processed,
+        jobId: eagerProcessingResult.jobId,
+        entityType: eagerProcessingResult.entityType,
+        entityName: eagerProcessingResult.entityName,
+        status: eagerProcessingResult.status,
+        error: eagerProcessingResult.error,
+      });
     }
 
     return NextResponse.json({

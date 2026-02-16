@@ -412,6 +412,56 @@ function entityTableName(entityType: string): string | null {
   }
 }
 
+
+let lastOpportunisticTriggerAt = 0;
+const OPPORTUNISTIC_MIN_INTERVAL_MS = 10 * 60 * 1000;
+
+/**
+ * Best-effort opportunistic processor trigger for environments where frequent cron
+ * is unavailable (e.g. hobby plans).
+ *
+ * Runs at most once per instance every 10 minutes, and processes a single job with
+ * a short timeout so request-driven endpoints stay fast.
+ */
+export function triggerOpportunisticEnrichment(reason: string) {
+  const now = Date.now();
+  if (now - lastOpportunisticTriggerAt < OPPORTUNISTIC_MIN_INTERVAL_MS) {
+    return;
+  }
+
+  lastOpportunisticTriggerAt = now;
+
+  void (async () => {
+    try {
+      const hasPending = await hasPendingEnrichmentJobs();
+      if (!hasPending) {
+        return;
+      }
+
+      const result = await Promise.race([
+        processNextEnrichmentJob(),
+        new Promise<Awaited<ReturnType<typeof processNextEnrichmentJob>>>((resolve) => {
+          setTimeout(() => resolve({ processed: false, error: 'Opportunistic processing timeout (4s)' }), 4000);
+        }),
+      ]);
+
+      log('info', 'opportunistic_trigger_result', 'Opportunistic enrichment trigger completed', {
+        reason,
+        processed: result.processed,
+        jobId: result.jobId,
+        entityType: result.entityType,
+        entityName: result.entityName,
+        status: result.status,
+        error: result.error,
+      });
+    } catch (error) {
+      log('warn', 'opportunistic_trigger_error', 'Opportunistic enrichment trigger failed', {
+        reason,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  })();
+}
 export async function hasPendingEnrichmentJobs(): Promise<boolean> {
   const { count, error } = await supabaseAdmin
     .from('EnrichmentQueue')

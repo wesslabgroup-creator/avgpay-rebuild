@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+import { triggerOpportunisticEnrichment } from '@/lib/enrichment';
 
 export const dynamic = 'force-dynamic';
 
@@ -70,6 +71,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const view = searchParams.get('view');
+
+    triggerOpportunisticEnrichment('api:salaries');
 
     const company = searchParams.get('company');
     const role = searchParams.get('role');
