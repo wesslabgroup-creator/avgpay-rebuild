@@ -4,21 +4,26 @@ import { slugify } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Salaries | AvgPay",
-  description: "Search and compare tech salaries by job title. Real data from BLS, H-1B filings, and pay transparency laws.",
+  description: "Search and compare salaries by job title. Real compensation data aggregated from public and self-reported sources.",
 };
 
-export default function SalariesPage() {
+export default function SalariesPage({
+  searchParams,
+}: {
+  searchParams?: { role?: string };
+}) {
+  const initialRoleQuery = searchParams?.role?.trim() || "";
   return (
     <main className="min-h-screen bg-slate-50 pt-24 pb-12">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center space-y-4 mb-10">
-          <h1 className="text-4xl font-bold text-slate-900">Tech Salaries</h1>
+          <h1 className="text-4xl font-bold text-slate-900">Salary Insights by Role</h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Search job titles to see real salary data. All data aggregated from BLS, H-1B filings, and state pay transparency laws.
+            Search job titles to explore salary ranges across industries. Data is aggregated from public filings and verified community submissions for broader pay transparency.
           </p>
         </div>
 
-        <SalarySearch />
+        <SalarySearch initialQuery={initialRoleQuery} />
 
         {/* Popular Reports Section */}
         <div className="mt-16 border-t border-slate-200 pt-16">

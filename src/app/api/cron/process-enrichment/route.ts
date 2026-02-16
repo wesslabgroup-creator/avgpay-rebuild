@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { processNextEnrichmentJob, recoverFailedJobs, hasPendingEnrichmentJobs } from '@/lib/enrichment';
+import { processNextEnrichmentJob, recoverFailedJobs, hasPendingEnrichmentJobs, backfillMissingAnalysis } from '@/lib/enrichment';
 import { log } from '@/lib/enrichmentLogger';
 
 export const dynamic = 'force-dynamic';
@@ -23,14 +23,19 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const limit = Math.min(parseInt(searchParams.get('limit') || '3', 10), 10);
+    const backfillBatchSize = Math.min(parseInt(searchParams.get('backfillBatchSize') || String(limit), 10), 25);
 
-    log('info', 'cron_process_start', `Starting enrichment processor via cron`, { limit });
+    log('info', 'cron_process_start', `Starting enrichment processor via cron`, { limit, backfillBatchSize });
 
     try {
-        // Step 1: Recover failed jobs whose backoff has expired (gives them fresh retries)
+        // Step 1: Proactively queue missing analysis so stale entities get picked up
+        // even when dedicated backfill schedules are delayed or misconfigured.
+        const backfill = await backfillMissingAnalysis(backfillBatchSize);
+
+        // Step 2: Recover failed jobs whose backoff has expired (gives them fresh retries)
         const recovered = await recoverFailedJobs(10);
 
-        // Step 2: Process pending jobs
+        // Step 3: Process pending jobs
         const results = [];
         for (let i = 0; i < limit; i++) {
             const result = await processNextEnrichmentJob();
@@ -46,6 +51,7 @@ export async function GET(request: Request) {
         const remaining = await hasPendingEnrichmentJobs();
 
         return NextResponse.json({
+            backfill,
             recovered,
             processed: results.length,
             remaining,

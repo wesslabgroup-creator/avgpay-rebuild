@@ -91,6 +91,7 @@ export default function SubmitSalaryPage() {
       bonus: formData.bonus || '0',
       otherComp: formData.otherComp || '0',
       totalComp: calculateTotalComp().toString(),
+      level: formData.experienceLevel,
       experienceLevel: formData.experienceLevel,
       yearsAtCompany: formData.yearsAtCompany || '0',
       userNotes: formData.userNotes?.trim() || '',
@@ -127,7 +128,7 @@ export default function SubmitSalaryPage() {
             <CardContent className="p-12 text-center">
               <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto mb-6" />
               <h2 className="text-3xl font-bold text-slate-900 mb-4">Thank You!</h2>
-              <p className="text-lg text-slate-600">Your contribution helps make the tech industry more transparent.</p>
+              <p className="text-lg text-slate-600">Your contribution helps make salary data more transparent for everyone.</p>
             </CardContent>
           </Card>
         </div>
