@@ -11,9 +11,6 @@ import { WebSiteSchema } from "@/components/schema-markup";
 
 const OfferAnalyzer = dynamic(() => import('@/components/offer-analyzer').then(mod => mod.OfferAnalyzer), {
   loading: () => <div className="h-96 w-full animate-pulse bg-slate-100 rounded-3xl" />,
-  ssr: false // Optional: Only client-side if we want to defer it completely, but usually SSR is good for SEO content.
-  // However, OfferAnalyzer is highly interactive and mostly client-side logic.
-  // Let's keep SSR: true (default) for now unless it causes hydration issues.
 });
 
 export const metadata: Metadata = {
