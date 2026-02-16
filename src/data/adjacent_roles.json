@@ -1,0 +1,5 @@
+{
+  "Software Engineer": ["Staff Software Engineer", "Engineering Manager", "Machine Learning Engineer", "Solutions Architect", "Developer Advocate", "Product Engineer"],
+  "Product Manager": ["Senior Product Manager", "Group Product Manager", "Product Operations Lead", "Growth Product Manager", "Technical Program Manager", "Strategy & Operations Manager"],
+  "Data Scientist": ["Senior Data Scientist", "ML Engineer", "Analytics Engineer", "Data Product Manager", "Decision Scientist", "Research Scientist"]
+}

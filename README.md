@@ -84,31 +84,45 @@ npm run audit:deps
 
 This wrapper runs `npm audit --audit-level=moderate` and treats registry advisory endpoint blocks (HTTP 403) as an environment warning so local runs in restricted networks don't fail noisily. Run the same check in CI with unrestricted registry access for enforcement.
 
-## Pricing storefront & simulated checkout funnel
+## One-time digital products funnel (template + variable injection)
 
-### New routes
+### Routes
 - `/pricing`
-- `/products/salary-negotiation-kit`
-- `/products/compensation-benchmark-report`
-- `/products/career-pay-blueprint`
-- `/checkout/[productSlug]` (simulated checkout)
-- `/delivery/[productSlug]?token=demo` (post-purchase demo delivery; noindex)
+- `/products/[slug]`
+- `/checkout/[slug]` (multi-step personalization + review)
+- `/delivery/[purchaseId]?token=demo`
+- `POST /api/generate-product`
+- `GET /api/search/jobs?q=`
+- `GET /api/search/cities?q=`
 
-### Digital product assets
-All downloadable deliverables are under:
-- `public/products/salary-negotiation-kit/` (source files for kit bundle)
-- `public/products/compensation-benchmark-report/`
-- `public/products/career-pay-blueprint/`
-- `src/app/api/download/salary-negotiation-kit/route.ts` (runtime ZIP bundle endpoint)
+### Template and generation architecture
+- HTML/CSS PDF templates live in:
+  - `src/templates/pdf/htmlTemplates.ts`
+- Product generation engine lives in:
+  - `src/lib/products/productCatalog.ts`
+  - `src/lib/products/generateProduct.ts`
+  - `src/lib/products/generators/*`
+  - `src/lib/products/pdf/renderPdf.ts` (HTML -> PDF via Playwright runtime path)
+  - `src/lib/products/files/zip.ts`
+  - `src/lib/products/stats.ts`
+  - `src/lib/products/storage.ts`
 
-### Replacing simulated checkout with real payment later
-Current flow routes users from `/checkout/[productSlug]` to `/delivery/[productSlug]?token=demo` when they click **Complete purchase (simulated)**.
-To enable real checkout later, replace that handler/link with a payment-provider redirect (for example Stripe Checkout Session creation + redirect URL) and only allow delivery access after payment verification.
+### Generated files and metadata
+Per purchase, files are written to:
+- `public/generated/purchases/{purchaseId}/...`
+- `public/generated/purchases/{purchaseId}/meta.json`
+
+### Stripe-ready handoff (later)
+Checkout currently simulates purchase when users click **Complete purchase (simulated)**.
+To enable Stripe later, replace this handler with:
+1. Create Checkout Session server-side
+2. Redirect to Stripe Checkout
+3. On webhook success, call generation entry (`generateProduct`) and redirect to `/delivery/[purchaseId]`
 
 ### Manual test checklist
-1. Open `/pricing` and confirm all 3 products + prices are visible, with **Best Seller** on Compensation Benchmark Report.
-2. Open each detail page from pricing and verify hero, features, who-it's-for, and Buy now CTA.
-3. Click Buy now and verify `/checkout/[productSlug]` order summary shows the matching product and price.
-4. Click **Complete purchase (simulated)** and verify redirect to `/delivery/[productSlug]?token=demo`.
-5. Verify each delivery page shows simulated receipt and working download buttons for real files.
-6. Open `/delivery/[productSlug]` without token and verify gated message links back to `/pricing`.
+1. Visit `/pricing`, confirm 3 products and Benchmark has **Best Seller**.
+2. Open each `/products/[slug]` page and click **Get Instant Download**.
+3. In `/checkout/[slug]`, select Job + City from typeahead and continue to review.
+4. Click **Complete purchase (simulated)** and verify redirect to `/delivery/[purchaseId]?token=demo`.
+5. Verify downloads include PDF(s), CSV/TXT, and `bundle.zip` for all products.
+6. Visit `/delivery/[purchaseId]` without token and verify gating message.

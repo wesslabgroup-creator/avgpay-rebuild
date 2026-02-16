@@ -1,0 +1,38 @@
+{
+  "Software Engineer": [
+    {"skill":"System Design", "premium":12},
+    {"skill":"Distributed Systems", "premium":11},
+    {"skill":"AI/ML Productization", "premium":10},
+    {"skill":"Staff-level Communication", "premium":9},
+    {"skill":"Cloud Cost Optimization", "premium":8},
+    {"skill":"Security by Design", "premium":8},
+    {"skill":"Architecture Reviews", "premium":7},
+    {"skill":"Observability", "premium":7},
+    {"skill":"Mentorship", "premium":6},
+    {"skill":"Cross-functional Leadership", "premium":6}
+  ],
+  "Product Manager": [
+    {"skill":"Pricing Strategy", "premium":12},
+    {"skill":"Experimentation", "premium":11},
+    {"skill":"Executive Storytelling", "premium":10},
+    {"skill":"Roadmap Prioritization", "premium":9},
+    {"skill":"SQL/Analytics Fluency", "premium":8},
+    {"skill":"AI Feature Strategy", "premium":8},
+    {"skill":"Go-to-market Planning", "premium":7},
+    {"skill":"Retention Modeling", "premium":7},
+    {"skill":"Stakeholder Alignment", "premium":6},
+    {"skill":"Customer Discovery", "premium":6}
+  ],
+  "Data Scientist": [
+    {"skill":"Causal Inference", "premium":12},
+    {"skill":"ML Deployment", "premium":11},
+    {"skill":"Experiment Design", "premium":10},
+    {"skill":"Feature Engineering", "premium":9},
+    {"skill":"Business Communication", "premium":8},
+    {"skill":"Forecasting", "premium":8},
+    {"skill":"Data Visualization", "premium":7},
+    {"skill":"Python Productionization", "premium":7},
+    {"skill":"Stakeholder Influence", "premium":6},
+    {"skill":"Model Monitoring", "premium":6}
+  ]
+}

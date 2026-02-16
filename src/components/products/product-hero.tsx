@@ -1,6 +1,6 @@
-import { Product } from "@/lib/products";
+import { CatalogProduct } from "@/lib/products/productCatalog";
 
-export function ProductHero({ product }: { product: Product }) {
+export function ProductHero({ product }: { product: CatalogProduct }) {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">
