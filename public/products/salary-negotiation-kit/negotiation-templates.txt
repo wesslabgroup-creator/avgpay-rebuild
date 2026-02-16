@@ -1,0 +1,29 @@
+Salary Negotiation Templates (AvgPay)
+
+Friendly Email
+Subject: Offer discussion
+Hi [Name],
+Thank you for the offer. I'm excited about the role and team.
+Based on scope and market benchmarks, I'd like to discuss a package in the [X-Y] range.
+Would you be open to a quick call to review options?
+
+Firm Email
+Subject: Compensation alignment
+Hi [Name],
+I'm aligned with the role and timeline. To accept confidently, I need total compensation to align with market for this scope.
+I'm targeting [X-Y], and I can sign quickly if we can close that gap.
+
+Direct Email
+Subject: Ready to close
+Hi [Name],
+I'm ready to move forward. If we can bring base to [X] and equity to [Y], I'll accept today.
+
+Call Prompts
+Opening: I'm excited to join and would like to review compensation details before final acceptance.
+Anchor: Given scope and market context, I'm targeting [X-Y] total compensation.
+Close: Great, what is the process and timeline for an updated package?
+
+Counter Responses
+1) I appreciate the update. If we can adjust [component] by [amount], I'm ready to close.
+2) Could we improve sign-on or equity to bridge the remaining gap?
+3) If level is fixed, can we review scope/title alignment for the first review cycle?

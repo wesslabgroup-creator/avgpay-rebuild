@@ -83,3 +83,32 @@ npm run audit:deps
 ```
 
 This wrapper runs `npm audit --audit-level=moderate` and treats registry advisory endpoint blocks (HTTP 403) as an environment warning so local runs in restricted networks don't fail noisily. Run the same check in CI with unrestricted registry access for enforcement.
+
+## Pricing storefront & simulated checkout funnel
+
+### New routes
+- `/pricing`
+- `/products/salary-negotiation-kit`
+- `/products/compensation-benchmark-report`
+- `/products/career-pay-blueprint`
+- `/checkout/[productSlug]` (simulated checkout)
+- `/delivery/[productSlug]?token=demo` (post-purchase demo delivery; noindex)
+
+### Digital product assets
+All downloadable deliverables are under:
+- `public/products/salary-negotiation-kit/` (source files for kit bundle)
+- `public/products/compensation-benchmark-report/`
+- `public/products/career-pay-blueprint/`
+- `src/app/api/download/salary-negotiation-kit/route.ts` (runtime ZIP bundle endpoint)
+
+### Replacing simulated checkout with real payment later
+Current flow routes users from `/checkout/[productSlug]` to `/delivery/[productSlug]?token=demo` when they click **Complete purchase (simulated)**.
+To enable real checkout later, replace that handler/link with a payment-provider redirect (for example Stripe Checkout Session creation + redirect URL) and only allow delivery access after payment verification.
+
+### Manual test checklist
+1. Open `/pricing` and confirm all 3 products + prices are visible, with **Best Seller** on Compensation Benchmark Report.
+2. Open each detail page from pricing and verify hero, features, who-it's-for, and Buy now CTA.
+3. Click Buy now and verify `/checkout/[productSlug]` order summary shows the matching product and price.
+4. Click **Complete purchase (simulated)** and verify redirect to `/delivery/[productSlug]?token=demo`.
+5. Verify each delivery page shows simulated receipt and working download buttons for real files.
+6. Open `/delivery/[productSlug]` without token and verify gated message links back to `/pricing`.
