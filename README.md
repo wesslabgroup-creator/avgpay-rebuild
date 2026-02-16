@@ -83,3 +83,46 @@ npm run audit:deps
 ```
 
 This wrapper runs `npm audit --audit-level=moderate` and treats registry advisory endpoint blocks (HTTP 403) as an environment warning so local runs in restricted networks don't fail noisily. Run the same check in CI with unrestricted registry access for enforcement.
+
+## One-time digital products funnel (template + variable injection)
+
+### Routes
+- `/pricing`
+- `/products/[slug]`
+- `/checkout/[slug]` (multi-step personalization + review)
+- `/delivery/[purchaseId]?token=demo`
+- `POST /api/generate-product`
+- `GET /api/search/jobs?q=`
+- `GET /api/search/cities?q=`
+
+### Template and generation architecture
+- HTML/CSS PDF templates live in:
+  - `src/templates/pdf/htmlTemplates.ts`
+- Product generation engine lives in:
+  - `src/lib/products/productCatalog.ts`
+  - `src/lib/products/generateProduct.ts`
+  - `src/lib/products/generators/*`
+  - `src/lib/products/pdf/renderPdf.ts` (HTML -> PDF via Playwright runtime path)
+  - `src/lib/products/files/zip.ts`
+  - `src/lib/products/stats.ts`
+  - `src/lib/products/storage.ts`
+
+### Generated files and metadata
+Per purchase, files are written to:
+- `public/generated/purchases/{purchaseId}/...`
+- `public/generated/purchases/{purchaseId}/meta.json`
+
+### Stripe-ready handoff (later)
+Checkout currently simulates purchase when users click **Complete purchase (simulated)**.
+To enable Stripe later, replace this handler with:
+1. Create Checkout Session server-side
+2. Redirect to Stripe Checkout
+3. On webhook success, call generation entry (`generateProduct`) and redirect to `/delivery/[purchaseId]`
+
+### Manual test checklist
+1. Visit `/pricing`, confirm 3 products and Benchmark has **Best Seller**.
+2. Open each `/products/[slug]` page and click **Get Instant Download**.
+3. In `/checkout/[slug]`, select Job + City from typeahead and continue to review.
+4. Click **Complete purchase (simulated)** and verify redirect to `/delivery/[purchaseId]?token=demo`.
+5. Verify downloads include PDF(s), CSV/TXT, and `bundle.zip` for all products.
+6. Visit `/delivery/[purchaseId]` without token and verify gating message.
