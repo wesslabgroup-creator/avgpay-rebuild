@@ -371,13 +371,14 @@ export async function POST(request: Request) {
       });
     }
 
-    // Fire enrichment queue entries without blocking the response
+    // Persist enrichment queue entries before returning the response.
+    // In serverless runtimes, fire-and-forget work can be dropped when the
+    // request lifecycle ends, causing entities to remain stuck at "none".
     if (enrichmentPromises.length > 0) {
-      Promise.allSettled(enrichmentPromises).then(results => {
-        const queued = results.filter(r => r.status === 'fulfilled' && r.value !== null).length;
-        const skipped = results.length - queued;
-        log('info', 'enrichment_queued', `Queued ${queued} enrichment job(s), ${skipped} skipped/deduped from salary submission`);
-      });
+      const results = await Promise.allSettled(enrichmentPromises);
+      const queued = results.filter(r => r.status === 'fulfilled' && r.value !== null).length;
+      const skipped = results.length - queued;
+      log('info', 'enrichment_queued', `Queued ${queued} enrichment job(s), ${skipped} skipped/deduped from salary submission`);
     }
 
     return NextResponse.json({
