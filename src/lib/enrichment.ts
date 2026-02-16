@@ -509,6 +509,14 @@ export async function queueEnrichment(
     .maybeSingle();
 
   if (existing) {
+    const table = entityTableName(entityType);
+    if (table) {
+      await supabaseAdmin
+        .from(table)
+        .update({ enrichmentStatus: 'pending' })
+        .eq('id', entityId);
+    }
+
     log('info', 'queue_dedup', `Enrichment already queued for ${entityType} "${entityName}" (${existing.status})`, {
       existingJobId: existing.id, entityKey,
     });
@@ -558,6 +566,14 @@ export async function queueEnrichment(
       void triggerAutoQueueProcessor();
       return failedJob.id;
     } else {
+      const table = entityTableName(entityType);
+      if (table) {
+        await supabaseAdmin
+          .from(table)
+          .update({ enrichmentStatus: 'pending' })
+          .eq('id', entityId);
+      }
+
       log('info', 'queue_backoff', `Failed job still in backoff for ${entityType} "${entityName}"`, {
         jobId: failedJob.id, runAfter: failedJob.runAfter,
       });
