@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { buildCityContextData, getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
+import { buildCityContextData, getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment, triggerOpportunisticEnrichment } from '@/lib/enrichment';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { getNearbyCities } from '@/lib/internal-linking';
 import { buildPageValueBlocks } from '@/lib/value-expansion';
@@ -30,6 +30,10 @@ export async function GET(request: Request) {
   if (!citySlug) {
     return NextResponse.json({ error: 'City slug is required' }, { status: 400 });
   }
+
+
+  // Best-effort worker kick so queue keeps moving without dedicated high-frequency cron.
+  triggerOpportunisticEnrichment('api:city-details');
 
   try {
     // 1. Find the Location by slug (case-insensitive)

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
-import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment } from '@/lib/enrichment';
+import { getEnrichmentStatus, hasRenderableAnalysis, queueEnrichment, triggerOpportunisticEnrichment } from '@/lib/enrichment';
 import { buildPageValueBlocks } from '@/lib/value-expansion';
 import { buildEntityFaq, evaluateIndexingEligibility, shouldTriggerEnrichment } from '@/lib/seo';
 import { generateIntentDrivenFaqs } from '@/lib/intentClassifier';
@@ -17,6 +17,10 @@ export async function GET(request: Request) {
   if (!jobTitle) {
     return NextResponse.json({ error: 'Job title is required' }, { status: 400 });
   }
+
+
+  // Best-effort worker kick so queue keeps moving without dedicated high-frequency cron.
+  triggerOpportunisticEnrichment('api:job-details');
 
   try {
     // 1. Get Job Details (Role)

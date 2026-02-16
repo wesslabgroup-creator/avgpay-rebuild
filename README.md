@@ -63,6 +63,7 @@ Use this when queueing/processing appears stalled.
 
 3. **Hobby plan limitation workaround**
    - Because Supabase cron can be 1/day on hobby, use a DB webhook on `public.EnrichmentQueue` INSERT to call `POST /api/enrichment-queue?mode=single`.
+   - Configure `ENRICHMENT_API_KEY` (or reuse `CRON_SECRET`) and send it as `Authorization: Bearer <key>`; the endpoint now validates against those dedicated keys.
    - Keep daily Vercel cron for retries/recovery.
 
 4. **Manual recovery for missing analysis**

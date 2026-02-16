@@ -4,6 +4,19 @@ import { processNextEnrichmentJob, processAllPendingJobs } from '@/lib/enrichmen
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // LLM calls can take 60s+ per model
 
+function isAuthorized(request: Request): boolean {
+  const authHeader = request.headers.get('authorization');
+  const configuredSecrets = [process.env.ENRICHMENT_API_KEY, process.env.CRON_SECRET]
+    .filter((value): value is string => !!value && value.trim().length > 0);
+
+  // In local/dev environments where no key is configured, allow manual testing.
+  if (configuredSecrets.length === 0) {
+    return process.env.NODE_ENV !== 'production';
+  }
+
+  return configuredSecrets.some((secret) => authHeader === `Bearer ${secret}`);
+}
+
 /**
  * POST /api/enrichment-queue
  *
@@ -15,11 +28,7 @@ export const maxDuration = 300; // LLM calls can take 60s+ per model
  *   ?mode=single — Process the next single job (default)
  */
 export async function POST(request: Request) {
-  // Basic auth check — in production, use a proper secret/API key
-  const authHeader = request.headers.get('authorization');
-  const expectedKey = process.env.ENRICHMENT_API_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
+  if (!isAuthorized(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -62,10 +71,7 @@ export async function POST(request: Request) {
  * Returns current queue status (counts by status).
  */
 export async function GET(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  const expectedKey = process.env.ENRICHMENT_API_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
+  if (!isAuthorized(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
