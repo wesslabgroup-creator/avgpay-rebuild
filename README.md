@@ -47,6 +47,28 @@ This migration creates:
 - `"EnrichmentQueue"` table (async enrichment jobs)
 - `"analysis"` + `"analysisGeneratedAt"` on `"Company"`, `"Role"`, and `"Location"`
 
+
+### Enrichment pipeline troubleshooting checklist
+Use this when queueing/processing appears stalled.
+
+1. **DB trigger wiring (required for direct Salary table inserts)**
+   - Run `supabase/migrations/20260217_enrichment_pipeline_repair.sql`.
+   - This guarantees the `enqueue_enrichment_from_salary` trigger exists on `public."Salary"` and inserts into `public."EnrichmentQueue"`.
+
+2. **Processing worker (required for LLM output to appear)**
+   - Supabase cron is **not** required for this project path.
+   - Processing is done by app endpoints:
+     - `GET /api/cron/process-enrichment` (daily safety + backfill)
+     - `POST /api/enrichment-queue?mode=single` (near-real-time worker call)
+
+3. **Hobby plan limitation workaround**
+   - Because Supabase cron can be 1/day on hobby, use a DB webhook on `public.EnrichmentQueue` INSERT to call `POST /api/enrichment-queue?mode=single`.
+   - Keep daily Vercel cron for retries/recovery.
+
+4. **Manual recovery for missing analysis**
+   - Run: `select public.backfill_missing_enrichment_jobs(100);`
+   - This queues entities where analysis is null or status is `none/error`.
+
 ### Hobby-plan stabilization pattern (cron runs once/day)
 - Keep daily cron enabled for safety (`/api/cron/process-enrichment`).
 - Add a Supabase Database Webhook on `public.EnrichmentQueue` `INSERT` that calls `POST /api/enrichment-queue?mode=single`.
