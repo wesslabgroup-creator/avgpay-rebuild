@@ -1,8 +1,15 @@
 import { promises as fs } from "fs";
+import os from "os";
 import path from "path";
 
+const purchaseStorageRoot = process.env.PURCHASE_STORAGE_ROOT?.trim() || path.join(os.tmpdir(), "avgpay-generated-purchases");
+
 export function getPurchaseDir(purchaseId: string) {
-  return path.join(process.cwd(), "public", "generated", "purchases", purchaseId);
+  return path.join(purchaseStorageRoot, purchaseId);
+}
+
+export function getPurchaseFilePath(purchaseId: string, fileName: string) {
+  return path.join(getPurchaseDir(purchaseId), fileName);
 }
 
 export async function ensurePurchaseDir(purchaseId: string) {
@@ -15,11 +22,11 @@ export async function writePurchaseFile(purchaseId: string, fileName: string, co
   const dir = await ensurePurchaseDir(purchaseId);
   const fullPath = path.join(dir, fileName);
   await fs.writeFile(fullPath, content);
-  return `/generated/purchases/${purchaseId}/${fileName}`;
+  return `/api/purchases/${purchaseId}/files/${encodeURIComponent(fileName)}`;
 }
 
 export async function readPurchaseMeta(purchaseId: string) {
-  const metaPath = path.join(getPurchaseDir(purchaseId), "meta.json");
+  const metaPath = getPurchaseFilePath(purchaseId, "meta.json");
   const raw = await fs.readFile(metaPath, "utf8");
   return JSON.parse(raw);
 }

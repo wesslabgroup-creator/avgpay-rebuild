@@ -2,6 +2,9 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { readPurchaseMeta } from "@/lib/products/storage";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Delivery | AvgPay",
   robots: { index: false, follow: false },
