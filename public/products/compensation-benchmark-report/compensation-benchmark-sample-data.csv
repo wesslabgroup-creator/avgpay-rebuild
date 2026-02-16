@@ -1,0 +1,6 @@
+role,city,percentile_25,percentile_50,percentile_75,percentile_90,data_type
+Senior Software Engineer,San Francisco,142000,168000,201000,235000,Sample
+Senior Software Engineer,New York,137000,162000,194000,228000,Sample
+Senior Software Engineer,Austin,121000,145000,173000,204000,Sample
+Product Manager,San Francisco,150000,181000,219000,258000,Sample
+Data Scientist,Remote US,132000,158000,189000,221000,Sample
