@@ -6,9 +6,21 @@ import { Button } from "@/components/ui/button";
 
 type Option = { id: string; label: string };
 
+type GenerationStatus = {
+  status: "queued" | "running" | "completed" | "failed";
+  progress: number;
+  stage: string;
+  error?: string;
+  deliveryUrl?: string;
+};
+
 async function search(endpoint: string, q: string) {
   const res = await fetch(`/api/search/${endpoint}?q=${encodeURIComponent(q)}`);
   return (await res.json()).results as Option[];
+}
+
+async function wait(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function CheckoutFlow({ product }: { product: CatalogProduct }) {
@@ -21,6 +33,7 @@ export function CheckoutFlow({ product }: { product: CatalogProduct }) {
   const [city, setCity] = useState<Option | null>(null);
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState<Record<string, string>>({});
+  const [status, setStatus] = useState<GenerationStatus | null>(null);
 
   const canContinue = !!job && !!city;
 
@@ -32,6 +45,7 @@ export function CheckoutFlow({ product }: { product: CatalogProduct }) {
   async function completePurchase() {
     if (!job || !city) return;
     setLoading(true);
+    setStatus({ status: "queued", progress: 3, stage: "Preparing request" });
     const purchaseId = `p_${Date.now()}`;
 
     const payload = {
@@ -54,14 +68,47 @@ export function CheckoutFlow({ product }: { product: CatalogProduct }) {
       },
     };
 
-    const res = await fetch("/api/generate-product", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch("/api/generate-product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await res.json();
-    window.location.href = data.deliveryUrl;
+      if (!res.ok) {
+        throw new Error("Failed to start generation.");
+      }
+
+      const data = await res.json();
+      setStatus({ status: "running", progress: 8, stage: "Generation started" });
+
+      for (let attempt = 0; attempt < 180; attempt++) {
+        const statusRes = await fetch(data.statusUrl, { cache: "no-store" });
+        const next = (await statusRes.json()) as GenerationStatus;
+        setStatus(next);
+
+        if (next.status === "completed") {
+          window.location.href = next.deliveryUrl ?? data.deliveryUrl;
+          return;
+        }
+
+        if (next.status === "failed") {
+          throw new Error(next.error ?? "Generation failed");
+        }
+
+        await wait(750);
+      }
+
+      throw new Error("Generation timed out. Please try again.");
+    } catch (error) {
+      setStatus({
+        status: "failed",
+        progress: 100,
+        stage: "Generation failed",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      setLoading(false);
+    }
   }
 
   return (
@@ -106,8 +153,22 @@ export function CheckoutFlow({ product }: { product: CatalogProduct }) {
             <p>Price: <strong>${purchaseSummary.price} (one-time)</strong></p>
             <p>You will receive generated PDF/CSV/TXT assets and a ZIP bundle instantly.</p>
           </div>
+
+          {status && (
+            <div className="mt-4 rounded-lg border border-slate-200 bg-white p-4">
+              <div className="flex items-center justify-between text-sm text-slate-700">
+                <span>{status.stage}</span>
+                <span>{Math.min(100, Math.max(0, Math.round(status.progress)))}%</span>
+              </div>
+              <div className="mt-2 h-2 w-full rounded-full bg-slate-200">
+                <div className="h-2 rounded-full bg-emerald-600 transition-all" style={{ width: `${Math.min(100, Math.max(0, status.progress))}%` }} />
+              </div>
+              {status.error && <p className="mt-2 text-sm text-red-600">{status.error}</p>}
+            </div>
+          )}
+
           <div className="mt-4 flex gap-3">
-            <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
+            <Button variant="outline" onClick={() => setStep(1)} disabled={loading}>Back</Button>
             <Button onClick={completePurchase} disabled={loading}>{loading ? "Generating files..." : "Complete purchase (simulated)"}</Button>
           </div>
         </section>

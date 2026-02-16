@@ -6,13 +6,16 @@ import { generateNegotiationProduct } from "./generators/negotiation";
 import { generateBenchmarkProduct } from "./generators/benchmark";
 import { generateBlueprintProduct } from "./generators/blueprint";
 
-export async function generateProduct(input: PurchaseInput) {
+type ProgressReporter = (progress: number, stage: string) => void;
+
+export async function generateProduct(input: PurchaseInput, onProgress?: ProgressReporter) {
   const product = getCatalogProduct(input.productSlug);
   if (!product) throw new Error("Unknown product");
 
   const jobLabel = getJobOptions().find((job) => job.id === input.jobId)?.label ?? "Software Engineer";
   const cityLabel = getCityOptions().find((city) => city.id === input.cityId)?.label ?? "San Francisco, CA";
 
+  onProgress?.(15, "Computing salary benchmarks");
   const stats = getSalaryStats(input.jobId, input.cityId);
   const ask = computeAskRange(stats, input.options);
   const underpaid = computeUnderpaidScore(stats, input.options);
@@ -33,10 +36,12 @@ export async function generateProduct(input: PurchaseInput) {
     skillPremiums: getSkillPremiums(input.jobId),
   };
 
+  onProgress?.(30, "Preparing personalized content");
+
   let files;
-  if (input.productSlug === "salary-negotiation-kit") files = await generateNegotiationProduct(input.purchaseId, ctx);
-  else if (input.productSlug === "compensation-benchmark-report") files = await generateBenchmarkProduct(input.purchaseId, ctx);
-  else files = await generateBlueprintProduct(input.purchaseId, ctx);
+  if (input.productSlug === "salary-negotiation-kit") files = await generateNegotiationProduct(input.purchaseId, ctx, onProgress);
+  else if (input.productSlug === "compensation-benchmark-report") files = await generateBenchmarkProduct(input.purchaseId, ctx, onProgress);
+  else files = await generateBlueprintProduct(input.purchaseId, ctx, onProgress);
 
   const meta: PurchaseMeta = {
     purchaseId: input.purchaseId,
@@ -58,7 +63,10 @@ export async function generateProduct(input: PurchaseInput) {
     createdAt: new Date().toISOString(),
   };
 
+  onProgress?.(92, "Writing purchase metadata");
   const metaPath = await writePurchaseFile(input.purchaseId, "meta.json", JSON.stringify(meta, null, 2));
+
+  onProgress?.(100, "Generation complete");
 
   return {
     purchaseId: input.purchaseId,
