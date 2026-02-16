@@ -12,7 +12,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     
     const variantClasses = {
       default: "bg-emerald-600 text-white hover:bg-emerald-700",
-      outline: "border border-slate-700 bg-transparent hover:bg-slate-800",
+      outline: "border border-slate-300 bg-white text-slate-800 hover:bg-slate-100 hover:text-slate-900",
       ghost: "hover:bg-slate-800",
       destructive: "bg-red-600 text-white hover:bg-red-700",
     }[variant];
