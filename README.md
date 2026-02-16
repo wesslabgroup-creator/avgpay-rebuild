@@ -41,9 +41,18 @@ supabase db push
 
 Or paste `supabase/migrations/20260211_add_enrichment_queue.sql` into the Supabase SQL Editor.
 
+Then apply `supabase/migrations/20260216_salary_enrichment_triggers.sql` to enable DB-level queueing from `Salary` inserts/updates (recommended for hobby plans).
+
 This migration creates:
 - `"EnrichmentQueue"` table (async enrichment jobs)
 - `"analysis"` + `"analysisGeneratedAt"` on `"Company"`, `"Role"`, and `"Location"`
+
+### Hobby-plan stabilization pattern (cron runs once/day)
+- Keep daily cron enabled for safety (`/api/cron/process-enrichment`).
+- Add a Supabase Database Webhook on `public.EnrichmentQueue` `INSERT` that calls `POST /api/enrichment-queue?mode=single`.
+- Send `Authorization: Bearer <ENRICHMENT_API_KEY>` in webhook headers.
+
+This gives near-real-time processing on queue inserts while the daily cron still handles retries/backfill.
 
 ## Security Checks
 ```bash
