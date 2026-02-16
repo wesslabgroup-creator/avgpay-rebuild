@@ -108,9 +108,8 @@ This wrapper runs `npm audit --audit-level=moderate` and treats registry advisor
   - `src/lib/products/storage.ts`
 
 ### Generated files and metadata
-Per purchase, files are written to:
-- `public/generated/purchases/{purchaseId}/...`
-- `public/generated/purchases/{purchaseId}/meta.json`
+Per purchase, files are written to a writable runtime directory (`$PURCHASE_STORAGE_ROOT`, defaulting to `/tmp/avgpay-generated-purchases` in serverless environments). Downloads are served via:
+- `GET /api/purchases/{purchaseId}/files/{fileName}`
 
 ### Stripe-ready handoff (later)
 Checkout currently simulates purchase when users click **Complete purchase (simulated)**.
