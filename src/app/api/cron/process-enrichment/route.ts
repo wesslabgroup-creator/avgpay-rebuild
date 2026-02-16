@@ -6,8 +6,14 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5 min — LLM calls can take 60s+ per model
 
 export async function GET(request: Request) {
-    // Verify Vercel cron secret (if configured) to prevent unauthorized triggers
+    // Verify Vercel cron secret. Fail closed in production if missing.
     const cronSecret = process.env.CRON_SECRET;
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    if (!cronSecret && isProduction) {
+        return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 500 });
+    }
+
     if (cronSecret) {
         const authHeader = request.headers.get('authorization');
         if (authHeader !== `Bearer ${cronSecret}`) {

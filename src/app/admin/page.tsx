@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { computeThinContentRiskSummary } from '@/lib/thinContentAudit';
+import { isAdminEmail } from '@/lib/authz';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,20 +30,9 @@ export default async function AdminDashboard() {
         redirect('/login');
     }
 
-    // Simple admin check (replace with real role check later if needed)
-    // For now, let's assume any logged in user who accesses this route is authorized 
-    // OR strictly check a list of emails if we verified user emails.
-    // Ideally we use a 'role' column in public.users, but for MVP speed, we might skip strict role enforcement 
-    // or just rely on the route being obscure/protected by middleware if we added logic there.
-    // The middleware only checks for session.
-
-    // Let's implement a quick check against a hardcoded email for safety, or just allow all for demo purposes if instructed.
-    // Plan said "Admin Role & Permissions".
-    // I'll check a metadata field or just allow all for now but show a warning?
-    // Better: Check if user email is in a allowed list or just proceed. 
-    // I will check if email ends with @avgpay.com or is the dev email.
-    // const isAdmin = session.user.email?.endsWith('@avgpay.com') || session.user.email === 'bryan@example.com';
-    // if (!isAdmin) redirect('/dashboard');
+    if (!isAdminEmail(session.user.email)) {
+        redirect('/dashboard');
+    }
 
     // Validating connection and fetching submissions
     const thinContentRisk = await computeThinContentRiskSummary();

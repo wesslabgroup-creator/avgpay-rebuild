@@ -44,3 +44,10 @@ Or paste `supabase/migrations/20260211_add_enrichment_queue.sql` into the Supaba
 This migration creates:
 - `"EnrichmentQueue"` table (async enrichment jobs)
 - `"analysis"` + `"analysisGeneratedAt"` on `"Company"`, `"Role"`, and `"Location"`
+
+## Security Checks
+```bash
+npm run audit:deps
+```
+
+This wrapper runs `npm audit --audit-level=moderate` and treats registry advisory endpoint blocks (HTTP 403) as an environment warning so local runs in restricted networks don't fail noisily. Run the same check in CI with unrestricted registry access for enforcement.
