@@ -53,6 +53,7 @@ async function fetchAllSalaries(): Promise<SalaryData[]> {
         Role(title),
         Location(city)
       `)
+      .order('id', { ascending: true })
       .range(from, to);
 
     if (error) throw error;

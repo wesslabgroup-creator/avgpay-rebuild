@@ -41,9 +41,42 @@ supabase db push
 
 Or paste `supabase/migrations/20260211_add_enrichment_queue.sql` into the Supabase SQL Editor.
 
+Then apply `supabase/migrations/20260216_salary_enrichment_triggers.sql` to enable DB-level queueing from `Salary` inserts/updates (recommended for hobby plans).
+
+Important: SQL migrations do **not** run automatically in production just because they exist in the repo. You must apply them once (via `supabase db push` or Supabase SQL Editor). After they are applied, the DB trigger runs automatically on every matching `Salary` insert/update event.
+
 This migration creates:
 - `"EnrichmentQueue"` table (async enrichment jobs)
 - `"analysis"` + `"analysisGeneratedAt"` on `"Company"`, `"Role"`, and `"Location"`
+
+### Hobby-plan stabilization pattern (cron runs once/day)
+- Keep daily cron enabled for safety (`/api/cron/process-enrichment`).
+- Add a Supabase Database Webhook on `public.EnrichmentQueue` `INSERT` that calls `POST /api/enrichment-queue?mode=single`.
+- Send `Authorization: Bearer <ENRICHMENT_API_KEY>` in webhook headers.
+
+This gives near-real-time processing on queue inserts while the daily cron still handles retries/backfill.
+
+### If queue items stay `pending`/`processing` with no `result`
+Common root causes:
+- No active scheduler/trigger calling `/api/enrichment-queue` or `/api/cron/process-enrichment`.
+- Invalid LLM credentials/model (e.g., Gemini API key invalid or unsupported model).
+- Old malformed `entityKey` values from early trigger SQL (fixed by `20260216_fix_enrichment_entity_key_normalization.sql`).
+
+Quick checks:
+```sql
+-- Count queue by status
+select status, count(*) from public."EnrichmentQueue" group by status order by status;
+
+-- See latest failures
+select id, "entityType", "entityName", attempts, "lastError", "runAfter"
+from public."EnrichmentQueue"
+order by "createdAt" desc
+limit 25;
+```
+
+Operational note:
+- Supabase **Cron** is optional if your webhook is correctly firing to `/api/enrichment-queue?mode=single`.
+- But you still want at least one periodic runner (daily is fine) for retries/backfill.
 
 ## Security Checks
 ```bash

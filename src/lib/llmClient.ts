@@ -34,7 +34,7 @@ const DEFAULT_PROVIDER: LlmProvider = providerFromEnv === 'gemini' || providerFr
   ? providerFromEnv
   : 'openrouter';
 
-const GEMINI_PRIMARY_MODEL = process.env.GEMINI_MODEL ?? 'gemini-1.5-flash';
+const GEMINI_PRIMARY_MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.0-flash';
 const OPENROUTER_PRIMARY_MODEL = process.env.OPENROUTER_PRIMARY_MODEL ?? 'arcee-ai/trinity-large-preview:free';
 const OPENROUTER_SECONDARY_MODEL = process.env.OPENROUTER_SECONDARY_MODEL ?? 'x-ai/grok-4.1-fast';
 const OPENROUTER_TERTIARY_MODEL = process.env.OPENROUTER_TERTIARY_MODEL ?? 'stepfun/step-3.5-flash:free';
@@ -55,15 +55,22 @@ const geminiClient = process.env.GEMINI_API_KEY
   : null;
 
 function buildModelChain(): LlmModelConfig[] {
+  const openrouterChain: LlmModelConfig[] = [
+    { provider: 'openrouter', model: OPENROUTER_PRIMARY_MODEL },
+    { provider: 'openrouter', model: OPENROUTER_SECONDARY_MODEL },
+    { provider: 'openrouter', model: OPENROUTER_TERTIARY_MODEL },
+  ];
+
   if (DEFAULT_PROVIDER === 'openrouter') {
-    return [
-      { provider: 'openrouter', model: OPENROUTER_PRIMARY_MODEL },
-      { provider: 'openrouter', model: OPENROUTER_SECONDARY_MODEL },
-      { provider: 'openrouter', model: OPENROUTER_TERTIARY_MODEL },
-    ];
+    return openrouterChain;
   }
 
-  return [{ provider: 'gemini', model: GEMINI_PRIMARY_MODEL }];
+  // Gemini-first configuration still falls back to OpenRouter so one provider outage
+  // does not stall the enrichment pipeline.
+  return [
+    { provider: 'gemini', model: GEMINI_PRIMARY_MODEL },
+    ...openrouterChain,
+  ];
 }
 
 async function generateWithGemini(modelName: string, prompt: string): Promise<string> {
@@ -203,12 +210,12 @@ export async function generateWithFallback(
   qualityGate: (content: string) => QualityGateResult,
   options?: { systemPrompt?: string },
 ): Promise<LlmGenerationResult> {
-  // Fail fast if the API key is missing — don't burn through retries for a config error
-  if (DEFAULT_PROVIDER === 'openrouter' && !process.env.OPENROUTER_API_KEY) {
-    throw new Error('OPENROUTER_API_KEY is not configured. Set it in your environment variables.');
-  }
-  if (DEFAULT_PROVIDER === 'gemini' && !process.env.GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY is not configured. Set it in your environment variables.');
+  // Validate at least one configured provider can be used.
+  const hasGemini = !!process.env.GEMINI_API_KEY;
+  const hasOpenRouter = !!process.env.OPENROUTER_API_KEY;
+
+  if (!hasGemini && !hasOpenRouter) {
+    throw new Error('No LLM API keys are configured. Set GEMINI_API_KEY and/or OPENROUTER_API_KEY.');
   }
 
   const chain = buildModelChain();
@@ -217,6 +224,26 @@ export async function generateWithFallback(
   for (const entry of chain) {
     for (let retry = 0; retry <= OPENROUTER_RETRIES_PER_MODEL; retry++) {
       try {
+        if (entry.provider === 'openrouter' && !process.env.OPENROUTER_API_KEY) {
+          failures.push({
+            provider: entry.provider,
+            model: entry.model,
+            reason: 'api_error',
+            message: 'OPENROUTER_API_KEY is not configured.',
+          });
+          break;
+        }
+
+        if (entry.provider === 'gemini' && !process.env.GEMINI_API_KEY) {
+          failures.push({
+            provider: entry.provider,
+            model: entry.model,
+            reason: 'api_error',
+            message: 'GEMINI_API_KEY is not configured.',
+          });
+          break;
+        }
+
         const content = entry.provider === 'openrouter'
           ? await generateWithOpenRouter(entry.model, prompt, options?.systemPrompt)
           : await generateWithGemini(
