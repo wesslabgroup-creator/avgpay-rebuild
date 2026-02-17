@@ -27,6 +27,44 @@ export async function writePurchaseFile(purchaseId: string, fileName: string, co
 
 export async function readPurchaseMeta(purchaseId: string) {
   const metaPath = getPurchaseFilePath(purchaseId, "meta.json");
-  const raw = await fs.readFile(metaPath, "utf8");
-  return JSON.parse(raw);
+  try {
+    const raw = await fs.readFile(metaPath, "utf8");
+    return JSON.parse(raw);
+  } catch (error) {
+    const dir = getPurchaseDir(purchaseId);
+    const entries = await fs.readdir(dir).catch(() => [] as string[]);
+    const fileNames = entries.filter((entry) => entry !== "meta.json");
+
+    if (fileNames.length === 0) {
+      throw error;
+    }
+
+    const files = fileNames.map((fileName) => ({
+      label: fileName,
+      path: `/api/purchases/${purchaseId}/files/${encodeURIComponent(fileName)}`,
+    }));
+
+    const stats = await Promise.all(
+      fileNames.map(async (fileName) => fs.stat(getPurchaseFilePath(purchaseId, fileName)).catch(() => null))
+    );
+    const createdAt = stats
+      .filter((stat): stat is Awaited<ReturnType<typeof fs.stat>> => !!stat)
+      .reduce<string>((latest, stat) => {
+        const candidate = stat.mtime.toISOString();
+        return candidate > latest ? candidate : latest;
+      }, new Date(0).toISOString());
+
+    return {
+      purchaseId,
+      productSlug: "generated-purchase",
+      productTitle: "Your generated files",
+      job: { id: "unknown", label: "Personalized purchase" },
+      city: { id: "unknown", label: "Generated delivery" },
+      options: {},
+      stats: {},
+      computations: {},
+      files,
+      createdAt,
+    };
+  }
 }
