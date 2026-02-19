@@ -30,22 +30,25 @@ export async function POST(request: NextRequest) {
     deliveryUrl: `/delivery/${input.purchaseId}?token=demo`,
   });
 
-  void (async () => {
-    try {
-      setGenerationState(input.purchaseId, { status: "running", progress: 10, stage: "Starting generator" });
-      await generateProduct(input, (progress, stage) => {
-        setGenerationState(input.purchaseId, { status: "running", progress, stage });
-      });
-      setGenerationState(input.purchaseId, { status: "completed", progress: 100, stage: "Files ready" });
-    } catch (error) {
-      setGenerationState(input.purchaseId, {
-        status: "failed",
-        progress: 100,
-        stage: "Generation failed",
-        error: error instanceof Error ? error.message : "Unknown generation error",
-      });
-    }
-  })();
+  try {
+    setGenerationState(input.purchaseId, { status: "running", progress: 10, stage: "Starting generator" });
+    await generateProduct(input, (progress, stage) => {
+      setGenerationState(input.purchaseId, { status: "running", progress, stage });
+    });
+    setGenerationState(input.purchaseId, { status: "completed", progress: 100, stage: "Files ready" });
+  } catch (error) {
+    setGenerationState(input.purchaseId, {
+      status: "failed",
+      progress: 100,
+      stage: "Generation failed",
+      error: error instanceof Error ? error.message : "Unknown generation error",
+    });
+
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to generate product" },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({
     purchaseId: input.purchaseId,
