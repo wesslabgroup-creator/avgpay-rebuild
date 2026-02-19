@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { getGenerationState } from "@/lib/products/progress";
 import { readPurchaseMeta } from "@/lib/products/storage";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,25 @@ export default async function DeliveryPage({ params, searchParams }: { params: {
   try {
     meta = await readPurchaseMeta(params.purchaseId);
   } catch {
-    return <main className="min-h-screen bg-white px-6 py-20"><div className="mx-auto max-w-xl">Purchase not found.</div></main>;
+    const generationState = getGenerationState(params.purchaseId);
+
+    return (
+      <main className="min-h-screen bg-white px-6 py-20">
+        <div className="mx-auto max-w-xl rounded-xl border border-slate-200 p-8 text-center">
+          <h1 className="text-2xl font-bold text-slate-900">We&apos;re still preparing your files</h1>
+          <p className="mt-3 text-slate-600">
+            {generationState
+              ? `${generationState.stage} (${generationState.progress}%)`
+              : "This purchase may still be generating. Please refresh in a moment."}
+          </p>
+          {generationState?.error ? <p className="mt-2 text-sm text-red-600">{generationState.error}</p> : null}
+          <div className="mt-6 flex justify-center gap-4">
+            <a href={`/delivery/${params.purchaseId}?token=demo`} className="inline-flex rounded-md bg-emerald-600 px-4 py-2 text-white">Refresh</a>
+            <Link href="/pricing" className="inline-flex rounded-md border border-slate-300 px-4 py-2 text-slate-700">Go to Pricing</Link>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   return (
