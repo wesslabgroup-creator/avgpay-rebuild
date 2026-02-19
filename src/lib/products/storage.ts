@@ -47,12 +47,14 @@ export async function readPurchaseMeta(purchaseId: string) {
     const stats = await Promise.all(
       fileNames.map(async (fileName) => fs.stat(getPurchaseFilePath(purchaseId, fileName)).catch(() => null))
     );
-    const createdAt = stats
-      .filter((stat): stat is Awaited<ReturnType<typeof fs.stat>> => !!stat)
-      .reduce<string>((latest, stat) => {
-        const candidate = stat.mtime.toISOString();
-        return candidate > latest ? candidate : latest;
-      }, new Date(0).toISOString());
+    const createdAt = stats.reduce<string>((latest, stat) => {
+      if (!stat) {
+        return latest;
+      }
+
+      const candidate = stat.mtime.toISOString();
+      return candidate > latest ? candidate : latest;
+    }, new Date(0).toISOString());
 
     return {
       purchaseId,
